@@ -14,6 +14,13 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "User Guide" => [
+            "General Usage" => "userguide/intro.md",
+            "Velocity Models" => "userguide/velmod.md",
+            "Configurations" => "userguide/config.md",
+        ],
+        "Method" => "method.md", 
+        "API Reference" => "reference.md"
     ],
 )
 
