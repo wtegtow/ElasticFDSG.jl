@@ -1,11 +1,29 @@
 module ElasticFDSG
 
-# Write your package code here.
+    module dim2
+        # ----- external dependencies -----
+        using Metal, CUDA
+        using JLD2, HDF5, NPZ, YAML
+        using ProgressMeter
 
-function some_math(x,y)
-    return x+y
-end 
+        using Printf, LinearAlgebra
+        # ----- scripts -----
+        include(joinpath(@__DIR__,"2d/main.jl"))
+        export runsim, configtemplate
+    end 
 
-export some_math
+    module dim3
+        # ----- external dependencies ----- 
+        using Metal, CUDA    
+        using JLD2, HDF5, NPZ, YAML     
+        using ProgressMeter             
+
+        using Printf, LinearAlgebra
+        # ----- scripts -----
+        include(joinpath(@__DIR__,"3d/main.jl"))
+        export runsim, configtemplate
+    end 
+
+export dim2, dim3
 
 end

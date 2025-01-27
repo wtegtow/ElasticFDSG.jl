@@ -3,7 +3,23 @@ uuid = "5b8de370-2f65-449b-a80a-5b10b09533c5"
 authors = ["William Tegtow <w.tegtow@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+Metal = "dde4c033-4e86-420c-a63e-0dd931031962"
+NPZ = "15e1cf62-19b3-5cfa-8e77-841668bca605"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+
 [compat]
+CUDA = "5.6.1"
+HDF5 = "0.17.2"
+JLD2 = "0.5.11"
+Metal = "1.5.1"
+NPZ = "0.4.3"
+ProgressMeter = "1.10.2"
+YAML = "0.4.12"
 julia = "1.11"
 
 [extras]
