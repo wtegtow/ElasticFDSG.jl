@@ -2,5 +2,5 @@ using ElasticFDSG
 using Test
 
 @testset "ElasticFDSG.jl" begin
-    # Write your tests here.
+    @test some_math(1,1) == 2
 end
