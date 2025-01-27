@@ -1,0 +1,13 @@
+name = "ElasticFDSG"
+uuid = "5b8de370-2f65-449b-a80a-5b10b09533c5"
+authors = ["William Tegtow <w.tegtow@gmail.com> and contributors"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.11"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
