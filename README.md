@@ -39,6 +39,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 A step by step user guide can be found in the documentation ADD FINAL LINK.
 
 
+![Demo](docs/src/assets/readme_anim.gif)
 
 
 ## Installation
