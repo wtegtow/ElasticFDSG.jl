@@ -28,7 +28,7 @@ Run the 2D elastic forward simulation using the specified configuration and velo
 # Returns
 - `Nothing`: The function runs the simulation and saves the results as specified in the configuration file.
 """
-function runsim(CONFIGPATH, VELMODPATH)
+function runsim(CONFIGPATH::String, VELMODPATH::String)
 
     # SETUP
     mlog = MessageLog(String[]);

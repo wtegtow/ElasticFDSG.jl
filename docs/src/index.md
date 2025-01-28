@@ -34,7 +34,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 
 ```julia-repl
 Using Pkg
-Pkg.add("ElasticFDSG")
+Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
 ```
 
 ## Citing

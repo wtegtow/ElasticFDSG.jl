@@ -45,7 +45,7 @@ A step by step user guide can be found in the [documentation](https://wtegtow.gi
 
 ```julia-repl
 Using Pkg
-Pkg.add("ElasticFDSG")
+Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
 ```
 
 ## Citing

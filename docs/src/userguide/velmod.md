@@ -4,7 +4,8 @@ Velocity models can be prepared in .jld2 (Julia) or .npy/.npz (Python) formats.
 This gives users the freedom to design their velocity models in the tool of their choice and adapt them to the required format. 
 The following explains the required structure for 2D and 3D models and shows how to create simple velocity models in Julia.
 
-**Note:** To simplify the creation of velocity models, all elastic parameters are defined on full-integer grid points in the staggered grid.
+!!!Note
+    To simplify the creation of velocity models, all elastic parameters are defined on full-integer grid points in the staggered grid.
 
 
 ## 2D 
