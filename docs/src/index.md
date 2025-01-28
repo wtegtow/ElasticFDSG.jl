@@ -38,4 +38,18 @@ Pkg.add("ElasticFDSG")
 ```
 
 ## Citing
+If you find this package helpful for your research, please consider citing:
 
+```
+@misc{ElasticFDSG,
+  author       = {William Tegtow},
+  title        = {ElasticFDSG.jl: Simulating elastic wave propagation in 2D and 3D anisotropic media.},
+  year         = {2025},
+  publisher    = {GitHub},
+  journal      = {GitHub repository},
+  howpublished = {\url{https://github.com/wtegtow/ElasticFDSG.jl}},
+  note         = {Version 1.0.0},
+  doi          = {https://doi.org/10.5281/zenodo.14752931}
+}
+
+```

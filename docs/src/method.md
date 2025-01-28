@@ -140,8 +140,8 @@ The 10 force components contributing to $f_{x}$ are:
 \begin{aligned}
 f_{x \; i,j,k} &= - f_{x \; i+1,j,k} &= \frac{M_{xx}(t)}{\Delta x^{2} \Delta y \Delta z} \\\\
 
-f_{x \ ;i,j+1,k} &= - f_{x \; i,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x \Delta y^{2} \Delta z} \\
-f_{x \ ;i+1,j+1,k} &= - f_{x \; i+1,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x  \Delta y^{2}  \Delta z} \\\\
+f_{x \; i,j+1,k} &= - f_{x \; i,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x \Delta y^{2} \Delta z} \\
+f_{x \; i+1,j+1,k} &= - f_{x \; i+1,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x  \Delta y^{2}  \Delta z} \\\\
 
 f_{x \; i,j,k+1} &= - f_{x \; i,j,k-1} &= \frac{M_{xz}(t)}{4 \Delta x \Delta y \Delta z^{2}} \\
 f_{x \; i+1,j,k+1} &= - f_{x \;i+1,j,k-1} &= \frac{M_{xz}(t)}{4 \Delta x \Delta y \Delta z^{2}} \\

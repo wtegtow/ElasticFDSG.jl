@@ -5,6 +5,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 [![Build Status](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14752931)
 
 
 ElasticFDSG.jl solves the elastic wave equation using finite differences on a staggered grid (FDSG) in the velocity-stress formulation [Virieux (1986)].
@@ -36,11 +37,10 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Save Distributed Acoustic Sensing (DAS) receiver, aligned with model coordinate axis (strain-profiles).
 - Easy-to-read source code.
 
-A step by step user guide can be found in the documentation ADD FINAL LINK.
+A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/stable/).
 
 
-![Demo](docs/src/assets/readme_anim.gif)
-
+![Demo](docs/src/assets/readme_animation.gif)
 
 ## Installation
 
@@ -60,10 +60,11 @@ If you find this package helpful for your research, please consider citing:
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/wtegtow/ElasticFDSG.jl}},
-  note         = {Version 1.0.0}
+  note         = {Version 1.0.0},
+  doi          = {https://doi.org/10.5281/zenodo.14752931}
 }
 
 ```
 
-!!! note
-    This package is still in its early stages, and only limited testing have been performed so far. Any bug report or suggestion is very welcomed.
+**Note:**
+This package is still in its early stages, and only limited testing have been performed so far. Any bug report or suggestion is very welcomed.
