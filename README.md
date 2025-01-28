@@ -67,4 +67,4 @@ If you find this package helpful for your research, please consider citing:
 ```
 
 **Note:**
-This package is still in its early stages, and only limited testing have been performed so far. Any bug report or suggestion is very welcomed.
+This package is still in its early stages, and only limited testing has been done so far. Any bug report or suggestion is very welcomed.
