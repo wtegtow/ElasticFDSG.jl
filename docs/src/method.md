@@ -76,17 +76,17 @@ Using this scheme, the discrete form of (1) and (2) are given by:
 ```math
 \begin{aligned}
 
-\sigma_{xx \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{xx \; (i+\frac{1}{2},j,k)}^{t_{n}} \Delta t (c_{11} \mathcal{D}_{x} v_{x} + c_{12} \mathcal{D}_{y} v_{y} + c_{13} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)} \\ 
+\sigma_{xx \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{xx \; (i+\frac{1}{2},j,k)}^{t_{n}-\frac{1}{2}} \Delta t (c_{11} \mathcal{D}_{x} v_{x} + c_{12} \mathcal{D}_{y} v_{y} + c_{13} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)}^{t_{n}} \\ 
 
-\sigma_{yy \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{yy \; (i+\frac{1}{2},j,k)}^{t_{n}} \Delta t (c_{12} \mathcal{D}_{x} v_{x} + c_{22} \mathcal{D}_{y} v_{y} + c_{23} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)} \\ 
+\sigma_{yy \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{yy \; (i+\frac{1}{2},j,k)}^{t_{n}-\frac{1}{2}} \Delta t (c_{12} \mathcal{D}_{x} v_{x} + c_{22} \mathcal{D}_{y} v_{y} + c_{23} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)}^{t_{n}} \\ 
 
-\sigma_{zz \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{zz \; (i+\frac{1}{2},j,k)}^{t_{n}} \Delta t (c_{13} \mathcal{D}_{x} v_{x} + c_{23} \mathcal{D}_{y} v_{y} + c_{33} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)} \\ 
+\sigma_{zz \; (i+\frac{1}{2},j,k)}^{t_{n}+\frac{1}{2}} &= \sigma_{zz \; (i+\frac{1}{2},j,k)}^{t_{n}-\frac{1}{2}} \Delta t (c_{13} \mathcal{D}_{x} v_{x} + c_{23} \mathcal{D}_{y} v_{y} + c_{33} \mathcal{D}_{z} v_{z} ) \bigg|_{(i+\frac{1}{2},j,k)}^{t_{n}} \\ 
 
-\sigma_{xy \; (i,j+\frac{1}{2},k)}^{t_{n}+\frac{1}{2}} &= \sigma_{xy \; (i,j+\frac{1}{2},k)}^{t_{n}} \Delta t \, c_{66} ( \mathcal{D}_{x} v_{y} +  \mathcal{D}_{y} v_{x})\bigg|_{(i,j+\frac{1}{2},k)} \\
+\sigma_{xy \; (i,j+\frac{1}{2},k)}^{t_{n}+\frac{1}{2}} &= \sigma_{xy \; (i,j+\frac{1}{2},k)}^{t_{n}-\frac{1}{2}} \Delta t \, c_{66} ( \mathcal{D}_{x} v_{y} +  \mathcal{D}_{y} v_{x})\bigg|_{(i,j+\frac{1}{2},k)}^{t_{n}} \\
 
-\sigma_{xz \; (i,j,k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} &= \sigma_{xz \; (i,j,k+\frac{1}{2})}^{t_{n}} \Delta t \, c_{55} ( \mathcal{D}_{x} v_{z} + \mathcal{D}_{z} v_{x})\bigg|_{(i,j,k+\frac{1}{2})} \\
+\sigma_{xz \; (i,j,k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} &= \sigma_{xz \; (i,j,k+\frac{1}{2})}^{t_{n}-\frac{1}{2}} \Delta t \, c_{55} ( \mathcal{D}_{x} v_{z} + \mathcal{D}_{z} v_{x})\bigg|_{(i,j,k+\frac{1}{2})}^{t_{n}} \\
 
-\sigma_{yz \; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} &= \sigma_{yz \; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})}^{t_{n}} \Delta t \, c_{44} ( \mathcal{D}_{y} v_{z} +  \mathcal{D}_{y} v_{z})\bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})} \\
+\sigma_{yz \; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} &= \sigma_{yz \; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})}^{t_{n}-\frac{1}{2}} \Delta t \, c_{44} ( \mathcal{D}_{y} v_{z} +  \mathcal{D}_{y} v_{z})\bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})}^{t_{n}} \\
             
             
 \end{aligned}
@@ -94,9 +94,9 @@ Using this scheme, the discrete form of (1) and (2) are given by:
 
 ```math
 \begin{aligned}
-v_{x \; (i,j,k)}^{t_{n}+1} &= v_{x \; (i,j,k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xx} + \mathcal{D}_{y} \sigma_{xy} + \mathcal{D}_{z} \sigma_{xz} + f_{x}) \bigg|_{(i,j,k)} \\
-v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+1} &= v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xy} + \mathcal{D}_{y} \sigma_{yy} + \mathcal{D}_{z} \sigma_{yz} + f_{y}) \bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k)} \\
-v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+1} &= v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xz} + \mathcal{D}_{y} \sigma_{xz} + \mathcal{D}_{z} \sigma_{zz} + f_{z}) \bigg|_{(i+\frac{1}{2},j,k+\frac{1}{2})} \tag{3}
+v_{x \; (i,j,k)}^{t_{n}+1} &= v_{x \; (i,j,k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xx} + \mathcal{D}_{y} \sigma_{xy} + \mathcal{D}_{z} \sigma_{xz} + f_{x}) \bigg|_{(i,j,k)}^{t_{n}+\frac{1}{2}} \\
+v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+1} &= v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xy} + \mathcal{D}_{y} \sigma_{yy} + \mathcal{D}_{z} \sigma_{yz} + f_{y}) \bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+\frac{1}{2}} \\
+v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+1} &= v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xz} + \mathcal{D}_{y} \sigma_{xz} + \mathcal{D}_{z} \sigma_{zz} + f_{z}) \bigg|_{(i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} \tag{3}
 
 \end{aligned}
 ```
