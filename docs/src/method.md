@@ -117,7 +117,8 @@ The differential operators $\mathcal{D}$ are given by central difference approxi
 ```      
 with order $N$ and coefficients $c_{n}$.
 
-!!!Note
+!!! note
+
   To compute a spatial derivative of order $N$ at a specific location, at least $N$ neighboring nodes are required on both sides. As a result, for edge nodes no spatial derivatives can be calculated. These edge nodes (ghost nodes) are effective model boundaries and should lie outside the physical (user-defined) domain. The application automatically extends the user-defined domain with $N$ ghost node layers.
 
   In staggered grids, it is often beneficial to assign certain elastic properties to specific points within the grid cell. However, requiring users to define such grids can become difficult to manage, particularly for complex media. To simplify this, we define all elastic properties at full integer grid points (e.g., on $v_{x}$) and effective properties are calculated by interpolating values from neighboring nodes.

@@ -5,7 +5,8 @@ Empty template configuration.yaml files can be generated with:
 - [ElasticFDSG.dim3.configtemplate()](@ref ElasticFDSG.dim3.configtemplate) for 3D simulations.
 The contents of these files must then be fully completed by the user either manually or with self-written scripts.
 
-!!!Note
+!!! note
+
     The configuration file reader yet dont perform any type or spell checks. User should fill the form like indicated below. For instance, ```settings.spatial_derivative_order: 10``` will work, while ```"10"``` would throw an error.
 
 
