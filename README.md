@@ -2,7 +2,6 @@
 
 <img src="docs/src/assets/logo.png" alt="ElasticFDSG Logo" width="200"/>
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 [![Build Status](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14752931)
@@ -37,7 +36,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Save Distributed Acoustic Sensing (DAS) receiver, aligned with model coordinate axis (strain-profiles).
 - Easy-to-read source code.
 
-A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/stable/).
+A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
 
 
 ![Demo](docs/src/assets/readme_animation.gif)
