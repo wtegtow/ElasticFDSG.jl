@@ -5,7 +5,7 @@ To validate the correctness of the application, the numerically derived seismome
 Solutions for inhomogeneous partial differential equations can be obtained using Green's functions 
 $G(\mathbf{x}, t; \mathbf{x_{0}}, t_{0})$ with $\delta$-distributions as source terms acting on $(\mathbf{x}, t)$ and activated on $(\mathbf{x_{0}}, t_{0})$.
 
-The solution to that problem leads to the practical scenario where the displacement field can be described by a convolution of the Green's function with the source-time function:
+The solution to that problem leads to the practical relationship where the displacement field can be described by a convolution of the Green's function with the source-time function:
 
 ```math
 
