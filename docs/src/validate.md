@@ -1,14 +1,15 @@
 ## Validation
 
-To validate the correctness of the method, the numerically derived seismometer data is compared with analytical solutions for a given homogeneous medium.
+To validate the correctness of the application, the numerically derived seismometer data is compared with analytical solutions for a given homogeneous medium.
 
-Solutions for inhomogeneous partial differential equations can be obtained using Green's functions \( G(\mathbf{x}, t; \mathbf{x}_0, t_0) \) with \(\delta\)-distributions as source terms acting on \((\mathbf{x}, t)\) and activated on \((\mathbf{x}_0, t_0)\).
+Solutions for inhomogeneous partial differential equations can be obtained using Green's functions 
+$G(\mathbf{x}, t; \mathbf{x_{0}}, t_{0})$ with $\delta$-distributions as source terms acting on $(\mathbf{x}, t)$ and activated on $(\mathbf{x_{0}}, t_{0})$.
 
 The solution to that problem leads to the practical scenario where the displacement field can be described by a convolution of the Green's function with the source-time function:
 
 ```math
 
-u_{i} = G * S, \quad i \in \{x, y, z\}..
+u_{i} = G * S, \quad i \in \{x, y, z\}.
 
 ```
 
@@ -23,7 +24,7 @@ v_{i} = \frac{\partial u_{i}}{\partial t}, \quad i \in \{x, y, z\}.
 In the 2D case, the Green's function is given by:
 
 ```math
-G_{2D}(x,z,t) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{|r|}{c_{s0}}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
+G_{2D}(x,z,t) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{r}{c}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
 
 ```
 
@@ -32,7 +33,7 @@ and in the 3D case:
 
 ```math
 
-G_{3D}(x,z,t) = \frac{1}{4 \pi \rho c^2 r} \delta(t - \frac{r}{c})
+G_{3D}(x,z,t) = \frac{1}{4 \pi \rho c^2 r} \delta((t-t_{0}) - \frac{r}{c})
 
 
 ```

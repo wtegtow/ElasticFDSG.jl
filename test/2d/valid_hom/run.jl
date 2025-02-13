@@ -1,7 +1,4 @@
-using ElasticFDSG
-
-#using CairoMakie, HDF5, YAML, Test, Statistics
-
+#using ElasticFDSG, CairoMakie, HDF5, YAML, Test, Statistics
 
 # Utils 
 # ----------------------------------------
