@@ -31,6 +31,9 @@ function init_settings(CONFIGPATH, mlog)
     save = config["settings"]["save_results"]
 
     output_dir = config["settings"]["output"]["destination_folder"]
+    if output_dir == "test" # magic method to save outputs in test folder
+        output_dir = dirname(CONFIGPATH)
+    end
     if save == true check_dir(output_dir) end # check if output_dir exists
 
     format = config["settings"]["output"]["format"]

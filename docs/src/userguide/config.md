@@ -15,7 +15,7 @@ The contents of these files must then be fully completed by the user either manu
 ```julia 
 using ElasticFDSG 
 
-configuration_file_path = joinpath(@__DIR__, "my_2D_configurations.yaml") # add your actual path here 
+configuration_file_path = "path/to/my/config_file.yaml" 
 ElasticFDSG.dim2.configtemplate(configuration_file_path)
 
 ```
@@ -26,47 +26,57 @@ This creates:
 # This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
 # Any other configuration file can be prepared in the same manner.
 # All keywords are case sensitive, and must be named as shown below.
-# Users must fill the whole template before running a simulation. 
+# The templates is filled with some example placeholder values.
+# The user must fill them before running a simulation. 
 # The velocity model is prepared in another file.
 
 settings:
-    device:                          # cpu / gpu-cuda / gpu-metal 
-    precision:                       # Float64 / Float32
-    spatial_derivative_order:        # 1-10
-    show_summary_in_console:         # true / false  
-    show_progress_in_console:        # true / false
-    save_results:                    # true / false  
+    device: cpu                         # cpu / gpu-cuda / gpu-metal 
+    precision: Float64                  # Float64 / Float32
+    spatial_derivative_order: 10        # (1-10)
+    show_summary_in_console: true       # true / false  
+    show_progress_in_console: true      # true / false
+    save_results: true                  # true / false  
     output:
-        destination_folder: 
-        file_name:  
+        destination_folder: path/to/destination/folder
+        file_name: cool_simulation 
         format: h5                   # h5 (only supported format yet) 
 
 time:
-    start:                # [sec]
-    end:                  # [sec]
-    timestep:             # [sec]
+    start: 0              # [sec]
+    end: 1                # [sec]
+    timestep: 0.005       # [sec] (will be checked and changed if unstable)
 
 source:
-    dominant_frequency:        # [Hz]
-    wavelet_type:              # ricker / gauss1d 
-    wavelet_center:            # (should be ≥ 1/fdom) [sec]
-    amplitude:                
-    force_angle:               # [°]            
-    point_source:              # true / false  (if true, double_couple should be false)
-    double_couple:             # true / false  (if true, point_source should be false)
-    location:
-        x:                     # [m]
-        y:                     # [m]
+    dominant_frequency: 15        # [Hz]
+    wavelet_type: gauss1d         # ricker / gauss1d (1st derivative of a gaussian)
+    wavelet_center: 0.067         # (should be ≥ 1/fdom) [sec]
+    amplitude: 1e5                # wavelet amplifier
+    location: 
+        x: 2500                   # [m]
+        y: 2500                   # [m]             
 
-boundaries: # absorbing / else (reflecting)
-    left:         # [x-start] 
-    right:        # [x-end]    
-    top:          # [y-start]  
-    bottom:       # [y-end]  
+    point_source:          
+        use: true               # (true/false) (if true, double_couple.use should be false)
+        act_on:
+            on_vx: true         # Enable on x-direction
+            on_vy: false        # Enable on y-direction
+            on_vx_and_vy: 
+                force_angle: 0   # [°] Only used if both on_vx and on_vy are enabled. ∈[0°,360°] 0° -> in y negative direction, 180° -> in x negative direction
+
+    double_couple:              
+        use: false               # (true/false) (if true, point_source.use should be false)
+        strike: 0                # ∈[0°,360°] 0° -> in y negative direction, 180° -> in x negative direction
+
+boundaries: # (absorbing / else)
+    xstart: absorbing      
+    xend: absorbing       
+    ystart: absorbing       
+    yend: absorbing
 
 pml:
-    nlayer:                       # 5-15 recommended
-    reflection_coefficient:       # 1e-10 recommended
+    nlayer: 10                      # about 5-15 work reasonable
+    reflection_coefficient: 1e-5    # about 1e-5 works reasonable
 
 receivers:
     geophones:
@@ -75,16 +85,15 @@ receivers:
     das:
         x_aligned:
         #- { x_range: "0:25:10000", y: 4000 }  # [m] Example das
-      
+        
         y_aligned:
         #- { x: 1000, y_range: "1000:25:9000"} # [m] Example das
         
-        
-snapshots:
-    times: 
-        # [0.25, 0.5, 0.75, 1.0] # [sec] Example
-    fields: 
-        # [vx, vy, sxx, sxy, syy] # Example 
+    snapshots:
+        times: 
+            # [0.25, 0.5, 0.75, 1.0] # [sec] Example
+        fields: 
+            # [vx, vy, sxx, sxy, syy] # Example 
 
 ```
 

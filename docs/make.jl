@@ -20,6 +20,7 @@ makedocs(;
             "Configurations" => "userguide/config.md",
         ],
         "Method" => "method.md", 
+        "Validation" => "validate.md",
         "API Reference" => "reference.md"
     ],
 )

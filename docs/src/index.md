@@ -4,7 +4,7 @@
 
 
 But why yet another implementation?
-In many current applications, the installation of various dependencies, setup and definition of model parameters are often already challenging tasks, especially for inexperienced users seeking a quick and straightforward workflow.
+In many current applications, the installation of various dependencies, setting simulation setups, definition of model parameters or accesing the results are often already complicated tasks, especially for inexperienced users seeking a quick and straightforward workflow.
 ElasticFDSG was developed with ease of use in mind. 
 It aims to offer a user-friendly experience while also maintaining flexibility to be applied to a wide variety of simulation scenarios.
 Users can easily customize their simulations by creating configuration files and defining velocity models in a straightforward manner, that can then be passed directly to the solvers.
@@ -21,12 +21,12 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
 - Elastic isotropic, VTI or orthorhombic (ORT) 3D models using Tsvankin parameter.
 - All elastic properties are defined on full integer grid points to simplify the creation of velocity models.
-- Solver can handle fully heterogeneous media.
+- Solver can handle fully heterogeneous media (to the limits of the method).
 - Point and anisotropic double couple sources. 
-- Absorbing boundaries implemented with Convolutional-Perfectly-Matched-Layer.
+- Absorbing boundaries using Convolutional-Perfectly-Matched-Layer.
 - Save geophone receiver (velocity point sensors). 
-- Save snapshots at specified time steps.
 - Save Distributed Acoustic Sensing (DAS) receiver, aligned with model coordinate axis (strain-profiles).
+- Save snapshots at specified time steps.
 - Easy-to-read source code.
 
 

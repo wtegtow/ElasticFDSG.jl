@@ -77,7 +77,6 @@ function init_domain(VELMODPATH, settings::Settings)
     z_inner_start = z0 
     z_inner_end = zend
 
-
     file_nx, file_ny, file_nz = size(velmod[1,:,:,:])
 
     dx = abs(velmod[1,begin,begin,begin] - velmod[1,begin+1,begin,begin])
@@ -171,7 +170,6 @@ function init_domain(VELMODPATH, settings::Settings)
            pml_index += 1
 
         end
-
     end
     
     pml_points = union(pml_points)

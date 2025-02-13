@@ -24,7 +24,6 @@ function init_source(settings::Settings,
     ts = settings.config["source"]["wavelet_center"]   
     f0 = settings.config["source"]["amplitude"] 
 
-    force_angle = settings.float(deg2rad(settings.config["source"]["force_angle"]))
     source_x = settings.float(settings.config["source"]["location"]["x"])
     source_y = settings.float(settings.config["source"]["location"]["y"])
 

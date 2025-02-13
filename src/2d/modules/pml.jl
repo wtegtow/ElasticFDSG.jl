@@ -1,6 +1,6 @@
 mutable struct Pml{T, U}
 
-    # fields 
+    # memory variables 
     vx_x_old::T
     vy_y_old::T
     vy_x_old::T
@@ -37,23 +37,21 @@ function init_pml(settings::Settings,
     N = settings.N
     npoints_pml = settings.config["pml"]["nlayer"]
     rcoeff = settings.config["pml"]["reflection_coefficient"]
-    RIGHT = settings.config["boundaries"]["right"] == "absorbing" ? true : false
-    LEFT  = settings.config["boundaries"]["left"] == "absorbing" ? true : false
-    TOP   = settings.config["boundaries"]["top"] == "absorbing" ? true : false
-    BOTTOM = settings.config["boundaries"]["bottom"] == "absorbing" ? true : false
+    xstart = settings.config["boundaries"]["xstart"] == "absorbing" ? true : false
+    xend   = settings.config["boundaries"]["xend"]   == "absorbing" ? true : false
+    ystart = settings.config["boundaries"]["ystart"] == "absorbing" ? true : false
+    yend   = settings.config["boundaries"]["yend"]   == "absorbing" ? true : false
 
     K_x_evn, K_x_odd, 
     a_x_evn, a_x_odd, 
-    b_x_evn, b_x_odd = cmpl(N, npoints_pml, RIGHT, LEFT, domain.xcoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
+    b_x_evn, b_x_odd = cmpl(N, npoints_pml, xstart, xend, domain.xcoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
 
     K_y_evn, K_y_odd, 
     a_y_evn, a_y_odd, 
-    b_y_evn, b_y_odd = cmpl(N, npoints_pml, TOP, BOTTOM, domain.ycoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
-
+    b_y_evn, b_y_odd = cmpl(N, npoints_pml, ystart, yend, domain.ycoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
 
     pml_dim = length(domain.pml_points)
     ref_dim = pml_dim 
-    
 
     vx_x_old  = zeros(settings.float,ref_dim)
     vy_y_old  = zeros(settings.float,ref_dim);

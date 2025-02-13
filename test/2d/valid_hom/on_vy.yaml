@@ -1,0 +1,77 @@
+# This is an example configuration.yaml file for a 2D FDSG simulation.
+# Any other configuration file can be prepared in the same manner.
+# All keywords are case sensitive, and must be named as shown below.
+# The velocity model is prepared in another file (see scripts in velmod folder).
+
+settings:
+  device: cpu                          # cpu / gpu-cuda / gpu-metal 
+  precision: Float32                   # Float64 / Float32
+  spatial_derivative_order: 10         # (1-10)
+  show_summary_in_console: false       # true / false  
+  show_progress_in_console: false      # true / false
+  save_results: true                   # true / false  
+  output:
+    destination_folder: test
+    file_name:  on_vy
+    format: h5                       # h5 (only supported format yet) 
+
+time:
+  start: 0.0                  # [sec]
+  end: 0.8                   # [sec]
+  timestep: 0.5            # [sec]
+
+source:
+  dominant_frequency: 25        # [Hz]
+  wavelet_type: ricker         # ricker / gauss1d 
+  wavelet_center: 0.04          # (should be ≥ 1/fdom) [sec]
+  amplitude: 2  
+  location:
+    x: 2500                    # [m]
+    y: 2500                    # [m]             
+
+  point_source:               # true / false (if true, double_couple should be false)
+    use: true                   # Enables point source
+    act_on:
+      on_vx: false               # Enable on x-direction
+      on_vy: true               # Enable on y-direction
+      on_vx_and_vy: 
+        force_angle: 0          # [°] Only used if both on_vx and on_vy are enabled
+    
+  double_couple:               # true / false  (if true, point_source should be false)
+    use: false
+    strike: 0
+
+boundaries: # {absorbing / else}
+  xstart: absorbing      
+  xend: absorbing       
+  ystart: absorbing       
+  yend: absorbing
+
+pml:
+  nlayer: 10               
+  reflection_coefficient: 1
+
+receivers:
+  geophones:
+    - { x: 2100, y: 2100 }    #[m]
+    - { x: 1700, y: 1700 }    #[m]
+    - { x: 1500, y: 1500 }    #[m]
+
+    - { x: 2900, y: 2100 }     #[m]
+    - { x: 3300, y: 1700 }     #[m]
+
+    - { x: 2100, y: 2900 }     #[m]
+    - { x: 1700, y: 3300 }     #[m]
+
+    - { x: 2900, y: 2900 }     #[m]
+    - { x: 3300, y: 3300 }     #[m]
+
+  das:
+    x_aligned:
+    y_aligned:
+  
+  snapshots:
+   times: 
+    [0.25, 0.5]
+   fields: 
+    [vx, vy]

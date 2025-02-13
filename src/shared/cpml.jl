@@ -48,7 +48,7 @@ function cmpl(N,
     ghost_width = N*h
     d0 = -(NPOW-1) * vmax * log(rcoef) / (2 * pml_width)
 
-    # pml regions (start = left, end = right of domain)
+    # pml region
     pml_start = domain_[begin] + ghost_width : h : domain_[begin] + ghost_width + pml_width - h
     pml_end = domain_[end] - ghost_width - pml_width + h : h : domain_[end] - ghost_width 
    

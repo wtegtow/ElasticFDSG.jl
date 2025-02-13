@@ -11,13 +11,11 @@ mutable struct FDSG2D{a,b,c,d,e,f,g,h,i,j}
     snapshots::j
 end
 
-
-
 include(joinpath(@__DIR__, "../shared/__export__.jl"))
 include(joinpath(@__DIR__, "modules/__export__.jl"))
 
 """
-    Elastic_FDSG.dim2.runsim(CONFIGPATH, VELMODPATH)
+    ElasticFDSG.dim2.runsim(CONFIGPATH, VELMODPATH)
 
 Run the 2D elastic forward simulation using the specified configuration and velocity model.
 
@@ -29,7 +27,7 @@ Run the 2D elastic forward simulation using the specified configuration and velo
 - `Nothing`: The function runs the simulation and saves the results as specified in the configuration file.
 """
 function runsim(CONFIGPATH::String, VELMODPATH::String)
-
+    
     # SETUP
     mlog = MessageLog(String[]);
     settings = init_settings(CONFIGPATH, mlog)
@@ -45,14 +43,15 @@ function runsim(CONFIGPATH::String, VELMODPATH::String)
     snapshots = init_snapshots(settings, domain, time)
     das       = init_das(settings, domain, elastic, time)
 
-    # INIT
+    # INIT SIMULATION
     fdsg2d = FDSG2D{Settings, Domain, Elastic, Fields, Time, Source, Pml, Geophones, DAS, Snapshots}(
                     settings, domain, elastic, fields, time, source, pml, geophones, das, snapshots)
     iwindow(mlog, fdsg2d)
 
-    # SOLVE 
+    # SOLVER
     solver = init_solver(fdsg2d)
     solver(fdsg2d)
+
     # SAVE RESULTS 
     save_results(fdsg2d)
 end;

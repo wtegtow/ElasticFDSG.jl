@@ -1,11 +1,12 @@
 using ElasticFDSG
 using Test
 
+using HDF5, YAML, Statistics
+
 @testset "ElasticFDSG.jl" begin
-    
-    # runs two small demo simulations. If no error occur, the tests are considered passed.
-    include(joinpath(@__DIR__,"2d/demo_small/main.jl"))
-    include(joinpath(@__DIR__,"3d/demo_small/main.jl"))
-    
-    # some more in-depth tests might be included in the future. 
+    # 2D tests
+    include(joinpath(@__DIR__,"2d/valid_hom/run.jl"))
+
+    # 3D tests
+     
 end

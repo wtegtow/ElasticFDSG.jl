@@ -39,18 +39,11 @@ function load_velmod(VELMODPATH)
         velmod = velmodfile["velmod"];
         close(velmodfile)
         else
-        error("no valid velocity model file found.")
+        error("No valid velocity model file found.")
     end;
     return velmod 
 end 
 
-function convert_to_array_hashmap(pml_hash_dict, ny, nx)
-    hash_table = fill(-1, ny, nx)
-    for ((y, x), idx) in pml_hash_dict
-        hash_table[y, x] = idx
-    end
-    return hash_table
-end;
 
 # init domain 
 function init_domain(VELMODPATH, settings::Settings)
@@ -67,10 +60,19 @@ function init_domain(VELMODPATH, settings::Settings)
     y0 = velmod[2,begin,begin]
     yend = velmod[2,end,end]
 
+    # due to name collision, i rename variables above
+    x_inner_start = x0
+    x_inner_end   = xend 
+    y_inner_start = y0
+    y_inner_end = yend 
+
     file_ny, file_nx = size(velmod[1,:,:])
 
     dx = abs(velmod[1,begin,begin] - velmod[1,begin,begin+1])
     dy = abs(velmod[2,begin,begin] - velmod[2,begin+1,begin])
+
+    dx = settings.float(dx)
+    dy = settings.float(dy)
 
     xcoords_inner = LinRange(x0, xend, file_nx)
     @assert length(xcoords_inner) == file_nx "Lin  X range failed"
@@ -78,56 +80,69 @@ function init_domain(VELMODPATH, settings::Settings)
     ycoords_inner = LinRange(y0, yend, file_ny)
     @assert length(ycoords_inner) == file_ny "Lin Y range failed"
 
-    RIGHT = settings.config["boundaries"]["right"] == "absorbing" ? true : false
-    LEFT  = settings.config["boundaries"]["left"] == "absorbing" ? true : false
-    TOP   = settings.config["boundaries"]["top"] == "absorbing" ? true : false
-    BOTTOM = settings.config["boundaries"]["bottom"] == "absorbing" ? true : false
+    # boundaries 
+    xstart = settings.config["boundaries"]["xstart"] == "absorbing" ? true : false
+    xend   = settings.config["boundaries"]["xend"]   == "absorbing" ? true : false
+    ystart = settings.config["boundaries"]["ystart"] == "absorbing" ? true : false
+    yend   = settings.config["boundaries"]["yend"]   == "absorbing" ? true : false
 
-    xleft  = LEFT   == true ? (N+nlayer_pml)*dx  : N*dx 
-    xright = RIGHT  == true ? (N+nlayer_pml)*dx  : N*dx 
-    ytop   = TOP    == true ? (N+nlayer_pml)*dy  : N*dy
-    ybot   = BOTTOM == true ? (N+nlayer_pml)*dy  : N*dy
-
-    nleft = round(Int, xleft/dx)  
-    nright  = round(Int,xright/dx)
-    ntop  = round(Int,ytop/dy)
-    nbot = round(Int,ybot/dy)
+    # pml points + ghost nodes (derivative points)
+    nx_start = xstart == true ? nlayer_pml + N : N
+    nx_end   = xend   == true ? nlayer_pml + N : N
+    ny_start = ystart == true ? nlayer_pml + N : N
+    ny_end   = yend   == true ? nlayer_pml + N : N
 
     # expand coordinates
-    xcoords = LinRange(xcoords_inner[1] - xleft, xcoords_inner[end] + xright, file_nx + nleft + nright)
-    ycoords = LinRange(ycoords_inner[1] - ytop, ycoords_inner[end] + ybot, file_ny + ntop + nbot)
+    xcoords = LinRange(xcoords_inner[1]   - nx_start * dx, 
+                       xcoords_inner[end] + nx_end   * dx,
+                       file_nx + nx_start + nx_end)
+    
+    ycoords = LinRange(ycoords_inner[1]   - ny_start * dy, 
+                       ycoords_inner[end] + ny_end   * dy,
+                       file_ny + ny_start + ny_end)
+
     nx = length(xcoords)
     ny = length(ycoords)
     dim = (ny, nx)
 
     # find indices of inner_domain
-    inner_domain = (ycoords_inner, xcoords_inner)
     inner_xid = [argmin(abs.(x .- xcoords)) for x in xcoords_inner]
     inner_yid = [argmin(abs.(y .- ycoords)) for y in ycoords_inner]
-    inner_id = (inner_yid, inner_xid)
 
+    inner_id = (inner_yid, inner_xid)  
     @assert length(inner_id[1]) == file_ny "error in domain.jl"
     @assert length(inner_id[2]) == file_nx "error in domain.jl"
 
-    # find indices of 1d pml profiles
-    pml_xid = [inner_xid[begin] - nlayer_pml : inner_xid[1] - 1 ;
-               inner_xid[end] + 1 : inner_xid[end] + nlayer_pml]
+    # calculate indices of 1d pml profiles
+    pml_xid = [xstart == true ? (N+1:N+nlayer_pml) : nothing ;
+               xend   == true ? (inner_xid[end]+1:inner_xid[end]+nlayer_pml) : nothing]
 
-    pml_yid = [inner_yid[begin] - nlayer_pml : inner_yid[1] - 1 ;
-               inner_yid[end] + 1 : inner_yid[end] + nlayer_pml]
-    
+    pml_yid = [ystart == true ? (N+1:N+nlayer_pml) : nothing ;
+               yend   == true ? (inner_yid[end]+1:inner_yid[end]+nlayer_pml) : nothing]
+
     pml_id = (pml_yid, pml_xid)
 
-    # calculate all pml points (indices)
-    yline = collect(pml_yid[begin]:1:pml_yid[end]) 
-    xline = collect(pml_xid[begin]:1:pml_xid[end])
-    xpoints = [(n, m) for n in yline, m in pml_xid]
-    ypoints = [(n, m) for n in pml_yid, m in xline]
-    pml_points = union(xpoints, ypoints) 
-    # create hashmap for pml points 
-    pml_points_dict = Dict((y, x) => i for (i, (y, x)) in enumerate(pml_points))
-    pml_points_hash = convert_to_array_hashmap(pml_points_dict, ny, nx)
- 
+    # calculate pml points (indices) and create hashmap
+    pml_points = []
+    pml_points_hash = zeros(Int, dim);
+    pml_points_hash .= -1
+
+    pml_index = 1
+    for y in 1:ny, x in 1:nx 
+        
+        if y in pml_yid || 
+           x in pml_xid 
+
+           push!(pml_points, (y,x))
+           pml_points_hash[y,x] = pml_index
+           pml_index += 1
+
+        end
+    end
+
+    pml_points = union(pml_points)
+    @assert length(pml_points) == pml_index - 1 # because the index started with 1
+
     # memory approximation
     number_of_nodes = nx*ny
     element_size = Base.sizeof(settings.float)
@@ -140,8 +155,8 @@ function init_domain(VELMODPATH, settings::Settings)
 
     domain = Domain{T, U, V}(
                     velmod,
-                    x0,dx,xend,nx,xcoords,
-                    y0,dy,yend,ny,ycoords,
+                    x_inner_start,dx,x_inner_end,nx,xcoords,
+                    y_inner_start,dy,y_inner_end,ny,ycoords,
                     dim,
                     inner_id, 
                     pml_id, pml_points, pml_points_hash,
