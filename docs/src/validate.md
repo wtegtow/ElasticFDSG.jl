@@ -24,7 +24,7 @@ v_{i} = \frac{\partial u_{i}}{\partial t}, \quad i \in \{x, y, z\}.
 In the 2D case, the Green's function is given by:
 
 ```math
-G_{2D}(\mathbf{x},t) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{r}{c}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
+G_{2D}(\mathbf{x}, t; \mathbf{x_{0}}, t_{0}) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{r}{c}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
 
 ```
 
@@ -33,7 +33,7 @@ and in the 3D case:
 
 ```math
 
-G_{3D}(\mathbf{x},t) = \frac{1}{4 \pi \rho c^2 r} \delta(t - \frac{r}{c})
+G_{3D}(\mathbf{x}, t; \mathbf{x_{0}}, t_{0}) = \frac{1}{4 \pi \rho c^2 r} \delta(t - \frac{r}{c})
 
 
 ```
