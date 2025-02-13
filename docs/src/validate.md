@@ -24,7 +24,7 @@ v_{i} = \frac{\partial u_{i}}{\partial t}, \quad i \in \{x, y, z\}.
 In the 2D case, the Green's function is given by:
 
 ```math
-G_{2D}(x,z,t) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{r}{c}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
+G_{2D}(\mathbf{x},t) = \frac{1}{2\pi \rho c^2} \frac{H\biggl((t-t_{0})-\frac{r}{c}\biggr)}{\sqrt{(t-t_{0})^2-\frac{r^2}{c^2}}},
 
 ```
 
@@ -33,7 +33,7 @@ and in the 3D case:
 
 ```math
 
-G_{3D}(x,z,t) = \frac{1}{4 \pi \rho c^2 r} \delta((t-t_{0}) - \frac{r}{c})
+G_{3D}(\mathbf{x},t) = \frac{1}{4 \pi \rho c^2 r} \delta(t - \frac{r}{c})
 
 
 ```
@@ -42,11 +42,20 @@ In the equations above, $\rho$ represents the density, $c$ is the wave speed, $H
 
 The following images show a comparison of numerical seismograms with corresponding analytical solutions (red dashed lines). 
 
+
+2D:
 ![comp](assets/comparision.png)
 
 
+3D: coming soon
+
+
+
+The examples were selected to illustrate grid-dispersion.
 Grid dispersion can be counteracted with higher order spatial derivative operators $N$. However, users should set the grid-spacing sufficient fine to avoid grid-dispersion.
 
 For heterogeneous media, analytical solutions are not so easily obtainable. 
-Furthermore, due to different schemes, results from different numerical methods are also difficult to compare. 
-For that reason, the "validation" of heterogeneous media is left completely on a visible basis:
+Furthermore, due to different schemes, results from different numerical methods are also more difficult to compare. 
+For that reason, the "validation" of heterogeneous media is yet left completely on a visible basis:
+
+![2danim](assets/2dvalid.gif)

@@ -16,6 +16,10 @@ function init_time(settings::Settings,
     tend = settings.config["time"]["end"]
     dt = settings.config["time"]["timestep"]
 
+    t0 = settings.float(t0)
+    tend = settings.float(tend)
+    dt = settings.float(dt)
+
     # check stability criterion
     courant = 0.65
     dt_stable = courant/(elastic.vpmax * sqrt(1/domain.dx^2 + 1.0/domain.dy^2 ))
