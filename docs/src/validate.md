@@ -55,7 +55,7 @@ The examples were selected to illustrate grid-dispersion.
 Grid dispersion can be counteracted with higher order spatial derivative operators $N$. However, users should set the grid-spacing sufficient fine to avoid grid-dispersion.
 
 For heterogeneous media, analytical solutions are not so easily obtainable. 
-Furthermore, due to different schemes, results from different numerical methods are also more difficult to compare. 
+Additionally, unique characteristics of various numerical methods make it challenging to compare results across different approaches.
 For that reason, the "validation" of heterogeneous media is yet left completely on a visible basis:
 
 ![2danim](assets/2dvalid.gif)
