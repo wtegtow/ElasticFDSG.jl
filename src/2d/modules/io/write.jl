@@ -145,8 +145,8 @@ function configtemplate(path::String)
         point_source:             
             use: true               # Enables point source (if true, double_couple.use should be false)
             act_on:
-                on_vx: true         # Enable on x-direction
-                on_vy: false        # Enable on y-direction
+                on_vx: true         # Apply only on vx-component
+                on_vy: false        # Apply only on vy-component
                 on_vx_and_vy: 
                     force_angle: 0   # [°] Only used if both on_vx and on_vy are enabled. ∈[0°,360°] 0° -> in y negative direction, 180° -> in x negative direction
     
@@ -161,7 +161,7 @@ function configtemplate(path::String)
         yend: absorbing
 
     pml:
-        nlayer: 10                      # about 5-15 works reasonable
+        nlayer: 10                      # about 10-20 works reasonable
         reflection_coefficient: 1e-5    # about 1e-5 works reasonable
 
     receivers:

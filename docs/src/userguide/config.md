@@ -7,7 +7,7 @@ The contents of these files must then be fully completed by the user either manu
 
 !!! note
 
-    The configuration file reader yet dont perform any type or spell checks. User should fill the form like indicated below. For instance, ```settings.spatial_derivative_order: 10``` will work, while ```"10"``` would throw an error.
+    The configuration file reader yet dont perform any type or spell checks. User should fill the form like indicated below to avoid mysterious error further downstream in the application. For instance, ```settings.spatial_derivative_order: 10``` will work, while ```"10"``` would throw an error.
 
 
 ## 2D 

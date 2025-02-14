@@ -64,24 +64,47 @@ function init_forces(fdsg3d::FDSG3D)
     @assert use_point != use_double "Only one source type can be used at a time"
 
     if use_point
-        phi = deg2rad(fdsg3d.settings.config["source"]["point_source"]["phi"])
-        theta = deg2rad(fdsg3d.settings.config["source"]["point_source"]["theta"])
 
-        force_x = sin(theta) .* cos(phi) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
-        force_y = sin(theta) .* sin(phi) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
-        force_z = cos(theta) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
+        force_x = zeros(fdsg3d.time.nt)
+        force_y = zeros(fdsg3d.time.nt)
+        force_z = zeros(fdsg3d.time.nt)
+
+        # single component sources
+        if fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vx"] == true 
+            force_x = fdsg3d.source.STF .* fdsg3d.time.dt/(fdsg3d.source.rhosrc * fdsg3d.domain.dx * fdsg3d.domain.dy * fdsg3d.domain.dz)
+
+        elseif fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vy"] == true
+            force_y = fdsg3d.source.STF .* fdsg3d.time.dt/(fdsg3d.source.rhosrc * fdsg3d.domain.dx * fdsg3d.domain.dy * fdsg3d.domain.dz) 
+
+        elseif fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vz"] == true 
+            force_z = fdsg3d.source.STF .* fdsg3d.time.dt/(fdsg3d.source.rhosrc * fdsg3d.domain.dx * fdsg3d.domain.dy * fdsg3d.domain.dz)
+        end
+
+        # if all components are used -> directed force
+        if fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vx"] &&
+               fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vy"] &&
+               fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_vz"] 
+
+            phi   = deg2rad(fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_all"]["phi"])
+            theta = deg2rad(fdsg3d.settings.config["source"]["point_source"]["act_on"]["on_all"]["theta"])
+
+            force_x = sin(theta) .* cos(phi) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
+            force_y = sin(theta) .* sin(phi) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
+            force_z = cos(theta) .* fdsg3d.source.STF .* fdsg3d.time.dt/fdsg3d.source.rhosrc
+
+        end
 
         forces = [fdsg3d.settings.float.(force_x), 
                   fdsg3d.settings.float.(force_y), 
                   fdsg3d.settings.float.(force_z)]
 
+    # double couple sources
     elseif use_double
         forces = moment_tensor(fdsg3d)
     end
 
     return forces
 end;
-
 
 function apply_forces!(forces,
     vx,vy,vz,

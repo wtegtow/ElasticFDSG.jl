@@ -1,4 +1,4 @@
-function check_configfile3d(d)
+function check_configfile3d(cf)
 
     """
     Checks that all required informations are present in the configuration file.
@@ -29,8 +29,11 @@ function check_configfile3d(d)
         "source.amplitude",
 
         "source.point_source.use",
-        "source.point_source.theta",
-        "source.point_source.phi",
+        "source.point_source.act_on.on_vx",
+        "source.point_source.act_on.on_vy",
+        "source.point_source.act_on.on_vz",
+        "source.point_source.act_on.on_all.phi",
+        "source.point_source.act_on.on_all.theta",
 
         "source.double_couple.use",
         "source.double_couple.dip",
@@ -63,15 +66,24 @@ function check_configfile3d(d)
 
     error_name = "Configuration file tests failed."
 
+    function key_exists(d, key_path)
+        # Base case: If we have reached the last key in the path
+        if length(key_path) == 1
+            return haskey(d, key_path[1])
+        end
+        
+        # Recursive case: Go deeper into the dictionary
+        if haskey(d, key_path[1]) && isa(d[key_path[1]], Dict)
+            return key_exists(d[key_path[1]], key_path[2:end])
+        else
+            return false
+        end
+    end
+
     for key in required_keys
-        keys_hierarchy = split(key, ".")
-        current_dict = d
-        for k in keys_hierarchy
-            if haskey(current_dict, k)
-                current_dict = current_dict[k]
-            else
-                throw(ArgumentError("$error_name '$key' not found"))
-            end
+        key_path = split(key, ".")
+        if !key_exists(cf, key_path)
+            throw(ArgumentError("$error_name '$key' not found"))
         end
     end
 end

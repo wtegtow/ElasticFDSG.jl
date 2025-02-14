@@ -1,11 +1,11 @@
 ## Validation
 
-To validate the correctness of the application, the numerically derived seismometer data is compared with analytical solutions for a given homogeneous medium.
+To validate the outputs of the application, numerically derived seismometers are compared with analytical solutions for a given homogeneous medium.
 
 Solutions for inhomogeneous partial differential equations can be obtained using Green's functions 
-$G(\mathbf{x}, t; \mathbf{x_{0}}, t_{0})$ with $\delta$-distributions as source terms acting on $(\mathbf{x}, t)$ and activated on $(\mathbf{x_{0}}, t_{0})$.
+$G(\mathbf{x}, t; \mathbf{x_{0}}, t_{0})$ with $\delta$-functions as source terms acting on $(\mathbf{x}, t)$ and activated on $(\mathbf{x_{0}}, t_{0})$.
 
-The solution to that problem leads to the practical relationship where the displacement field can be described by a convolution of the Green's function with the source-time function:
+The solution to that problem leads to the practical relationship that the displacement field can be described by a convolution of the Green's function with the source-time function:
 
 ```math
 
@@ -44,15 +44,17 @@ The following images show a comparison of numerical seismograms with correspondi
 
 
 2D:
-![comp](assets/comparision.png)
+![comp](assets/ana2d.png)
 
 
-3D: coming soon
+3D: 
+![comp](assets/ana3d.png)
 
 
-
-The examples were selected to illustrate grid-dispersion.
-Grid dispersion can be counteracted with higher order spatial derivative operators $N$. However, users should set the grid-spacing sufficient fine to avoid grid-dispersion.
+The examples above were selected to illustrate grid-dispersion.
+As indicated, grid-dispersion can be counteracted with higher order spatial derivative operators $N$. 
+However, it is more important to set the grid spacing sufficiently fine to avoid grid-dispersion.
+The images show that the numerical solution is sufficiently close to the analytical one, but the quality of the solution depends on the simulation setup.
 
 For heterogeneous media, analytical solutions are not so easily obtainable. 
 Additionally, unique characteristics of various numerical methods make it challenging to compare results across different approaches.
