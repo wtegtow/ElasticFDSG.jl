@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Configurations · ElasticFDSG.jl</title><meta name="title" content="Configurations · ElasticFDSG.jl"/><meta property="og:title" content="Configurations · ElasticFDSG.jl"/><meta property="twitter:title" content="Configurations · ElasticFDSG.jl"/><meta name="description" content="Documentation for ElasticFDSG.jl."/><meta property="og:description" content="Documentation for ElasticFDSG.jl."/><meta property="twitter:description" content="Documentation for ElasticFDSG.jl."/><meta property="og:url" content="https://wtegtow.github.io/ElasticFDSG.jl/userguide/config/"/><meta property="twitter:url" content="https://wtegtow.github.io/ElasticFDSG.jl/userguide/config/"/><link rel="canonical" href="https://wtegtow.github.io/ElasticFDSG.jl/userguide/config/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="ElasticFDSG.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">ElasticFDSG.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">User Guide</span><ul><li><a class="tocitem" href="../intro/">General Usage</a></li><li><a class="tocitem" href="../velmod/">Velocity Models</a></li><li class="is-active"><a class="tocitem" href>Configurations</a><ul class="internal"><li><a class="tocitem" href="#2D"><span>2D</span></a></li><li><a class="tocitem" href="#3D"><span>3D</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../method/">Method</a></li><li><a class="tocitem" href="../../validate/">Validation</a></li><li><a class="tocitem" href="../../reference/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User Guide</a></li><li class="is-active"><a href>Configurations</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Configurations</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/wtegtow/ElasticFDSG.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/wtegtow/ElasticFDSG.jl/blob/main/docs/src/userguide/config.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Configurations"><a class="docs-heading-anchor" href="#Configurations">Configurations</a><a id="Configurations-1"></a><a class="docs-heading-anchor-permalink" href="#Configurations" title="Permalink"></a></h1><p>Empty template configuration.yaml files can be generated with:</p><ul><li><a href="../../reference/#ElasticFDSG.dim2.configtemplate-Tuple{String}">ElasticFDSG.dim2.configtemplate()</a> for 2D simulations </li><li><a href="../../reference/#ElasticFDSG.dim3.configtemplate-Tuple{String}">ElasticFDSG.dim3.configtemplate()</a> for 3D simulations.</li></ul><p>The contents of these files must then be fully completed by the user either manually or with self-written scripts.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The configuration file reader yet dont perform any type or spell checks. User should fill the form like indicated below to avoid mysterious errors further downstream in the application. For instance, <code>settings.spatial_derivative_order: 10</code> will work, while <code>&quot;10&quot;</code> would throw an error.</p></div></div><h2 id="2D"><a class="docs-heading-anchor" href="#2D">2D</a><a id="2D-1"></a><a class="docs-heading-anchor-permalink" href="#2D" title="Permalink"></a></h2><pre><code class="language-julia hljs">using ElasticFDSG 
+
+configuration_file_path = &quot;path/to/my/config_file.yaml&quot; 
+ElasticFDSG.dim2.configtemplate(configuration_file_path)
+</code></pre><p>This creates:</p><pre><code class="language-yaml hljs"># This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
+# Any other configuration file can be prepared in the same manner.
+# All keywords are case sensitive, and must be named as shown below.
+# The templates is filled with some example placeholder values.
+# The user must fill them before running a simulation. 
+# The velocity model is prepared in another file.
+
+settings:
+    device: cpu                         # cpu / gpu-cuda / gpu-metal 
+    precision: Float64                  # Float64 / Float32
+    spatial_derivative_order: 10        # (1-10)
+    show_summary_in_console: true       # true / false  
+    show_progress_in_console: true      # true / false
+    save_results: true                  # true / false  
+    output:
+        destination_folder: path/to/destination/folder
+        file_name: cool_simulation 
+        format: h5                   # h5 (only supported format yet) 
+
+time:
+    start: 0              # [sec]
+    end: 1                # [sec]
+    timestep: 0.005       # [sec] (will be checked and changed if unstable)
+
+source:
+    dominant_frequency: 15        # [Hz]
+    wavelet_type: gauss1d         # ricker / gauss1d (first derivative of a gaussian)
+    wavelet_center: 0.067         # (should be ≥ 1/fdom) [sec]
+    amplitude: 1e5                # wavelet amplifier
+    location: 
+        x: 2500                   # [m]
+        y: 2500                   # [m]             
+
+    point_source:             
+        use: true               # Enables point source (if true, double_couple.use should be false)
+        act_on:
+            on_vx: true         # Apply only on vx-component
+            on_vy: false        # Apply only on vy-component
+            on_vx_and_vy: 
+                force_angle: 0   # [°] Only used if both on_vx and on_vy are enabled. ∈[0°,360°] 0° -&gt; in y negative direction, 180° -&gt; in x negative direction
+
+    double_couple:            
+        use: false               # Enables double couple source (if true, point_source.use should be false)
+        strike: 0                # ∈[0°,360°] 0° -&gt; in y negative direction, 180° -&gt; in x negative direction
+
+boundaries: # (absorbing / else)
+    xstart: absorbing      
+    xend: absorbing       
+    ystart: absorbing       
+    yend: absorbing
+
+pml:
+    nlayer: 10                      # about 10-20 works reasonable
+    reflection_coefficient: 1e-5    # about 1e-5 works reasonable
+
+receivers:
+    geophones:
+         - { x: 3000, y: 3000 }        # [m] Example geophone
+
+    das:
+        x_aligned:
+        - { x_range: &quot;0:25:10000&quot;, y: 4000 }  # [m] Example das
+        
+        y_aligned:
+        - { x: 1000, y_range: &quot;1000:25:9000&quot;} # [m] Example das
+        
+    snapshots:
+        times: 
+             [0.25, 0.5, 0.75, 1.0] # [sec] Example
+        fields: 
+             [vx, vy, sxx, sxy, syy] # Example
+</code></pre><h2 id="3D"><a class="docs-heading-anchor" href="#3D">3D</a><a id="3D-1"></a><a class="docs-heading-anchor-permalink" href="#3D" title="Permalink"></a></h2><pre><code class="language-julia hljs">using ElasticFDSG 
+
+configuration_file_path = &quot;path/to/my/config_file.yaml&quot;  # add your actual path here 
+ElasticFDSG.dim3.configtemplate(configuration_file_path)
+</code></pre><p>This creates:</p><pre><code class="language-yaml hljs"># This is a template configuration.yaml file for a 3D ElasticFDSG simulation.
+# Any other configuration file can be prepared in the same manner.
+# All keywords are case sensitive, and must be named as shown below.
+# The templates is filled with some example placeholder values.
+# The user must fill them before running a simulation. 
+# The velocity model is prepared in another file.
+
+settings:
+    device: cpu                         # cpu / gpu-cuda / gpu-metal 
+    precision: Float64                  # Float64 / Float32
+    spatial_derivative_order: 10        # (1-10)
+    show_summary_in_console: true       # true / false  
+    show_progress_in_console: true      # true / false
+    save_results: true                  # true / false  
+    output:
+        destination_folder: path/to/destination/folder
+        file_name: cool_simulation 
+        format: h5                   # h5 (only supported format yet) 
+
+time:
+    start: 0              # [sec]
+    end: 1                # [sec]
+    timestep: 0.005       # [sec] (will be checked and changed if unstable)
+
+source:
+    dominant_frequency: 25                 # [Hz]
+    wavelet_type: ricker                   # ricker / gauss1d 
+    wavelet_center: 0.04                   # (should be ≥ 1/fdom) [sec]
+    amplitude: 1 
+    location:
+        x: 200                             # [m]
+        y: 200                             # [m]
+        z: 100                             # [m]      
+    point_source:                 
+        use: true                          # true / false (if true, double_couple.use should be false)
+        act_on:
+            on_vx: true                    # Apply only on vx-component 
+            on_vy: false                   # Apply only on vy-component
+            on_vz: false                   # Apply only on vz-component
+            on_all:                        # Only activates, if all v-components are enabled true
+                phi: 0                     # [°] Elevation angle
+                theta: 0                   # [°] Azimuth angle (x-y plane)
+    double_couple: 
+        use: false                         # true / false  (if true, point_source.use should be false)
+        strike: 0                          # [°] ∈ [0, 360]
+        dip: 0                             # [°] ∈ [0, 90]
+        rake: 0                            # [°] ∈ [0, 360]
+        anisotropic_moment_tensor: true    # true / false
+
+boundaries: # (absorbing / else)
+    xstart: absorbing      
+    xend:   absorbing       
+    ystart: absorbing       
+    yend:   absorbing         
+    zstart: absorbing        
+    zend:   absorbing          
+
+pml:
+    nlayer: 10                       # about 10-20 works reasonable
+    reflection_coefficient: 1e-15    # about 1e-5 works reasonable
+
+receivers:
+    geophones: 
+        - { x: 100, y: 200, z: 300 }    #[m] Example geophone
+
+    das:
+        x_aligned: 
+            - { x_range: &quot;0:2.5:500&quot;, y: 100, z: 100 }  #[m] Example das 
+        
+        y_aligned: 
+            - { x: 200, y_range: &quot;100:2.5:400&quot;, z: 100 } #[m] Example das 
+
+        z_aligned:
+            - { x: 300, y: 250, z_range: &quot;0:2.5:400&quot; } #[m] Example das 
+                
+                
+    snapshots: # 2D plane-snapshots: XY, XZ, YZ planes only
+        times: 
+             [0.25, 0.5, 0.75, 1.0] # [sec] Example
+        fields: 
+             [vx, vy, vz, sxx, sxy, sxz, syy, syz, szz] # Example 
+        origins:
+             { x: 250, y: 250, z: 250 } # [m] Coordinates of snapshot origin. Example: XY-plane snapshots will be at z=250m
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../velmod/">« Velocity Models</a><a class="docs-footer-nextpage" href="../../method/">Method »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.1 on <span class="colophon-date" title="Friday 14 February 2025 17:41">Friday 14 February 2025</span>. Using Julia version 1.11.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
