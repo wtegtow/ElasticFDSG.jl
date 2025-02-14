@@ -21,7 +21,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
 - Elastic isotropic, VTI or orthorhombic (ORT) 3D models using Tsvankin parameter.
 - All elastic properties are defined on full integer grid points to simplify the creation of velocity models.
-- Solver can handle fully heterogeneous media (to the limits of the method).
+- Solver can handle fully heterogeneous media.
 - Point and anisotropic double couple sources. 
 - Absorbing boundaries using Convolutional-Perfectly-Matched-Layer.
 - Save geophone receiver (velocity point sensors). 

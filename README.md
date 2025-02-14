@@ -2,6 +2,7 @@
 
 <img src="docs/src/assets/logo.png" alt="ElasticFDSG Logo" width="200"/>
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 [![Build Status](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14752931)
@@ -28,7 +29,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
 - Elastic isotropic, VTI or orthorhombic (ORT) 3D models using Tsvankin parameter.
 - All elastic properties are defined on full integer grid points to simplify the creation of velocity models.
-- Solver can handle fully heterogeneous media (to the limits of the method).
+- Solver can handle fully heterogeneous media.
 - Point and anisotropic double couple sources. 
 - Absorbing boundaries using Convolutional-Perfectly-Matched-Layer.
 - Save geophone receiver (velocity point sensors). 

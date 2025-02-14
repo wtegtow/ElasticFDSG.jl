@@ -166,20 +166,20 @@ function configtemplate(path::String)
 
     receivers:
         geophones:
-            # - { x: 3000, y: 3000 }        # [m] Example geophone
+            - { x: 3000, y: 3000 }        # [m] Example geophone
 
         das:
             x_aligned:
-            #- { x_range: "0:25:10000", y: 4000 }  # [m] Example das
+                - { x_range: "0:25:10000", y: 4000 }  # [m] Example das
           
             y_aligned:
-            #- { x: 1000, y_range: "1000:25:9000"} # [m] Example das
+                - { x: 1000, y_range: "1000:25:9000"} # [m] Example das
             
         snapshots:
             times: 
-                # [0.25, 0.5, 0.75, 1.0] # [sec] Example
+                [0.25, 0.5, 0.75, 1.0] # [sec] Example
             fields: 
-                # [vx, vy, sxx, sxy, syy] # Example 
+                [vx, vy, sxx, sxy, syy] # Example 
 
     """
 

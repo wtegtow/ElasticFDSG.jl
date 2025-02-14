@@ -80,20 +80,20 @@ pml:
 
 receivers:
     geophones:
-        # - { x: 3000, y: 3000 }        # [m] Example geophone
+         - { x: 3000, y: 3000 }        # [m] Example geophone
 
     das:
         x_aligned:
-        #- { x_range: "0:25:10000", y: 4000 }  # [m] Example das
+        - { x_range: "0:25:10000", y: 4000 }  # [m] Example das
         
         y_aligned:
-        #- { x: 1000, y_range: "1000:25:9000"} # [m] Example das
+        - { x: 1000, y_range: "1000:25:9000"} # [m] Example das
         
     snapshots:
         times: 
-            # [0.25, 0.5, 0.75, 1.0] # [sec] Example
+             [0.25, 0.5, 0.75, 1.0] # [sec] Example
         fields: 
-            # [vx, vy, sxx, sxy, syy] # Example
+             [vx, vy, sxx, sxy, syy] # Example
 
 ```
 
@@ -174,25 +174,25 @@ pml:
 
 receivers:
     geophones: 
-        #- { x: 100, y: 200, z: 300 }    #[m] Example geophone
+        - { x: 100, y: 200, z: 300 }    #[m] Example geophone
 
     das:
         x_aligned: 
-        #- { x_range: "0:2.5:500", y: 100, z: 100 }  #[m] Example das 
+            - { x_range: "0:2.5:500", y: 100, z: 100 }  #[m] Example das 
         
         y_aligned: 
-        #- { x: 200, y_range: "100:2.5:400", z: 100 } #[m] Example das 
+            - { x: 200, y_range: "100:2.5:400", z: 100 } #[m] Example das 
 
         z_aligned:
-        #- { x: 300, y: 250, z_range: "0:2.5:400" } #[m] Example das 
+            - { x: 300, y: 250, z_range: "0:2.5:400" } #[m] Example das 
                 
                 
     snapshots: # 2D plane-snapshots: XY, XZ, YZ planes only
         times: 
-            # [0.25, 0.5, 0.75, 1.0] # [sec] Example
+             [0.25, 0.5, 0.75, 1.0] # [sec] Example
         fields: 
-            # [vx, vy, vz, sxx, sxy, sxz, syy, syz, szz] # Example 
+             [vx, vy, vz, sxx, sxy, sxz, syy, syz, szz] # Example 
         origins:
-            # { x: 250, y: 250, z: 250 } # [m] Coordinates of snapshot origin. Example: XY-plane snapshots will be at z=250m
+             { x: 250, y: 250, z: 250 } # [m] Coordinates of snapshot origin. Example: XY-plane snapshots will be at z=250m
 
 ```
