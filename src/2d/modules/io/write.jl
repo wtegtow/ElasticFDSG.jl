@@ -95,7 +95,7 @@ end
 # ------- template --------
 
 """
-ElasticFDSG.dim2.configtemplate(path)
+    ElasticFDSG.dim2.configtemplate(path)
 
 Creates and empty template configuration file for a 2D ElasticFDSG simulation. 
 The user must fill the template afterwards. 

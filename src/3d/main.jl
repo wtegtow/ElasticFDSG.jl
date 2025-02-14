@@ -15,7 +15,7 @@ include(joinpath(@__DIR__, "../shared/__export__.jl"))
 include(joinpath(@__DIR__, "modules/__export__.jl"))
 
 """
-    Elastic_FDSG.dim3.runsim(CONFIGPATH, VELMODPATH)
+    ElasticFDSG.dim3.runsim(CONFIGPATH, VELMODPATH)
 
 Run the 3D elastic forward simulation using the specified configuration and velocity model.
 

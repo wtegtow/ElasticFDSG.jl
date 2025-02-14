@@ -4,11 +4,11 @@
 # The velocity model is prepared in another file (see scripts in velmod folder).
 
 settings:
-  device: gpu-metal                   # cpu / gpu-cuda / gpu-metal 
+  device: cpu                   # cpu / gpu-cuda / gpu-metal 
   precision: Float32                  # Float64 / Float32
   spatial_derivative_order: 10        # (1-10)
-  show_summary_in_console: true       # true / false  
-  show_progress_in_console: true      # true / false
+  show_summary_in_console: false       # true / false  
+  show_progress_in_console: false      # true / false
   save_results: true                  # true / false  
   output:
     destination_folder: test

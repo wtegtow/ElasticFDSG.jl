@@ -123,7 +123,7 @@ end;
 # ------- template --------
 
 """
-Elastic_FDSG.dim3.configtemplate(path)
+    ElasticFDSG.dim3.configtemplate(path)
 
 Creates and empty template configuration file for a 3D ElasticFDSG simulation. 
 The user must fill the template afterwards. 
@@ -140,57 +140,63 @@ function configtemplate(path::String)
     # This is a template configuration.yaml file for a 3D ElasticFDSG simulation.
     # Any other configuration file can be prepared in the same manner.
     # All keywords are case sensitive, and must be named as shown below.
-    # Users must fill the whole template before running a simulation.  
+    # The templates is filled with some example placeholder values.
+    # The user must fill them before running a simulation. 
     # The velocity model is prepared in another file.
 
     settings:
-        device:                          # cpu / gpu-cuda / gpu-metal 
-        precision:                       # Float64 / Float32
-        spatial_derivative_order:        # (1-10)
-        show_summary_in_console:         # true / false  
-        show_progress_in_console:        # true / false
-        save_results:                    # true / false  
+        device: cpu                         # cpu / gpu-cuda / gpu-metal 
+        precision: Float64                  # Float64 / Float32
+        spatial_derivative_order: 10        # (1-10)
+        show_summary_in_console: true       # true / false  
+        show_progress_in_console: true      # true / false
+        save_results: true                  # true / false  
         output:
-            destination_folder: 
-            file_name:  
+            destination_folder: path/to/destination/folder
+            file_name: cool_simulation 
             format: h5                   # h5 (only supported format yet) 
 
     time:
-        start:                # [sec]
-        end:                  # [sec]
-        timestep:             # [sec]
+        start: 0              # [sec]
+        end: 1                # [sec]
+        timestep: 0.005       # [sec] (will be checked and changed if unstable)
 
     source:
-        dominant_frequency:          # [Hz]
-        wavelet_type:                # ricker / gauss1d 
-        wavelet_center:              # (should be ≥ 1/fdom) [sec]
-        amplitude:                        
-        point_source:          
-            use:                     # true / false  (if true, double_couple.use should be false)
-            phi:                     # [°] Elevation
-            theta:                   # [°] Azimuth 
-        double_couple: 
-            use:                     # true / false  (if true, point_source.use should be false)
-            strike:                  # [°] ∈ [0, 360]
-            dip:                     # [°] ∈ [0, 90]
-            rake:                    # [°] ∈ [0, 360]
-            anisotropic_moment_tensor:      # true / false
+        dominant_frequency: 25                 # [Hz]
+        wavelet_type: ricker                   # ricker / gauss1d 
+        wavelet_center: 0.04                   # (should be ≥ 1/fdom) [sec]
+        amplitude: 1 
         location:
-            x:              # [m]
-            y:              # [m]
-            z:              # [m]
+            x: 200                             # [m]
+            y: 200                             # [m]
+            z: 100                             # [m]      
+        point_source:                 
+            use: true                          # true / false (if true, double_couple.use should be false)
+            act_on:
+                on_vx: true                    # Apply only on vx-component 
+                on_vy: false                   # Apply only on vy-component
+                on_vz: false                   # Apply only on vz-component
+                on_all:                        # Only activates, if all v-components are enabled true
+                    phi: 0                     # [°] Elevation angle
+                    theta: 0                   # [°] Azimuth angle (x-y plane)
+        double_couple: 
+            use: false                         # true / false  (if true, point_source.use should be false)
+            strike: 0                          # [°] ∈ [0, 360]
+            dip: 0                             # [°] ∈ [0, 90]
+            rake: 0                            # [°] ∈ [0, 360]
+            anisotropic_moment_tensor: true    # true / false
 
-    boundaries: # absorbing / else
-        xstart:       
-        xend:        
-        ystart:        
-        yend:          
-        zstart:         
-        zend:           
+    boundaries: # (absorbing / else)
+        xstart: absorbing      
+        xend:   absorbing       
+        ystart: absorbing       
+        yend:   absorbing         
+        zstart: absorbing        
+        zend:   absorbing          
 
     pml:
-        nlayer:                      # 5-15 recommended
-        reflection_coefficient:      # 1e-10 recommended
+        nlayer: 10                       # about 10-20 works reasonable
+        reflection_coefficient: 1e-15    # about 1e-5 works reasonable
 
     receivers:
         geophones: 
@@ -207,7 +213,7 @@ function configtemplate(path::String)
             #- { x: 300, y: 250, z_range: "0:2.5:400" } #[m] Example das 
                     
                     
-        snapshots: # XY-, XZ-, YZ-planes only
+        snapshots: # 2D plane-snapshots: XY, XZ, YZ planes only
             times: 
                 # [0.25, 0.5, 0.75, 1.0] # [sec] Example
             fields: 
@@ -215,9 +221,7 @@ function configtemplate(path::String)
             origins:
                 # { x: 250, y: 250, z: 250 } # [m] Coordinates of snapshot origin. Example: XY-plane snapshots will be at z=250m
 
-
     """
-
 
     open(path, "w") do io
         write(io, template)

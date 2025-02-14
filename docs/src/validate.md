@@ -38,7 +38,7 @@ G_{3D}(\mathbf{x}, t; \mathbf{x_{0}}, t_{0}) = \frac{1}{4 \pi \rho c^2 r} \delta
 
 ```
 
-In the equations above, $\rho$ represents the density, $c$ is the wave speed, $H$ is the Heaviside step function, and $\delta$ is the Dirac delta function and $r$ the Euclidian distance for 2 and 3D, respectivly.
+In the equations above, $\rho$ represents the density, $c$ is the wave speed, $H$ is the Heaviside function, $\delta$ is the Dirac delta function and $r$ the 2 and 3D Euclidian distance, respectivly.
 
 The following images show a comparison of numerical seismograms with corresponding analytical solutions (red dashed lines). 
 
@@ -53,7 +53,7 @@ The following images show a comparison of numerical seismograms with correspondi
 
 The examples above were selected to illustrate grid-dispersion.
 As indicated, grid-dispersion can be counteracted with higher order spatial derivative operators $N$. 
-However, it is more important to set the grid spacing sufficiently fine to avoid grid-dispersion.
+However, more important is to set the grid spacing sufficiently fine to avoid grid-dispersion.
 The images show that the numerical solution is sufficiently close to the analytical one, but the quality of the solution depends on the simulation setup.
 
 For heterogeneous media, analytical solutions are not so easily obtainable. 
