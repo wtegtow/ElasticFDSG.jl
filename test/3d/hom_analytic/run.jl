@@ -28,7 +28,7 @@ function extract_hdf5_content(file_path::String)
     return result
 end;
 
-# euclidian 2d distance
+# euclidian 3d distance
 dist_3d(x1,x2,y1,y2,z1,z2) = sqrt((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2)
 
 # dummy convolution
@@ -148,7 +148,7 @@ function test_3d(abs_error_tol = 0.05)
         # p wave 
         λp = 1 / ( 4 * π * rho0 * vp0^2 * r)
         t_p = r / vp0 
-        p_arr_id = ceil(Int, t_p / dt)
+        p_arr_id = round(Int, t_p / dt)
         G[p_arr_id]= 1/dt * λp
 
         # s wave 

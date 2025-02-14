@@ -37,7 +37,7 @@ Furthermore, ElasticFDSG is implemented primarily in base Julia, minimizing depe
 - Save snapshots at specified time steps.
 - Easy-to-read source code.
 
-A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
+A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/stable/).
 
 
 ![Demo](docs/src/assets/readme_animation.gif)

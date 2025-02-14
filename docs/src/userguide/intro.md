@@ -17,8 +17,8 @@ Once the inputs are ready, a simulation can be initiated like:
 using ElasticFDSG
 
 # paths
-path_to_configfile = joinpath(@__DIR__, "config.yaml")
-path_to_velmodfile = joinpath(@__DIR__, "velmod.jld2")
+path_to_configfile = "path/to/my/config_file.yaml"
+path_to_velmodfile = "path/to/my/velocity_model.jld2"
 
 # run a 2D simulation
 ElasticFDSG.dim2.runsim(path_to_configfile, path_to_velmodfile)
