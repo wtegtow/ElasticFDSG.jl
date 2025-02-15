@@ -48,7 +48,7 @@ If you find this package helpful for your research, please consider citing:
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/wtegtow/ElasticFDSG.jl}},
-  doi          = {https://doi.org/10.5281/zenodo.14752931}
+  doi          = {https://doi.org/10.5281/zenodo.14872584}
 }
 
 ```

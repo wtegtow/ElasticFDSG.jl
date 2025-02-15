@@ -5,8 +5,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 [![Build Status](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14752931)
-
+[![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14872584)
 
 ElasticFDSG.jl solves the elastic wave equation using finite differences on a staggered grid (FDSG) in the velocity-stress formulation [Virieux (1986)].
 
@@ -60,7 +59,7 @@ If you find this package helpful for your research, please consider citing:
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/wtegtow/ElasticFDSG.jl}},
-  doi          = {https://doi.org/10.5281/zenodo.14752931}
+  doi          = {https://doi.org/10.5281/zenodo.14872584}
 }
 
 ```
