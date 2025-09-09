@@ -114,7 +114,7 @@ function save_results(fdsg3d::FDSG3D)
         # h5 format
         if occursin(".h5", fdsg3d.settings.filename)
             save_results_h5(fdsg3d)
-            println("Results saved.")
+            if fdsg3d.settings.showinfo println("Results saved.") end;
         end
     end
 end;

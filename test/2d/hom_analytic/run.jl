@@ -4,6 +4,52 @@
 # load wavelets
 include(joinpath(@__DIR__, "../../../src/shared/wavelets.jl"))
 
+function create_velmod(destination)
+    # spatial extends
+    x0 = 0
+    xend = 5000
+    y0 = 0 
+    yend = 5000
+    dx = 10
+    dy = 10
+
+    xcoords = x0:dx:xend # x-coordinates
+    ycoords = y0:dy:yend # y-coordinates
+
+    dim = (length(ycoords),(length(xcoords)))
+
+    # 2D meshgrid
+    X = repeat(xcoords', length(ycoords), 1)
+    Y = repeat(ycoords, 1, length(xcoords))
+
+    # velocity
+    vp = zeros(dim);
+    vs = zeros(dim);
+    rho = zeros(dim);
+    eps0 = zeros(dim);
+    del0 = zeros(dim);
+
+    vp[:,:]  .= 5000;
+    vs[:,:]  .= 2500;
+    rho[:,:] .= 2800;
+
+    veldim = (7,length(ycoords),(length(xcoords)))
+
+    # velocity model array
+    velmod = zeros(veldim)
+    velmod[1,:,:] .= X
+    velmod[2,:,:] .= Y
+    velmod[3,:,:] .= vp
+    velmod[4,:,:] .= vs
+    velmod[5,:,:] .= rho
+    velmod[6,:,:] .= eps0
+    velmod[7,:,:] .= del0
+
+    # save velocity model
+    velmod_path = joinpath(@__DIR__, "velmod.jld2")
+    jldsave(velmod_path; velmod)
+end;
+
 # extract content from result file 
 function extract_hdf5_content(file_path::String)
     file = h5open(file_path, "r")
@@ -22,7 +68,6 @@ function extract_hdf5_content(file_path::String)
             end
         end
     end
-    
     process_group(file)
     close(file)
     return result
@@ -31,20 +76,16 @@ end;
 # euclidian 2d distance
 dist_2d(x1,x2,y1,y2) = sqrt((x1-x2)^2 + (y1-y2)^2)
 
-# dummy convolution
 function convolve(a, b)
     n = length(a)
     m = length(b)
-    
     result_len = n + m - 1
     result = zeros(eltype(a), result_len)
-    
     for i in 1:result_len
         for j in max(1, i+1-m):min(i, n)
             result[i] += a[j] * b[i - j + 1]
         end
     end
-    
     return result ./ 2
 end;
 
@@ -121,7 +162,6 @@ function analytical_solution_2d(content, config_path, vp, vs, rho, geo_num, mode
 
     images = []
     push!(images, [time, geo_v, v])
-
     #begin     
     #    fig = Figure() 
     #    ax = Axis(fig[1,1], title="$geo_num " * mode, xlabel="time [sec]")
@@ -167,6 +207,7 @@ function test_2Dhom(abs_error_tol = 0.05)
     cfpath_on_vy = joinpath(@__DIR__, "on_vy.yaml")
     
     # run both simulations
+    create_velmod()
     ElasticFDSG.dim2.runsim(cfpath_on_vx, velmod_path)
     ElasticFDSG.dim2.runsim(cfpath_on_vy, velmod_path)
 
@@ -201,6 +242,10 @@ function test_2Dhom(abs_error_tol = 0.05)
         @test error_tolerance_not_exceeded
 
     end
+
+    rm(on_vx)
+    rm(on_vy)
+    rm(joinpath(@__DIR__,"velmod.jld2"))
 
 end;
 

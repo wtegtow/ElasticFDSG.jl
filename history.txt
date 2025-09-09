@@ -1,14 +1,15 @@
-
 # ------------------------------------------------------------
 v1.0.1 bugs 
 a: tests failing due to file writing permissions inside of .julia folder 
   -> use temporary directories
+
 b: 3D seisograms for y-component are sometimes buggy if x-z are correct, 
     and buggy for x-z if y is correct. Maybe due to the scheme? 
+    aliasing issue
   -> entire logig needs to be checked.
+  
 c: stability criterion for anisotropic media not correct. 
   -> Compute fastest phase velocity and use it for the ∆t check.
-
 
 # ------------------------------------------------------------
 
@@ -20,3 +21,6 @@ v1.1.0 plans
 - portable kernels
 - divergence checks 
 - tsanvkin parameter range checks
+- check if wavelet is nonzero 
+- check for ringing conditions 
+- use dip,strike,rake for point and double couple sources for consistency 
