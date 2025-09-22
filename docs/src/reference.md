@@ -9,5 +9,5 @@ Pages = ["reference.md"]
 ```
 
 ```@autodocs
-Modules = [ElasticFDSG.dim2, ElasticFDSG.dim3]
+Modules = [ElasticFDSG.dim2, ElasticFDSG.dim3, ElasticFDSG]
 ```
