@@ -25,7 +25,7 @@ function iwindow(fdsg2d::FDSG2D)
 
     # receiver 
     @printf("╔══════════════════════════════════════════════\n")
-    @printf("║ FDSG 3D - Summary                   \n")
+    @printf("║ FDSG 2D - Summary                   \n")
     @printf("╠══════════════════════════════════════════════\n")
     @printf("║ System: \n") 
     @printf("║   Device: %-1s                        \n", fdsg2d.settings.device_name)
