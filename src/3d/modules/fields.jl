@@ -1,18 +1,17 @@
-mutable struct Fields{T}
-    vx::T 
-    vy::T  
-    vz::T
-    sxx::T 
-    sxy::T
-    sxz::T 
-    syy::T
-    syz::T 
-    szz::T
+mutable struct Fields{T1}
+    vx::T1
+    vy::T1  
+    vz::T1
+    sxx::T1
+    sxy::T1
+    sxz::T1
+    syy::T1
+    syz::T1
+    szz::T1
 end
 
 function init_fields(settings::Settings, domain::Domain)
-    
-    # allocate field quantities
+    # allocate primary fields
     vx = zeros(settings.float,domain.dim);
     vy = zeros(settings.float,domain.dim);
     vz = zeros(settings.float,domain.dim);
@@ -22,8 +21,8 @@ function init_fields(settings::Settings, domain::Domain)
     syy = zeros(settings.float,domain.dim);
     syz = zeros(settings.float,domain.dim);
     szz = zeros(settings.float,domain.dim);
-
-    T = typeof(vx)
-    fields = Fields{T}(vx, vy, vz, sxx, sxy, sxz, syy, syz, szz)
+    # type
+    T1 = typeof(vx)
+    fields = Fields{T1}(vx, vy, vz, sxx, sxy, sxz, syy, syz, szz)
     return fields 
 end

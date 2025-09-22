@@ -2,4 +2,5 @@
 /docs/Manifest.toml
 /docs/build/
 .vscode/
-/dev.nosync
+.DS_Store
+/dev

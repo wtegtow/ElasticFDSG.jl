@@ -1,65 +1,36 @@
-struct Domain{T, U, V}
+struct Domain{T1,T2,T3,T4}
 
-    velmod::T
-
-    x0::U 
-    dx::U
-    xend::U 
+    x0::T1
+    dx::T2
+    xend::T1
     nx::Int64
-    xcoords::V
+    xcoords::T3
 
-    y0::U 
-    dy::U
-    yend::U 
+    y0::T1
+    dy::T2
+    yend::T1
     ny::Int64
-    ycoords::V 
+    ycoords::T3
 
-    z0::U 
-    dz::U
-    zend::U 
+    z0::T1
+    dz::T2
+    zend::T1
     nz::Int64
-    zcoords::V 
+    zcoords::T3
 
     dim::Tuple{Int64, Int64, Int64} 
-
     inner_id::Tuple{Vector{Int64}, Vector{Int64}, Vector{Int64}}
 
     pml_id::Vector{Vector{Int64}}
-    pml_points::Vector{Any}
-    pml_points_hash::Array{Int64, 3}
-
-    memory::Float64
-    number_of_nodes::Int64 
+    pml_lookup::T4
 
 end
 
 
-# utils 
-function load_velmod(VELMODPATH)
-    if endswith(VELMODPATH,"npz")
-        velmodfile = npzread(joinpath(VELMODPATH))
-        velmod = velmodfile["velmod"];
-        elseif endswith(VELMODPATH,"npy")
-        velmod = npzread(joinpath(VELMODPATH))
-        elseif endswith(VELMODPATH,"jld2")
-        velmodfile = jldopen(joinpath(VELMODPATH))
-        velmod = velmodfile["velmod"];
-        close(velmodfile)
-        else
-        error("no valid velocity model file found.")
-    end;
-    return velmod 
-end 
-
-
-# init domain 
-function init_domain(VELMODPATH, settings::Settings)
+function init_domain(settings::Settings, velmod)
     
     N = settings.N
-    nlayer_pml = settings.config["pml"]["nlayer"]
-
-    # load velocity model from file
-    velmod = settings.float.(load_velmod(VELMODPATH))
+    nlayer_pml = settings.config["boundaries"]["pml_layer"]
 
     # read coordinates 
     x0 = velmod[1,begin,begin,begin]
@@ -155,8 +126,8 @@ function init_domain(VELMODPATH, settings::Settings)
 
     # calculate pml points (indices) and create array hashmap
     pml_points = []
-    pml_points_hash = zeros(Int, dim);
-    pml_points_hash .= -1
+    pml_lookup = zeros(Int, dim);
+    pml_lookup .= -1
 
     pml_index = 1
     for z in 1:nz, y in 1:ny, x in 1:nx 
@@ -166,7 +137,7 @@ function init_domain(VELMODPATH, settings::Settings)
            x in pml_xid 
 
            push!(pml_points, (z,y,x))
-           pml_points_hash[z,y,x] = pml_index
+           pml_lookup[z,y,x] = pml_index
            pml_index += 1
 
         end
@@ -175,25 +146,18 @@ function init_domain(VELMODPATH, settings::Settings)
     pml_points = union(pml_points)
     @assert length(pml_points) == pml_index - 1 # because the index started with 1
  
-    # memory approximation
-    number_of_nodes = prod(dim)
-    element_size = Base.sizeof(settings.float)
-    memory = ((number_of_nodes * element_size) / (1024^3)) * 20 
-    
     # types 
-    T = typeof(velmod)
-    U = typeof(x0)
-    V = typeof(xcoords)
+    T1 = typeof(x0)
+    T2 = typeof(dx)
+    T3 = typeof(xcoords)
+    T4 = typeof(pml_lookup)
 
-    domain = Domain{T, U, V}(
-                    velmod,
+    domain = Domain{T1,T2,T3,T4}(
                     x_inner_start,dx,x_inner_end,nx,xcoords,
                     y_inner_start,dy,y_inner_end,ny,ycoords,
                     z_inner_start,dz,z_inner_end,nz,zcoords,
-                    dim,
-                    inner_id, 
-                    pml_id, pml_points, pml_points_hash,
-                    memory, number_of_nodes)
+                    dim, inner_id, 
+                    pml_id, pml_lookup)
 
     return domain 
 

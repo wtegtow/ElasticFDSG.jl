@@ -1,47 +1,30 @@
-mutable struct Pml{T, U}
-
-    # fields 
-    vx_x_old::T
-    vy_y_old::T
-    vz_z_old::T
-    vy_x_old::T
-    vx_y_old::T
-    vz_x_old::T
-    vx_z_old::T
-    vz_y_old::T
-    vy_z_old::T
-    sxx_x_old::T
-    sxy_y_old::T
-    sxz_z_old::T
-    sxy_x_old::T
-    syy_y_old::T
-    syz_z_old::T
-    sxz_x_old::T
-    syz_y_old::T
-    szz_z_old::T
-
+mutable struct Pml{T1, T2}
+    # fields  
+    vx_x_old::T1
+    vy_y_old::T1
+    vz_z_old::T1
+    vy_x_old::T1
+    vx_y_old::T1
+    vz_x_old::T1
+    vx_z_old::T1
+    vz_y_old::T1
+    vy_z_old::T1
+    sxx_x_old::T1
+    sxy_y_old::T1
+    sxz_z_old::T1
+    sxy_x_old::T1
+    syy_y_old::T1
+    syz_z_old::T1
+    sxz_x_old::T1
+    syz_y_old::T1
+    szz_z_old::T1
     # damping 
-    K_x_evn::U 
-    K_x_odd::U
-    a_x_evn::U
-    a_x_odd::U
-    b_x_evn::U
-    b_x_odd::U
-
-    K_y_evn::U
-    K_y_odd::U
-    a_y_evn::U
-    a_y_odd::U
-    b_y_evn::U
-    b_y_odd::U
-
-    K_z_evn::U
-    K_z_odd::U
-    a_z_evn::U
-    a_z_odd::U
-    b_z_evn::U
-    b_z_odd::U
-
+    x_evn::T2
+    x_odd::T2
+    y_evn::T2
+    y_odd::T2
+    z_evn::T2
+    z_odd::T2
 end
 
 
@@ -52,8 +35,8 @@ function init_pml(settings::Settings,
                   source::Source)
 
     N = settings.N
-    npoints_pml = settings.config["pml"]["nlayer"]
-    rcoeff = settings.config["pml"]["reflection_coefficient"]
+    npoints_pml = settings.config["boundaries"]["pml_layer"]
+    rcoeff = 1e-10
     
     # use pml? 
     xstart = settings.config["boundaries"]["xstart"] == "absorbing" ? true : false
@@ -65,43 +48,73 @@ function init_pml(settings::Settings,
 
     K_x_evn, K_x_odd, 
     a_x_evn, a_x_odd, 
-    b_x_evn, b_x_odd = cmpl(N, npoints_pml, xstart, xend, domain.xcoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
+    b_x_evn, b_x_odd = cmpl(N, npoints_pml, xstart, xend, domain.xcoords, elastic.vmax, source.fdom, time.dt, rcoeff, settings.float);
 
     K_y_evn, K_y_odd, 
     a_y_evn, a_y_odd, 
-    b_y_evn, b_y_odd = cmpl(N, npoints_pml, ystart, yend, domain.ycoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
+    b_y_evn, b_y_odd = cmpl(N, npoints_pml, ystart, yend, domain.ycoords, elastic.vmax, source.fdom, time.dt, rcoeff, settings.float);
 
     K_z_evn, K_z_odd, 
     a_z_evn, a_z_odd, 
-    b_z_evn, b_z_odd = cmpl(N, npoints_pml, zstart, zend, domain.zcoords, elastic.vpmax, source.fdom, time.dt, rcoeff, settings.float);
+    b_z_evn, b_z_odd = cmpl(N, npoints_pml, zstart, zend, domain.zcoords, elastic.vmax, source.fdom, time.dt, rcoeff, settings.float);
+ 
+    pml_dim = length(domain.pml_lookup)
 
-    pml_dim = length(domain.pml_points)
-    ref_dim = pml_dim 
-    
-    vx_x_old = zeros(settings.float,ref_dim);
-    vy_y_old = zeros(settings.float,ref_dim);
-    vz_z_old = zeros(settings.float,ref_dim);
-    vy_x_old = zeros(settings.float,ref_dim);
-    vx_y_old = zeros(settings.float,ref_dim);
-    vz_x_old = zeros(settings.float,ref_dim);
-    vx_z_old = zeros(settings.float,ref_dim);
-    vz_y_old = zeros(settings.float,ref_dim);
-    vy_z_old = zeros(settings.float,ref_dim);
-    sxx_x_old = zeros(settings.float,ref_dim);
-    sxy_y_old = zeros(settings.float,ref_dim);
-    sxz_z_old = zeros(settings.float,ref_dim);
-    sxy_x_old = zeros(settings.float,ref_dim);
-    syy_y_old = zeros(settings.float,ref_dim);
-    syz_z_old = zeros(settings.float,ref_dim);
-    sxz_x_old = zeros(settings.float,ref_dim);
-    syz_y_old = zeros(settings.float,ref_dim);
-    szz_z_old = zeros(settings.float,ref_dim);
+    vx_x_old = zeros(settings.float, pml_dim)
+    vy_y_old = zeros(settings.float, pml_dim)
+    vz_z_old = zeros(settings.float, pml_dim)
+    vy_x_old = zeros(settings.float, pml_dim)
+    vx_y_old = zeros(settings.float, pml_dim)
+    vz_x_old = zeros(settings.float, pml_dim)
+    vx_z_old = zeros(settings.float, pml_dim)
+    vz_y_old = zeros(settings.float, pml_dim)
+    vy_z_old = zeros(settings.float, pml_dim)
+    sxx_x_old = zeros(settings.float, pml_dim)
+    sxy_y_old = zeros(settings.float, pml_dim)
+    sxz_z_old = zeros(settings.float, pml_dim)
+    sxy_x_old = zeros(settings.float, pml_dim)
+    syy_y_old = zeros(settings.float, pml_dim)
+    syz_z_old = zeros(settings.float, pml_dim)
+    sxz_x_old = zeros(settings.float, pml_dim)
+    syz_y_old = zeros(settings.float, pml_dim)
+    szz_z_old = zeros(settings.float, pml_dim)
+
+    # damping (assemble a,b & K in lookup tables)
+    x_evn = zeros(settings.float, 3,domain.nx)
+    x_evn[1,:] .= a_x_evn
+    x_evn[2,:] .= b_x_evn
+    x_evn[3,:] .= K_x_evn
+
+    x_odd = zeros(settings.float,3,domain.nx)
+    x_odd[1,:] .= a_x_odd
+    x_odd[2,:] .= b_x_odd
+    x_odd[3,:] .= K_x_odd
+
+    y_evn = zeros(settings.float,3,domain.ny)
+    y_evn[1, :] .= a_y_evn
+    y_evn[2, :] .= b_y_evn
+    y_evn[3, :] .= K_y_evn
+
+    y_odd = zeros(settings.float,3,domain.ny)
+    y_odd[1, :] .= a_y_odd
+    y_odd[2, :] .= b_y_odd
+    y_odd[3, :] .= K_y_odd
+
+    z_evn = zeros(settings.float,3,domain.nz)
+    z_evn[1, :] .= a_z_evn
+    z_evn[2, :] .= b_z_evn
+    z_evn[3, :] .= K_z_evn
+
+    z_odd = zeros(settings.float,3,domain.nz)
+    z_odd[1, :] .= a_z_odd
+    z_odd[2, :] .= b_z_odd
+    z_odd[3, :] .= K_z_odd
 
     # types 
-    T = typeof(sxx_x_old)
-    U = typeof(K_x_evn)
+    T1 = typeof(sxx_x_old)
+    T2 = typeof(x_evn)
     
-    pml = Pml{T, U}(vx_x_old,
+    pml = Pml{T1, T2}(vx_x_old,
                     vy_y_old,
                     vz_z_old,
                     vy_x_old,
@@ -119,15 +132,9 @@ function init_pml(settings::Settings,
                     sxz_x_old,
                     syz_y_old,
                     szz_z_old,
-                    K_x_evn, K_x_odd, 
-                    a_x_evn, a_x_odd, 
-                    b_x_evn, b_x_odd,
-                    K_y_evn, K_y_odd, 
-                    a_y_evn, a_y_odd, 
-                    b_y_evn, b_y_odd,
-                    K_z_evn, K_z_odd, 
-                    a_z_evn, a_z_odd, 
-                    b_z_evn, b_z_odd)
+                    x_evn, x_odd,
+                    y_evn, y_odd, 
+                    z_evn, z_odd)
 
     return pml
 end  
