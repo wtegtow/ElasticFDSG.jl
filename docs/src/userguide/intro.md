@@ -27,7 +27,7 @@ ElasticFDSG.dim3.runsim(CONFIGFILE_PATH, VELMODFILE_PATH)
 
 ```
 After the calculations are completed, the results will be saved as a .h5 file at the specified location. These results can then be processed using any tool of choice that supports HDF5. 
-The package provides a function to load the results into a dictionary:
+The package also provides a function to load the results into a dictionary:
 
 ```julia 
 RESULTFILE_PATH = "path_to_my_resulth5_file"
