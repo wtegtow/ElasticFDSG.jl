@@ -19,8 +19,7 @@ makedocs(;
             "Velocity Models" => "userguide/velmod.md",
             "Configurations" => "userguide/config.md",
         ],
-        "Method" => "method.md", 
-        "Validation" => "validate.md",
+        "Method" => "method.md",
         "API Reference" => "reference.md"
     ],
 )

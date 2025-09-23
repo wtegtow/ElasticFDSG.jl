@@ -114,7 +114,7 @@ using JLD2
 # spatial extends
 h = 10
 xcoords = 0:h:1000 # x-coordinates
-ycoords = 0:h:1000  # y-coordinates
+ycoords = 0:h:1000 # y-coordinates
 zcoords = 0:h:1000 # z-coordinates
 
 # model dimension

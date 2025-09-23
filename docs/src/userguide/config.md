@@ -11,7 +11,6 @@ The contents of these files must then be fully completed by the user, either man
 ```julia 
 using ElasticFDSG 
 
-CONFIGFILE_PATH = "path/to/my/config_file.yaml" 
 ElasticFDSG.config_template(CONFIGFILE_PATH; dim=2)
 
 ```
@@ -82,8 +81,7 @@ receivers:
 ```julia 
 using ElasticFDSG 
 
-CONFIGFILE_PATH = "path/to/my/config_file.yaml"  # add your actual path here 
-ElasticFDSG.config_template(configuration_file_path; dim=3)
+ElasticFDSG.config_template(CONFIGFILE_PATH; dim=3)
 
 ```
 

@@ -18,9 +18,9 @@ Elastic wave propagation in a 3D anisotropic linear elastic material can be desc
 
 ```math
 \begin{aligned}
-\rho \partial_{t} v_{x} &= \partial_{x} \sigma_{xx} + \partial_{y} \sigma_{xy} + \partial_{z} \sigma_{xz} + f_{x} \\
-\rho \partial_{t} v_{y} &= \partial_{x} \sigma_{xy} + \partial_{y} \sigma_{yy} + \partial_{z} \sigma_{yz} + f_{y} \\
-\rho \partial_{t} v_{z} &= \partial_{x} \sigma_{xz} + \partial_{y} \sigma_{xz} + \partial_{z} \sigma_{zz} + f_{z} \tag{2} \\
+\rho \partial_{t} v_{x} &= \partial_{x} \sigma_{xx} + \partial_{y} \sigma_{xy} + \partial_{z} \sigma_{xz}  \\
+\rho \partial_{t} v_{y} &= \partial_{x} \sigma_{xy} + \partial_{y} \sigma_{yy} + \partial_{z} \sigma_{yz}  \\
+\rho \partial_{t} v_{z} &= \partial_{x} \sigma_{xz} + \partial_{y} \sigma_{xz} + \partial_{z} \sigma_{zz}  \tag{2} \\
 \end{aligned}
 ```
 
@@ -30,7 +30,6 @@ In these equations:
 - are $c_{11}, c_{12}, c_{13}, c_{22}, c_{23}, c_{33}, c_{44}, c_{55}, c_{66}$ the 9 elastic constants needed to describe an orthorhombic material.
 - is $\rho$ is the density of the material.
 - are $v_{x}, v_{y}, v_{z}$ the particle velocities in the $x$, $y$, and $z$ directions, respectively.
-- are $f_{x}, f_{y}, f_{z}$ the external body forces acting in the $x$, $y$, and $z$ directions, respectively.
 
 Using the Tsvankin notation, isotropic, vertical transversal isotropic (VTI) and ortorhombic materials (ORT) can be characterized by two vertical velocities and 7 dimensionless paramters $\epsilon_{1}, \epsilon_{2}, \gamma_{1}, \gamma_{2}, \delta_{1}, \delta_{2}, \delta_{3}$ :
 
@@ -47,7 +46,6 @@ c_{23} &= \sqrt{2 c_{33} \cdot (c_{33} - c_{44}) \cdot \delta_{1} + (c_{33} - c_
 c_{12} &= \sqrt{2 c_{11} \cdot (c_{11} - c_{66}) \cdot \delta_{3} + (c_{11} - c_{66})^2} - c_{66}
 \end{aligned}
 ```
-
 
 
 ## Numerical Scheme 
@@ -94,9 +92,9 @@ Using this scheme, the discrete form of (1) and (2) are given by:
 
 ```math
 \begin{aligned}
-v_{x \; (i,j,k)}^{t_{n}+1} &= v_{x \; (i,j,k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xx} + \mathcal{D}_{y} \sigma_{xy} + \mathcal{D}_{z} \sigma_{xz} + f_{x}) \bigg|_{(i,j,k)}^{t_{n}+\frac{1}{2}} \\
-v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+1} &= v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xy} + \mathcal{D}_{y} \sigma_{yy} + \mathcal{D}_{z} \sigma_{yz} + f_{y}) \bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+\frac{1}{2}} \\
-v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+1} &= v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xz} + \mathcal{D}_{y} \sigma_{xz} + \mathcal{D}_{z} \sigma_{zz} + f_{z}) \bigg|_{(i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} \tag{3}
+v_{x \; (i,j,k)}^{t_{n}+1} &= v_{x \; (i,j,k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xx} + \mathcal{D}_{y} \sigma_{xy} + \mathcal{D}_{z} \sigma_{xz}) \bigg|_{(i,j,k)}^{t_{n}+\frac{1}{2}} \\
+v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+1} &= v_{y \; (i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xy} + \mathcal{D}_{y} \sigma_{yy} + \mathcal{D}_{z} \sigma_{yz}) \bigg|_{(i+\frac{1}{2},j+\frac{1}{2},k)}^{t_{n}+\frac{1}{2}} \\
+v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+1} &= v_{z \; (i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}} \frac{\Delta t}{\rho} (\mathcal{D}_{x} \sigma_{xz} + \mathcal{D}_{y} \sigma_{xz} + \mathcal{D}_{z} \sigma_{zz}) \bigg|_{(i+\frac{1}{2},j,k+\frac{1}{2})}^{t_{n}+\frac{1}{2}} \tag{3}
 
 \end{aligned}
 ```
@@ -125,33 +123,63 @@ In staggered grids, it is often beneficial to assign certain elastic properties 
 
 
 ## Sources 
-Earthquake simulations require the excitation of point or double-couple forces using the body force term in the equation of motion.
 
-- Point Sources:
-Point sources can directly be applied to the velocity components at the desired source location $(s_{x},s_{y},s_{y})$, using elevation and azimuth angles combined with a source-time function that contains a wavelet. However, due to the positions of velocity components in the grid cell, the excitation occurs at slightly different locations.
+Earthquake simulations require the excitation of external double-couple sources.
+Source terms can be introduced in two different ways:
+  - As body-force terms acting on the velocity field. 
+  - As incremental stresses acting on the stress field.
 
-- Double couple sources
-Double-couple sources involve applying force pairs $(p,q)$ with strength $M_{pq}$ to the velocity field at a desired source location. In the used staggered grid scheme, double-couple sources are centered around normal stresses grid points, i.e., $(i+\frac{1}{2},j,k)$.
-As a result, a defined double couple source location is centered shifted by half a grid point in the x-direction! 
-Using moment tensors to represent the equivalent distribution of force pairs, at least 30 force contributions need to be applied to the surounding velocity field.
-The 10 force components contributing to $f_{x}$ are:
+In the SG scheme shown above, using incremental stresses requires fewer terms and results in fewer numerical ambiguities compared to body forces, due to the distribution of velocity nodes around the source.
+
+A moment tensor source can be described by:
 
 ```math
 \begin{aligned}
-f_{x \; i,j,k} &= - f_{x \; i+1,j,k} &= \frac{M_{xx}(t)}{\Delta x^{2} \Delta y \Delta z} \\\\
-
-f_{x \; i,j+1,k} &= - f_{x \; i,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x \Delta y^{2} \Delta z} \\
-f_{x \; i+1,j+1,k} &= - f_{x \; i+1,j-1,k} &= \frac{M_{xy}(t)}{4 \Delta x  \Delta y^{2}  \Delta z} \\\\
-
-f_{x \; i,j,k+1} &= - f_{x \; i,j,k-1} &= \frac{M_{xz}(t)}{4 \Delta x \Delta y \Delta z^{2}} \\
-f_{x \; i+1,j,k+1} &= - f_{x \;i+1,j,k-1} &= \frac{M_{xz}(t)}{4 \Delta x \Delta y \Delta z^{2}} \\
-
+\mathbf{F}(t) = m_0 \, \boldsymbol{M} \, \text{STF}(t),
 \end{aligned}
 ```  
 
-The same logic applies to the body force components contributing to $f_{y}$ and $f_{z}$.
+where $m_0$ is the seismic moment, $\text{STF}(t)$ is the source time function, and $\boldsymbol{M}$ is the moment tensor with components:
 
-The moment tensor components are computed by user defined dip, strike and rake values for the following coordinate system:
+```
+M = [ Mxx  Mxy  Mxz
+      Mxy  Myy  Myz
+      Mxz  Myz  Mzz ]
+```
+
+Assuming a moment-tensor source acting on the stress field, the nearest normal stress node (i+1/2,j,k) serves as the central point.
+To obtain a symmetrical solution, the shear stress components are then distributed symmetrically around this central node.
+Thus, in total three normal and twelve shear stress components are required for the full staggered grid formulation:
+
+```math
+\begin{aligned}
+
+V &= \Delta x \Delta y \Delta z
+
+s_{xx}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yy}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{zz}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{zz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+
+s_{xy}[i,j+\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy}[i+1,j+\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy}[i,j-\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy}[i+1,j-\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+
+s_{xz}[i,j,k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz}[i+1,j,k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz}[i,j,k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz}[i,j,k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+
+s_{yz}[i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz}[i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz}[i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz}[i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
+\end{aligned}
+```  
+
+where the notation $x -= 1 := x = x - 1$ is used.
+
+Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:
   
          x                  
        /                     
@@ -175,13 +203,13 @@ M_{zz} &= \sin(2\delta) \, \sin(\lambda)
     
 ## C-PML 
 
-Earthquake simulations often require modeling wave propagation in unbounded media. Perfectly Matched Layer (PML) is a very effective method to prevent artificial reflections at model boundaries.
+Earthquake simulations often require modeling wave propagation in unbounded media. Perfectly Matched Layers (PML) is a very effective method to prevent artificial reflections at model boundaries.
 The underlying idea is to manipulate the wave equation to obtain exponentially decaying plane wave solutions for complex arguments.
-Assuming that the computational domain (real arguments) is surrounded by a complex region (the PML region), the amplitudes of incident waves decay and cause negligible reflections at the model boundaries.
+Assuming that the computational domain (real arguments) is surrounded by a complex region (the PML region), the amplitudes of incident waves decay and cause negligible reflections at the computational boundaries.
 
 
 Komatitsch & Martin (2007) introduced a memory efficient convolution-based unsplit PML formulation (C-PML). 
-This approach requires storing one additional memory variable for each spatial derivative, but only in the PML region.
+This approach requires storing only one additional memory variable for each spatial derivative, but in the PML region only.
 For the PML region, spatial derivative operators are replaced by:
 
 ```math
@@ -198,8 +226,11 @@ Here, $\Psi_{x}$ represents the memory variable associated with the field from w
 ```
 
 while $a_{x}$, $b_{x}$ $\kappa_{x}$ are precomputed PML related parameter. 
+Accordingly, differential operators $\mathcal{D_{y}}$ and $\mathcal{D_{z}}$ are replaced by $\mathcal{D}_{\hat{y}}$ and $\mathcal{D}_{\hat{z}}$ in the PML-region. 
 
-Accordingly, differential operators $\mathcal{D_{y}}$ and $\mathcal{D_{z}}$ are replaced by $\mathcal{D}_{\hat{y}}$ and $\mathcal{D}_{\hat{z}}$ in the PML-region.
+
+## Validation
+
 
 
 ## References 
@@ -211,3 +242,4 @@ Moczo, P., Kristek, J., & Gális, M. (2014). The finite-difference modelling of 
 Tsvankin, I. (1997). Anisotropic parameters and P-wave velocity for orthorhombic media. Geophysics, 62(4), 1292-1309.
 
 Virieux, J. (1984). SH-wave propagation in heterogeneous media: Velocity-stress finite-difference method. Geophysics, 49(11), 1933-1942. 
+
