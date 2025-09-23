@@ -29,43 +29,11 @@ ElasticFDSG.dim3.runsim(path_to_configfile, path_to_velmodfile)
 ```
 
 
-After the calculations are completed, the results will be saved as a .h5 file at the specified location. These results can then be processed using any tool of choice that supports HDF5. Below is an example of how to access the content of the results file with Julia:
+After the calculations are completed, the results will be saved as a .h5 file at the specified location. These results can then be processed using any tool of choice that supports HDF5. 
 
 
 ```julia 
-using HDF5
-
-# extract content from result file 
-function extract_hdf5_content(file_path::String)
-    file = h5open(file_path, "r")
-    result = Dict()
-    
-    function process_group(group, prefix="")
-        for name in keys(group)
-            path = joinpath(prefix, name)
-            obj = group[name]
-            if obj isa HDF5.Group
-                process_group(obj, path)
-            elseif obj isa HDF5.Dataset
-                result[path] = read(obj)
-            else
-                ;
-            end
-        end
-    end
-    
-    process_group(file)
-    close(file)
-    return result
-end;
-
-file_path = joinpath(@__DIR__, "results.h5"); # add the actual path here
-content = extract_hdf5_content(file_path);
-
-println("Content keys")
-for (key, value) in content
-    println("$key")
-end
+ElasticFDSG.load_results("path_to_my_resulth5_file")
 ```
 
 In the next sections, the process for creating required velocity models and configuration files will be demonstrated.
