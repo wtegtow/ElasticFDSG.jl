@@ -1,7 +1,7 @@
 using ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3
 using Documenter
 
-DocMeta.setdocmeta!(ElasticFDSG, :DocTestSetup, :(using ElasticFDSG); recursive=true)
+DocMeta.setdocmeta!(ElasticFDSG, :DocTestSetup, :(using ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3); recursive=true)
 
 makedocs(;
     modules=[ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3],
