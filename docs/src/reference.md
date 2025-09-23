@@ -8,14 +8,17 @@ Pages = ["reference.md"]
 Pages = ["reference.md"]
 ```
 
-```@autodocs
-Modules = [ElasticFDSG]
-filter = f -> occursin("load_results", string(f)) ||
-             occursin("print_h5_tree", string(f)) ||
-             occursin("config_template", string(f))
+```@docs ElasticFDSG.print_h5_tree
 ```
 
-```@autodocs
-Modules = [ElasticFDSG.dim2, ElasticFDSG.dim3]
-filter = f -> occursin("runsim", string(f))
+```@docs ElasticFDSG.load_results
+```
+
+```@docs ElasticFDSG.config_template
+```
+
+```@docs ElasticFDSG..dim2.runsim
+```
+
+```@docs ElasticFDSG.dim3.runsim
 ```
