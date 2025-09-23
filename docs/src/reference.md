@@ -8,17 +8,15 @@ Pages = ["reference.md"]
 Pages = ["reference.md"]
 ```
 
-```@docs ElasticFDSG.print_h5_tree
-```
-
-```@docs ElasticFDSG.load_results
-```
-
-```@docs ElasticFDSG.config_template
-```
-
-```@docs ElasticFDSG..dim2.runsim
-```
-
-```@docs ElasticFDSG.dim3.runsim
+```@autodocs
+Modules = [ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3]
+Filter = f -> (
+    string(f) in (
+        "ElasticFDSG.config_template",
+        "ElasticFDSG.load_results",
+        "ElasticFDSG.print_h5_tree",
+        "ElasticFDSG.dim2.runsim",
+        "ElasticFDSG.dim3.runsim"
+    )
+)
 ```
