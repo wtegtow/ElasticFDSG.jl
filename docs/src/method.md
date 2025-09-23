@@ -156,24 +156,24 @@ Thus, in total three normal and twelve shear stress components are required for 
 
 V &= \Delta x \Delta y \Delta z \\ \\
 
-s_{xx\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yy\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{zz\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{zz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+\sigma_{xx\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{yy\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{zz\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{zz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{xy\; (,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy\; (i+1,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy\; (i,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy\; (i+1,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+\sigma_{xy\; (,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xy\; (i+1,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xy\; (i,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xy\; (i+1,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{xz\; (i,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz\; (i+1,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+\sigma_{xz\; (i,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xz\; (i+1,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
+\sigma_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+\sigma_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
 \end{aligned}
 ```  
 

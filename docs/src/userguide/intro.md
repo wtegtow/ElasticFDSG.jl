@@ -21,9 +21,9 @@ CONFIGFILE_PATH = "path/to/my/config_file.yaml"
 VELMODFILE_PATH = "path/to/my/velocity_model.jld2"
 
 # run a 2D simulation
-ElasticFDSG.dim2.runsim(path_to_configfile, path_to_velmodfile)
+ElasticFDSG.dim2.runsim(CONFIGFILE_PATH, VELMODFILE_PATH)
 # run a 3D simulation
-ElasticFDSG.dim3.runsim(path_to_configfile, path_to_velmodfile)
+ElasticFDSG.dim3.runsim(CONFIGFILE_PATH, VELMODFILE_PATH)
 
 ```
 After the calculations are completed, the results will be saved as a .h5 file at the specified location. These results can then be processed using any tool of choice that supports HDF5. 
