@@ -8,7 +8,6 @@ Pages = ["reference.md"]
 Pages = ["reference.md"]
 ```
 
-```
-@autodocs
-Modules = [ElasticFDSG]  
+```@autodocs
+Modules = [ElasticFDSG.dim2, ElasticFDSG.dim3, ElasticFDSG]
 ```
