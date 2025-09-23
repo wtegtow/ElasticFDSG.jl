@@ -154,30 +154,30 @@ Thus, in total three normal and twelve shear stress components are required for 
 ```math
 \begin{aligned}
 
-V &= \Delta x \Delta y \Delta z
+V &= \Delta x \Delta y \Delta z \\
 
-s_{xx}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yy}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{zz}[i+\frac{1}{2},j,k] &\mathrel{-}= \frac{dt}{V} M_{zz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+s_{xx\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yy\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{zz\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{zz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{xy}[i,j+\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy}[i+1,j+\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy}[i,j-\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xy}[i+1,j-\frac{1}{2},k] &\mathrel{-}= \frac{dt}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+s_{xy\; (,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy\; (i+1,j+\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy\; (i,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xy\; (i+1,j-\frac{1}{2},k)} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xy} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{xz}[i,j,k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz}[i+1,j,k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz}[i,j,k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{xz}[i,j,k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
+s_{xz\; (i,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz\; (i+1,j,k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{xz\; (i,j,k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{xz} \, \frac{\partial \text{STF}}{\partial t} \\[0.5em]
 
-s_{yz}[i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz}[i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz}[i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
-s_{yz}[i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2}] &\mathrel{-}= \frac{dt}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
+s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
+s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
 \end{aligned}
 ```  
 
-where the notation $x -= 1 := x = x - 1$ is used.
+where the notation \( x \mathrel{-}= 1 \) means \( x := x - 1 \).
 
 Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:
   
