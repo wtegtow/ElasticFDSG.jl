@@ -126,10 +126,10 @@ In staggered grids, it is often beneficial to assign certain elastic properties 
 
 Earthquake simulations require the excitation of external double-couple sources.
 Source terms can be introduced in two different ways:
-  - As body-force terms acting on the velocity field. 
-  - As incremental stresses acting on the stress field.
+  - As body-force terms acting on the velocity field (e.g., Virieux, 1984). 
+  - As incremental stresses acting on the stress field (e.g., Shi et al., 2018).
 
-In the SG scheme shown above, using incremental stresses requires fewer terms and results in fewer numerical ambiguities compared to body forces, due to the distribution of velocity nodes around the source.
+In the SG scheme shown above, using incremental stresses requires fewer terms and results in fewer numerical ambiguities compared to body forces, due to the distribution of velocity nodes around a source node.
 
 A moment tensor source can be described by:
 
@@ -337,7 +337,7 @@ R_{fs}[n] = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_
 The following figure compares numerically forward-modeled seismograms with analytical solutions for all three moment tensors.
 Analyitical velocities are obtained by differentiating the displacement.
 
-![comp](assets/validation.png)
+![valid](assets/validation.png)
 
 As shown, all errors remain within a reasonable range, confirming the correctness of the moment tensor source implementation and the elastic wave propagation.
 
@@ -347,6 +347,8 @@ As shown, all errors remain within a reasonable range, confirming the correctnes
 Komatitsch, D., & Martin, R. (2007). An unsplit convolutional perfectly matched layer improved at grazing incidence for the seismic wave equation. Geophysics, 72(5), SM155-SM167.
 
 Moczo, P., Kristek, J., & Gális, M. (2014). The finite-difference modelling of earthquake motions: Waves and ruptures. Cambridge University Press.
+
+Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.
 
 Tsvankin, I. (1997). Anisotropic parameters and P-wave velocity for orthorhombic media. Geophysics, 62(4), 1292-1309.
 
