@@ -179,7 +179,7 @@ V &= \Delta x \Delta y \Delta z \\ \\
 
 where the notation $x \mathrel{-}= 1$ -> $x = x - 1$ is used.
 
-Users who want to model double couple earthquake sources can compute the moment tensor components using dip, strike, and rake values. 
+Users who want to model shear slip earthquake sources can compute the moment tensor components using dip, strike, and rake values. 
 For example, defining the following coordinate system:
   
          x                  
