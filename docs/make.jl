@@ -4,7 +4,7 @@ using Documenter
 DocMeta.setdocmeta!(ElasticFDSG, :DocTestSetup, :(using ElasticFDSG); recursive=true)
 
 makedocs(;
-    modules=[ElasticFDSG],
+    modules=[ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3],
     authors="William Tegtow <w.tegtow@gmail.com> and contributors",
     sitename="ElasticFDSG.jl",
     format=Documenter.HTML(;
