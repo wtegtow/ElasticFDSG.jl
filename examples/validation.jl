@@ -270,7 +270,7 @@ mae(a, b) = mean(abs.(a .- b))
 
 begin
 fig = Figure(size=(1000, 1000))
-titles = ["Iso", "DC", "CLVD"]
+titles = ["ISO", "DC", "CLVD"]
 components = ["Vx", "Vy", "Vz"]
 first_num = nothing
 first_ana = nothing
@@ -307,7 +307,7 @@ for comp in 1:3
         xlims!(ax, 0.2, 0.7)
     end
 end
-Legend(fig[2, 4], [first_num, first_ana], ["numerical", "analytic"])
+Legend(fig[2, 4], [first_num, first_ana], ["numerical", "analytical"])
 display(fig)
 save(joinpath(@__DIR__, "validation.png"), fig)
 end

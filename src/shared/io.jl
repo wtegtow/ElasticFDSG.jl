@@ -92,7 +92,7 @@ Users can fill the template afterwards.
 - `dim::Real`: dim = 2 => 2D-template, dim=3 => 3D-template
 
 """
-function config_template(path::String, dim::Real)
+function config_template(path::String; dim::Real=3)
 
     @assert dim == 2 || dim == 3 "dim != 1 or 2"
     if dim == 2
@@ -107,7 +107,7 @@ end;
 function config_template2D(path::String)
 
     template = """
-    # This is a template configuration.yaml file for a 3D ElasticFDSG simulation.
+    # This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
     # Any other configuration file can be prepared in the same manner.
     # The user must fill them before running a simulation. 
     # The velocity model is prepared in another file.
@@ -115,7 +115,7 @@ function config_template2D(path::String)
     settings:
         device: cpu                         # cpu / cuda / metal / intel / amd  
         precision: Float64                  # Float64 / Float32
-        spatial_derivative_order: 10        # 1-10, but 4 recommended 
+        spatial_derivative_order: 4         # 1-10, but 4 recommended 
         show_progress_in_console: true      # true / false 
         output_file: path/to/my/output/file 
     time:
@@ -181,7 +181,7 @@ function config_template3D(path::String)
     settings:
         device: cpu                         # cpu / cuda / metal / intel / amd  
         precision: Float64                  # Float64 / Float32
-        spatial_derivative_order: 10        # 1-10, but 4 recommended 
+        spatial_derivative_order: 4         # 1-10, but 4 recommended 
         show_progress_in_console: true      # true / false 
         output_file: path/to/my/output/file 
     time:

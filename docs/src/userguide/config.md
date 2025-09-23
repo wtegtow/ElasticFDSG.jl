@@ -1,13 +1,9 @@
 # Configurations
 
 Empty template configuration.yaml files can be generated with:
-- [ElasticFDSG.dim2.configtemplate()](@ref ElasticFDSG.dim2.configtemplate) for 2D simulations 
-- [ElasticFDSG.dim3.configtemplate()](@ref ElasticFDSG.dim3.configtemplate) for 3D simulations.
-The contents of these files must then be fully completed by the user either manually or with self-written scripts.
+- [ElasticFDSG.config_template()](@ref ElasticFDSG.config_template).
+The contents of these files must then be fully completed by the user either manually or with self-written scripts (see [examples](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples))
 
-!!! note
-
-    The configuration file reader yet dont perform any type or spell checks. User should fill the form like indicated below to avoid mysterious errors further downstream in the application. For instance, ```settings.spatial_derivative_order: 10``` will work, while ```"10"``` would throw an error.
 
 
 ## 2D 
@@ -16,84 +12,67 @@ The contents of these files must then be fully completed by the user either manu
 using ElasticFDSG 
 
 configuration_file_path = "path/to/my/config_file.yaml" 
-ElasticFDSG.dim2.configtemplate(configuration_file_path)
+ElasticFDSG.config_template(configuration_file_path; dim=2)
 
 ```
 
-This creates:
+This saves the .yaml file with hopefully self-explaining settings:
 
 ```yaml
 # This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
 # Any other configuration file can be prepared in the same manner.
-# All keywords are case sensitive, and must be named as shown below.
-# The templates is filled with some example placeholder values.
 # The user must fill them before running a simulation. 
 # The velocity model is prepared in another file.
 
 settings:
-    device: cpu                         # cpu / gpu-cuda / gpu-metal 
+    device: cpu                         # cpu / cuda / metal / intel / amd  
     precision: Float64                  # Float64 / Float32
-    spatial_derivative_order: 10        # (1-10)
-    show_summary_in_console: true       # true / false  
-    show_progress_in_console: true      # true / false
-    save_results: true                  # true / false  
-    output:
-        destination_folder: path/to/destination/folder
-        file_name: cool_simulation 
-        format: h5                   # h5 (only supported format yet) 
-
+    spatial_derivative_order: 4         # 1-10, but 4 recommended 
+    show_progress_in_console: true      # true / false 
+    output_file: path/to/my/output/file 
 time:
-    start: 0              # [sec]
-    end: 1                # [sec]
-    timestep: 0.005       # [sec] (will be checked and changed if unstable)
+    start: 0              
+    end: 1              
+    timestep: 0.005  # (will be checked and changed if unstable)
 
 source:
-    dominant_frequency: 15        # [Hz]
-    wavelet_type: gauss1d         # ricker / gauss1d (first derivative of a gaussian)
-    wavelet_center: 0.067         # (should be ≥ 1/fdom) [sec]
-    amplitude: 1e5                # wavelet amplifier
-    location: 
-        x: 2500                   # [m]
-        y: 2500                   # [m]             
-
-    point_source:             
-        use: true               # Enables point source (if true, double_couple.use should be false)
-        act_on:
-            on_vx: true         # Apply only on vx-component
-            on_vy: false        # Apply only on vy-component
-            on_vx_and_vy: 
-                force_angle: 0   # [°] Only used if both on_vx and on_vy are enabled. ∈[0°,360°] 0° -> in y negative direction, 180° -> in x negative direction
-
-    double_couple:            
-        use: false               # Enables double couple source (if true, point_source.use should be false)
-        strike: 0                # ∈[0°,360°] 0° -> in y negative direction, 180° -> in x negative direction
+    dominant_frequency:                
+    wavelet_type: ricker               # ricker / gauss1d 
+    wavelet_center:                    # (should be ≥ 1.25/fdom) 
+    seismic_moment: 
+    location:
+        x: 0                                                        
+        z: 0                          
+    moment_tensor:
+        Mxx: 0
+        Mxz: 0
+        Mzz: 0
+        anisotropic: false       # true / false 
 
 boundaries: # (absorbing / else)
     xstart: absorbing      
-    xend: absorbing       
-    ystart: absorbing       
-    yend: absorbing
-
-pml:
-    nlayer: 10                      # about 10-20 works reasonable
-    reflection_coefficient: 1e-5    # about 1e-5 works reasonable
+    xend:   absorbing         
+    zstart: absorbing        
+    zend:   absorbing
+    pml_layer: 10          
 
 receivers:
     geophones:
-         - { x: 3000, y: 3000 }        # [m] Example geophone
+        - { x: 0, z: 0 }
+        - { x: 0, z: 0 }
 
     das:
         x_aligned:
-        - { x_range: "0:25:10000", y: 4000 }  # [m] Example das
-        
-        y_aligned:
-        - { x: 1000, y_range: "1000:25:9000"} # [m] Example das
-        
+            - { x: { start: 0, step: 5, end: 100 }, z: 0 }
+            - { x: { start: 0, step: 5, end: 100 }, z: 0 }
+
+        z_aligned:
+            - { x: 0, z: { start: 0, step: 5, end: 100 } }
+
     snapshots:
-        times: 
-             [0.25, 0.5, 0.75, 1.0] # [sec] Example
-        fields: 
-             [vx, vy, sxx, sxy, syy] # Example
+        # 2D plane snapshots XZ-plane
+        fields: ["vx", "vz", "sxx", "sxz", "szz"]
+        times: [0, 0.1, 1]
 
 ```
 
@@ -104,61 +83,46 @@ receivers:
 using ElasticFDSG 
 
 configuration_file_path = "path/to/my/config_file.yaml"  # add your actual path here 
-ElasticFDSG.dim3.configtemplate(configuration_file_path)
+ElasticFDSG.config_template(configuration_file_path; dim=3)
 
 ```
 
-This creates:
+This saves the .yaml file with hopefully self-explaining settings:
 
 ```yaml
 # This is a template configuration.yaml file for a 3D ElasticFDSG simulation.
 # Any other configuration file can be prepared in the same manner.
-# All keywords are case sensitive, and must be named as shown below.
-# The templates is filled with some example placeholder values.
 # The user must fill them before running a simulation. 
 # The velocity model is prepared in another file.
 
 settings:
-    device: cpu                         # cpu / gpu-cuda / gpu-metal 
+    device: cpu                         # cpu / cuda / metal / intel / amd  
     precision: Float64                  # Float64 / Float32
-    spatial_derivative_order: 10        # (1-10)
-    show_summary_in_console: true       # true / false  
-    show_progress_in_console: true      # true / false
-    save_results: true                  # true / false  
-    output:
-        destination_folder: path/to/destination/folder
-        file_name: cool_simulation 
-        format: h5                   # h5 (only supported format yet) 
-
+    spatial_derivative_order: 4         # 1-10, but 4 recommended 
+    show_progress_in_console: true      # true / false 
+    output_file: path/to/my/output/file 
 time:
-    start: 0              # [sec]
-    end: 1                # [sec]
-    timestep: 0.005       # [sec] (will be checked and changed if unstable)
+    start: 0              
+    end: 1              
+    timestep: 0.005  # (will be checked and changed if unstable)
 
 source:
-    dominant_frequency: 25                 # [Hz]
-    wavelet_type: ricker                   # ricker / gauss1d 
-    wavelet_center: 0.04                   # (should be ≥ 1/fdom) [sec]
-    amplitude: 1 
+    dominant_frequency:                
+    wavelet_type: ricker               # ricker / gauss1d 
+    wavelet_center:                    # (should be ≥ 1.25/fdom) 
+    seismic_moment: 
     location:
-        x: 200                             # [m]
-        y: 200                             # [m]
-        z: 100                             # [m]      
-    point_source:                 
-        use: true                          # true / false (if true, double_couple.use should be false)
-        act_on:
-            on_vx: true                    # Apply only on vx-component 
-            on_vy: false                   # Apply only on vy-component
-            on_vz: false                   # Apply only on vz-component
-            on_all:                        # Only activates, if all v-components are enabled true
-                phi: 0                     # [°] Elevation angle
-                theta: 0                   # [°] Azimuth angle (x-y plane)
-    double_couple: 
-        use: false                         # true / false  (if true, point_source.use should be false)
-        strike: 0                          # [°] ∈ [0, 360]
-        dip: 0                             # [°] ∈ [0, 90]
-        rake: 0                            # [°] ∈ [0, 360]
-        anisotropic_moment_tensor: true    # true / false
+        x: 0                             
+        y: 0                            
+        z: 0                          
+    moment_tensor:
+        Mxx: 0
+        Mxy: 0
+        Mxz: 0
+        Myy: 0
+        Myz: 0
+        Mzz: 0
+        anisotropic: false       # true / false 
 
 boundaries: # (absorbing / else)
     xstart: absorbing      
@@ -166,33 +130,30 @@ boundaries: # (absorbing / else)
     ystart: absorbing       
     yend:   absorbing         
     zstart: absorbing        
-    zend:   absorbing          
-
-pml:
-    nlayer: 10                       # about 10-20 works reasonable
-    reflection_coefficient: 1e-15    # about 1e-5 works reasonable
+    zend:   absorbing
+    pml_layer: 10          
 
 receivers:
-    geophones: 
-        - { x: 100, y: 200, z: 300 }    #[m] Example geophone
+    geophones:
+        - { x: 0, y: 0, z: 0 }
+        - { x: 0, y: 0, z: 0 }
 
     das:
-        x_aligned: 
-            - { x_range: "0:2.5:500", y: 100, z: 100 }  #[m] Example das 
-        
-        y_aligned: 
-            - { x: 200, y_range: "100:2.5:400", z: 100 } #[m] Example das 
+        x_aligned:
+            - { x: { start: 0, step: 5, end: 100 }, y: 0, z: 0 }
+            - { x: { start: 0, step: 5, end: 100 }, y: 0, z: 0 }
+
+        y_aligned: # empty, if no receiver is required
 
         z_aligned:
-            - { x: 300, y: 250, z_range: "0:2.5:400" } #[m] Example das 
-                
-                
-    snapshots: # 2D plane-snapshots: XY, XZ, YZ planes only
-        times: 
-             [0.25, 0.5, 0.75, 1.0] # [sec] Example
-        fields: 
-             [vx, vy, vz, sxx, sxy, sxz, syy, syz, szz] # Example 
-        origins:
-             { x: 250, y: 250, z: 250 } # [m] Coordinates of snapshot origin. Example: XY-plane snapshots will be at z=250m
+            - { x: 0, y: 0, z: { start: 0, step: 5, end: 100 } }
+
+    snapshots:
+        # 2D plane snapshots | XY, XZ, YZ - planes centered at plane_positions
+        fields: ["vx", "vy", "vz", "sxx", "sxy", "syy", "szz"]
+        times: [0, 0.1, 1]
+        plane_positions:
+            - { x: 100, y: 0, z: 0 }
+            - { x: 0, y:100, z: 0 }
 
 ```
