@@ -177,7 +177,7 @@ s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta 
 \end{aligned}
 ```  
 
-where the notation $\( x \mathrel{-}= 1 \) means \( x := x - 1 \)$.
+where the notation $x \mathrel{-}= 1$ <-> $x := x - 1$ is used.
 
 Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:
   
@@ -258,9 +258,10 @@ M_{\text{CLVD}} =
 0 & 1 & 0 \\
 0 & 0 & -2
 \end{bmatrix}.
+```
 
 Analytical solutions can be obtained by convolving the moment tensors with the Green’s function.
-For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}$, and a receiver located at $x_{x,y,z}, we define:
+For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}$, and a receiver located at $x_{x,y,z}$, we define:
 
 ```math
 \begin{aligned}
@@ -282,7 +283,9 @@ u_n &= M_{pq} * G_{np,q} \\[1ex]
     &\quad + R_{fs}^n \, \frac{1}{4 \pi \rho v_s^3 r} \, \dot{S}(t - r/v_s)
 \end{aligned}
 ```
-with the near field term $R_{ne}$ give by: 
+
+with the near field term $R_{ne}$ give by:
+
 ```math
 \begin{aligned}
 R_{ne} =
@@ -290,9 +293,9 @@ R_{ne} =
      - 3 \gamma_n \delta_{pq}
      - 3 \gamma_p \delta_{nq}
      - 3 \gamma_q \delta_{np} \right) M_{pq},
-
 \end{aligned}
 ```
+
 the p-wave intermediate field term $R_{ip}$ give by: 
 
 ```math
