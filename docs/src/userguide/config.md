@@ -2,7 +2,7 @@
 
 Empty template configuration.yaml files can be generated with:
 - [ElasticFDSG.config_template()](@ref ElasticFDSG.config_template).
-The contents of these files must then be fully completed by the user either manually or with self-written scripts (see [examples](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples))
+The contents of these files must then be fully completed by the user, either manually or with self-written scripts (see [examples](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples)).
 
 
 
@@ -11,12 +11,12 @@ The contents of these files must then be fully completed by the user either manu
 ```julia 
 using ElasticFDSG 
 
-configuration_file_path = "path/to/my/config_file.yaml" 
-ElasticFDSG.config_template(configuration_file_path; dim=2)
+CONFIGFILE_PATH = "path/to/my/config_file.yaml" 
+ElasticFDSG.config_template(CONFIGFILE_PATH; dim=2)
 
 ```
 
-This saves the .yaml file with hopefully self-explaining settings:
+This saves an empty .yaml file, with hopefully self-explaining configurations:
 
 ```yaml
 # This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
@@ -82,12 +82,12 @@ receivers:
 ```julia 
 using ElasticFDSG 
 
-configuration_file_path = "path/to/my/config_file.yaml"  # add your actual path here 
+CONFIGFILE_PATH = "path/to/my/config_file.yaml"  # add your actual path here 
 ElasticFDSG.config_template(configuration_file_path; dim=3)
 
 ```
 
-This saves the .yaml file with hopefully self-explaining settings:
+This saves an empty .yaml file, with hopefully self-explaining configurations:
 
 ```yaml
 # This is a template configuration.yaml file for a 3D ElasticFDSG simulation.

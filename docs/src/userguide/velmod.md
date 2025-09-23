@@ -10,17 +10,17 @@ The following explains the required structure for 2D and 3D models and shows how
 
 
 ## 2D 
-The 2D solver expects an (7, ny, nx) array with:
+The 2D solver expects an (7, nx, nz) array with:
 
 - 1: X - 2D meshgrid coordinates
-- 2: Y - 2D meshgrid coordinates 
-- 3: P-wave velocities [m/s]
-- 4: S-wave velocities [m/s]
-- 5: Densities [kg/m$^{3}$]
+- 2: Z - 2D meshgrid coordinates 
+- 3: P-wave velocities
+- 4: S-wave velocities 
+- 5: Densities 
 - 6: 2D Thomsen Parameter $\epsilon$ 
 - 7: 2D Thomsen Parameter $\delta$ 
 
-For an isotropic medium, set 6 & 7 zero.
+For an isotropic medium, 6 & 7 can be set to zero.
 
 The following script shows how to create a simple 2D velocity model.
 ```julia
@@ -28,26 +28,17 @@ The following script shows how to create a simple 2D velocity model.
 using JLD2
 
 # spatial extends
-x_start = 0
-x_end = 10000
+h = 10  # step size
+xcoords = 0:10:10000
+zcoords = 0:10:10000
 
-y_start = 0 
-y_end = 10000
+# model dimensions 
+nx, nz = length(xcoords), nz = length(zcoords)
+dim = (ny, nx) 
 
-dx = 10 # cell size x-direction 
-dy = 10 # cell size y-direction 
-
-xcoords = x_start:dx:x_end # x-coordinates
-ycoords = y_start:dy:y_end # y-coordinates
-
-nx = length(xcoords) # number of grid points x-direction
-ny = length(ycoords) # number of grid points y-direction
-
-dim = (ny, nx) # model dimensions 
-
-# 2D meshgrid
-X = repeat(xcoords', ny, 1)
-Y = repeat(ycoords,  1, nx)
+# 2D meshgrid coordinates
+X = repeat(xcoords,  1, nz);
+Z = repeat(reshape(zcoords, 1, :), nx, 1)
 
 vp = zeros(dim);   # P-wave velocity
 vs = zeros(dim);   # S-wave velocity
@@ -77,8 +68,7 @@ velmod[6,:,:] .= eps0
 velmod[7,:,:] .= del0
 
 # save the velocity model
-path = joinpath(@__DIR__,"velmod.jld2") # add your actual path here 
-jldsave(path; velmod)
+jldsave(VELMODFILE_PATH; velmod)
 ```
 
 ## 3D 
@@ -89,9 +79,9 @@ The 3D solver expects an (13, nx, ny, nz) array with:
 - 2: Y - 3D meshgrid coordinates 
 - 3: Z - 3D meshgrid coordinates 
 
-- 4: P-wave velocities [m/s] 
-- 5: S-wave velocities [m/s] 
-- 6: Densities [kg/m$^{3}$] 
+- 4: P-wave velocities 
+- 5: S-wave velocities  
+- 6: Densities  
 
 Tsvankin Parameter 
 - 7: $\varepsilon_1$ 
@@ -122,33 +112,19 @@ The following script shows how to create a simple 3D velocity model.
 using JLD2
 
 # spatial extends
-x_start = 0
-x_end = 500
+h = 10
+xcoords = 0:h:1000 # x-coordinates
+ycoords = 0:h:1000  # y-coordinates
+zcoords = 0:h:1000 # z-coordinates
 
-y_start = 0 
-y_end = 500
+# model dimension
+nx, ny, nz = length(xcoords), length(ycoords), length(zcoords)
+dim = (nx, ny, nz) 
 
-z_start = 0
-z_end = 500
-
-dx = 5 # cell size x-direction 
-dy = 5 # cell size y-direction 
-dz = 5 # cell size z-direction 
-
-xcoords = x_start:dx:x_end # x-coordinates
-ycoords = y_start:dy:y_end # y-coordinates
-zcoords = z_start:dz:z_end # z-coordinates
-
-nx = length(xcoords) # number of grid points x-direction
-ny = length(ycoords) # number of grid points y-direction
-nz = length(zcoords) # number of grid points z-direction
-
-# 3D Meshgrid
+# 3D meshgrid coordinates
 X = getindex.(Iterators.product(xcoords, ycoords, zcoords), 1)
 Y = getindex.(Iterators.product(xcoords, ycoords, zcoords), 2)
 Z = getindex.(Iterators.product(xcoords, ycoords, zcoords), 3)
-
-dim = (nx, ny, nz) # model dimension
 
 vp = zeros(dim);    # P-wave velocity
 vs = zeros(dim);    # S-wave velocity
@@ -182,11 +158,9 @@ velmod = zeros(veldim);
 velmod[1,:,:,:] .= X
 velmod[2,:,:,:] .= Y
 velmod[3,:,:,:] .= Z
-
 velmod[4,:,:,:] .= vp
 velmod[5,:,:,:] .= vs
 velmod[6,:,:,:] .= rho
-
 velmod[7,:,:,:] .= eps1
 velmod[8,:,:,:] .= eps2
 velmod[9,:,:,:] .= gam1
@@ -196,7 +170,5 @@ velmod[12,:,:,:] .= del2
 velmod[13,:,:,:] .= del3
 
 # save velocity model in jld2 file
-using JLD2
-path = joinpath(@__DIR__,"velmod.jld2") # add your actual path here 
-jldsave(path; velmod)
+jldsave(VELMODFILE_PATH; velmod)
 ```
