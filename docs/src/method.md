@@ -177,9 +177,10 @@ s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta 
 \end{aligned}
 ```  
 
-where the notation $x \mathrel{-}= 1$ <-> $x := x - 1$ is used.
+where the notation $x \mathrel{-}= 1$ -> $x = x - 1$ is used.
 
-Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:
+Users who want to model double couple earthquake sources can compute the moment tensor components using dip, strike, and rake values. 
+For example, defining the following coordinate system:
   
          x                  
        /                     
@@ -188,6 +189,9 @@ Users who want to model double couple earthquake sources can compute the moment 
      |                                            y -> east,
      |                                            z -> positive downward
      z  
+
+  
+Moment tensor components are given by:
 
 ```math
 \begin{aligned}
@@ -265,22 +269,22 @@ For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}
 
 ```math
 \begin{aligned}
-r_{x,y,z} &= |\xi_{x,y,z} - x_{x,y,z}|, \\
-\gamma_{x,y,z} &= (\xi_{x,y,z} - x_{x,y,z})/r_{x,y,z}.
+r  &= |\xi_{x,y,z} - x_{x,y,z}|, \\
+\gamma_{x,y,z} &= (\xi_{x,y,z} - x_{x,y,z})/r.
 \end{aligned}
 ```
 
-The analytical displacement is then given by:
+The analytical displacement is then given by (Aki and Richards (2002)):
 
 ```math
 \begin{aligned}
 u_n &= M_{pq} * G_{np,q} \\[1ex]
     &= R_{ne} \, \frac{M_0}{4 \pi \rho r^4} 
        \int_{r/v_s}^{r/v_p} \tau \, S(t - \tau) \, d\tau \\[1ex]
-    &\quad + R_{ip}^n \, \frac{1}{4 \pi \rho v_p^2 r^2} \, S(t - r/v_p) \\[1ex]
-    &\quad + R_{is}^n \, \frac{1}{4 \pi \rho v_s^2 r^2} \, S(t - r/v_s) \\[1ex]
-    &\quad + R_{fp}^n \, \frac{1}{4 \pi \rho v_p^3 r} \, \dot{S}(t - r/v_p) \\[1ex]
-    &\quad + R_{fs}^n \, \frac{1}{4 \pi \rho v_s^3 r} \, \dot{S}(t - r/v_s)
+    &\quad + R_{ip} \, \frac{1}{4 \pi \rho v_p^2 r^2} \, S(t - r/v_p) \\[1ex]
+    &\quad + R_{is} \, \frac{1}{4 \pi \rho v_s^2 r^2} \, S(t - r/v_s) \\[1ex]
+    &\quad + R_{fp} \, \frac{1}{4 \pi \rho v_p^3 r} \, \dot{S}(t - r/v_p) \\[1ex]
+    &\quad + R_{fs} \, \frac{1}{4 \pi \rho v_s^3 r} \, \dot{S}(t - r/v_s),
 \end{aligned}
 ```
 
@@ -333,9 +337,11 @@ and the s-wave far field term $R_{fs}$ give by:
 
 ```math
 \begin{aligned}
-R_{fs} = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq}
+R_{fs} = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq},
 \end{aligned}
 ```
+
+where $\delta_{np}$ denotes the Kronecker delta, and $\dot{S}$ the first derivative of the source time function.
 
 The following figure compares numerically forward-modeled seismograms with analytical solutions for all three moment tensors.
 Analyitical velocities are obtained by differentiating the displacement.
@@ -345,6 +351,8 @@ Analyitical velocities are obtained by differentiating the displacement.
 As shown, all errors remain within a reasonable range and confirm implementation of elastic wave propagation and moment tensor sources.
 
 ## References 
+
+Aki, K., & Richards, P. G. (2002). Quantitative seismology.
 
 Komatitsch, D., & Martin, R. (2007). An unsplit convolutional perfectly matched layer improved at grazing incidence for the seismic wave equation. Geophysics, 72(5), SM155-SM167.
 
