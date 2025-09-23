@@ -83,7 +83,7 @@ s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k+\frac{1}{2})} &amp;\mathrel{-}= \frac{\De
 s_{yz\; (i+\frac{1}{2},j+\frac{1}{2},k-\frac{1}{2})} &amp;\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
 s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k+\frac{1}{2})} &amp;\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t} \\
 s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &amp;\mathrel{-}= \frac{\Delta t}{4 V} M_{yz} \, \frac{\partial \text{STF}}{\partial t},
-\end{aligned}\]</p><p>where the notation <span>$\( x \mathrel{-}= 1 \) means \( x := x - 1 \)$</span>.</p><p>Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:</p><pre><code class="nohighlight hljs">     x                  
+\end{aligned}\]</p><p>where the notation <span>$x \mathrel{-}= 1$</span> &lt;-&gt; <span>$x := x - 1$</span> is used.</p><p>Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:</p><pre><code class="nohighlight hljs">     x                  
    /                     
   /                        δ = Dip, λ = Rake, Φ = Strike                
   ---- y                   Coordinate System: x -&gt; north,            
@@ -119,18 +119,38 @@ M_{\text{CLVD}} =
 1 &amp; 0 &amp; 0 \\
 0 &amp; 1 &amp; 0 \\
 0 &amp; 0 &amp; -2
-\end{bmatrix}.
+\end{bmatrix}.\]</p><p>Analytical solutions can be obtained by convolving the moment tensors with the Green’s function. For a Cartesian coordinate system that origins at a source location <span>$\xi_{x,y,z}$</span>, and a receiver located at <span>$x_{x,y,z}$</span>, we define:</p><p class="math-container">\[\begin{aligned}
+r_{x,y,z} &amp;= \norm{\xi_{x,y,z} - x_{x,y,z}}, \\
+\gamma_{x,y,z} &amp;= (\xi_{x,y,z} - x_{x,y,z})/r_{x,y,z}.
+\end{aligned}\]</p><p>The analytical displacement is then given by:</p><p class="math-container">\[\begin{aligned}
+u_n &amp;= M_{pq} * G_{np,q} \\[1ex]
+    &amp;= R_{ne} \, \frac{M_0}{4 \pi \rho r^4} 
+       \int_{r/v_s}^{r/v_p} \tau \, S(t - \tau) \, d\tau \\[1ex]
+    &amp;\quad + R_{ip}^n \, \frac{1}{4 \pi \rho v_p^2 r^2} \, S(t - r/v_p) \\[1ex]
+    &amp;\quad + R_{is}^n \, \frac{1}{4 \pi \rho v_s^2 r^2} \, S(t - r/v_s) \\[1ex]
+    &amp;\quad + R_{fp}^n \, \frac{1}{4 \pi \rho v_p^3 r} \, \dot{S}(t - r/v_p) \\[1ex]
+    &amp;\quad + R_{fs}^n \, \frac{1}{4 \pi \rho v_s^3 r} \, \dot{S}(t - r/v_s)
+\end{aligned}\]</p><p>with the near field term <span>$R_{ne}$</span> give by:</p><p class="math-container">\[\begin{aligned}
+R_{ne} =
+\left( 15 \gamma_n \gamma_p \gamma_q
+     - 3 \gamma_n \delta_{pq}
+     - 3 \gamma_p \delta_{nq}
+     - 3 \gamma_q \delta_{np} \right) M_{pq},
+\end{aligned}\]</p><p>the p-wave intermediate field term <span>$R_{ip}$</span> give by: </p><p class="math-container">\[\begin{aligned}
+R_{ip} =
+\left( 6 \gamma_n \gamma_p \gamma_q
+     - \gamma_n \delta_{pq}
+     - \gamma_p \delta_{nq}
+     - \gamma_q \delta_{np} \right) M_{pq},
+\end{aligned}\]</p><p>the s-wave intermediate field term <span>$R_{is}$</span> give by: </p><p class="math-container">\[\begin{aligned}
+R_{is} =
+-\left( 6 \gamma_n \gamma_p \gamma_q
+      - \gamma_n \delta_{pq}
+      - \gamma_p \delta_{nq}
+      - 2 \gamma_q \delta_{np} \right) M_{pq},
 
-Analytical solutions can be obtained by convolving the moment tensors with the Green’s function.
-For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}$, and a receiver located at $x_{x,y,z}, we define:
-\]</p><p>math \begin{aligned} r<em>{x,y,z} &amp;= \norm{\xi</em>{x,y,z} - x<em>{x,y,z}}, \
-\gamma</em>{x,y,z} &amp;= (\xi<em>{x,y,z} - x</em>{x,y,z})/r_{x,y,z}. \end{aligned}</p><pre><code class="nohighlight hljs">
-The analytical displacement is then given by:
-</code></pre><p>math \begin{aligned} u<em>n &amp;= M</em>{pq} * G<em>{np,q} \[1ex]     &amp;= R</em>{ne} \, \frac{M<em>0}{4 \pi \rho r^4}         \int</em>{r/v<em>s}^{r/v</em>p} \tau \, S(t - \tau) \, d\tau \[1ex]     &amp;\quad + R<em>{ip}^n \, \frac{1}{4 \pi \rho v</em>p^2 r^2} \, S(t - r/v<em>p) \[1ex]     &amp;\quad + R</em>{is}^n \, \frac{1}{4 \pi \rho v<em>s^2 r^2} \, S(t - r/v</em>s) \[1ex]     &amp;\quad + R<em>{fp}^n \, \frac{1}{4 \pi \rho v</em>p^3 r} \, \dot{S}(t - r/v<em>p) \[1ex]     &amp;\quad + R</em>{fs}^n \, \frac{1}{4 \pi \rho v<em>s^3 r} \, \dot{S}(t - r/v</em>s) \end{aligned}</p><pre><code class="nohighlight hljs">with the near field term $R_{ne}$ give by: </code></pre><p>math \begin{aligned} R<em>{ne} = \left( 15 \gamma</em>n \gamma<em>p \gamma</em>q      - 3 \gamma<em>n \delta</em>{pq}      - 3 \gamma<em>p \delta</em>{nq}      - 3 \gamma<em>q \delta</em>{np} \right) M_{pq},</p><p>\end{aligned}</p><pre><code class="nohighlight hljs">the p-wave intermediate field term $R_{ip}$ give by: 
-</code></pre><p>math \begin{aligned} R<em>{ip} = \left( 6 \gamma</em>n \gamma<em>p \gamma</em>q      - \gamma<em>n \delta</em>{pq}      - \gamma<em>p \delta</em>{nq}      - \gamma<em>q \delta</em>{np} \right) M_{pq}, \end{aligned}</p><pre><code class="nohighlight hljs">
-the s-wave intermediate field term $R_{is}$ give by: 
-</code></pre><p>math \begin{aligned} R<em>{is} = -\left( 6 \gamma</em>n \gamma<em>p \gamma</em>q       - \gamma<em>n \delta</em>{pq}       - \gamma<em>p \delta</em>{nq}       - 2 \gamma<em>q \delta</em>{np} \right) M_{pq},</p><p>\end{aligned}</p><pre><code class="nohighlight hljs">
-the p-wave far field term $R_{fp}$ give by: 
-</code></pre><p>math \begin{aligned} R<em>{fp}[n] = \left( \gamma</em>n \gamma<em>p \gamma</em>q \right) M_{pq}, \end{aligned}</p><pre><code class="nohighlight hljs">
-and the s-wave far field term $R_{fs}$ give by: 
-</code></pre><p>math \begin{aligned} R<em>{fs}[n] = -\left( \gamma</em>n \gamma<em>p \gamma</em>q - \delta<em>{np} \gamma</em>q \right) M_{pq} \end{aligned} ```</p><p>The following figure compares numerically forward-modeled seismograms with analytical solutions for all three moment tensors. Analyitical velocities are obtained by differentiating the displacement.</p><p><img src="../assets/validation.png" alt="valid"/></p><p>As shown, all errors remain within a reasonable range, confirming the correctness of the moment tensor source implementation and the elastic wave propagation.</p><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><p>Komatitsch, D., &amp; Martin, R. (2007). An unsplit convolutional perfectly matched layer improved at grazing incidence for the seismic wave equation. Geophysics, 72(5), SM155-SM167.</p><p>Moczo, P., Kristek, J., &amp; Gális, M. (2014). The finite-difference modelling of earthquake motions: Waves and ruptures. Cambridge University Press.</p><p>Shi, P., Angus, D., Nowacki, A., Yuan, S., &amp; Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.</p><p>Tsvankin, I. (1997). Anisotropic parameters and P-wave velocity for orthorhombic media. Geophysics, 62(4), 1292-1309.</p><p>Virieux, J. (1984). SH-wave propagation in heterogeneous media: Velocity-stress finite-difference method. Geophysics, 49(11), 1933-1942. </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../userguide/config/">« Configurations</a><a class="docs-footer-nextpage" href="../reference/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 23 September 2025 17:02">Tuesday 23 September 2025</span>. Using Julia version 1.11.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+\end{aligned}\]</p><p>the p-wave far field term <span>$R_{fp}$</span> give by: </p><p class="math-container">\[\begin{aligned}
+R_{fp}[n] = \left( \gamma_n \gamma_p \gamma_q \right) M_{pq},
+\end{aligned}\]</p><p>and the s-wave far field term <span>$R_{fs}$</span> give by: </p><p class="math-container">\[\begin{aligned}
+R_{fs}[n] = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq}
+\end{aligned}\]</p><p>The following figure compares numerically forward-modeled seismograms with analytical solutions for all three moment tensors. Analyitical velocities are obtained by differentiating the displacement.</p><p><img src="../assets/validation.png" alt="valid"/></p><p>As shown, all errors remain within a reasonable range, confirming the correctness of the moment tensor source implementation and the elastic wave propagation.</p><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><p>Komatitsch, D., &amp; Martin, R. (2007). An unsplit convolutional perfectly matched layer improved at grazing incidence for the seismic wave equation. Geophysics, 72(5), SM155-SM167.</p><p>Moczo, P., Kristek, J., &amp; Gális, M. (2014). The finite-difference modelling of earthquake motions: Waves and ruptures. Cambridge University Press.</p><p>Shi, P., Angus, D., Nowacki, A., Yuan, S., &amp; Wang, Y. (2018). Microseismic full waveform modeling in anisotropic media with moment tensor implementation. Surveys in Geophysics, 39(4), 567-611.</p><p>Tsvankin, I. (1997). Anisotropic parameters and P-wave velocity for orthorhombic media. Geophysics, 62(4), 1292-1309.</p><p>Virieux, J. (1984). SH-wave propagation in heterogeneous media: Velocity-stress finite-difference method. Geophysics, 49(11), 1933-1942. </p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../userguide/config/">« Configurations</a><a class="docs-footer-nextpage" href="../reference/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 23 September 2025 17:11">Tuesday 23 September 2025</span>. Using Julia version 1.11.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
