@@ -154,7 +154,7 @@ Thus, in total three normal and twelve shear stress components are required for 
 ```math
 \begin{aligned}
 
-V &= \Delta x \Delta y \Delta z \\
+V &= \Delta x \Delta y \Delta z \\ \\
 
 s_{xx\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{xx} \, \frac{\partial \text{STF}}{\partial t} \\
 s_{yy\; (i+\frac{1}{2},j,k)} &\mathrel{-}= \frac{\Delta t}{V} M_{yy} \, \frac{\partial \text{STF}}{\partial t} \\
@@ -177,7 +177,7 @@ s_{yz\; (i+\frac{1}{2},j-\frac{1}{2},k-\frac{1}{2})} &\mathrel{-}= \frac{\Delta 
 \end{aligned}
 ```  
 
-where the notation \( x \mathrel{-}= 1 \) means \( x := x - 1 \).
+where the notation $\( x \mathrel{-}= 1 \) means \( x := x - 1 \)$.
 
 Users who want to model double couple earthquake sources can compute the moment tensor components for the following coordinate system using dip, strike, and rake values:
   
@@ -231,6 +231,115 @@ Accordingly, differential operators $\mathcal{D_{y}}$ and $\mathcal{D_{z}}$ are 
 
 ## Validation
 
+To validate the outputs of the application, numerically derived seismograms are compared with analytical solutions for a homogeneous medium for three different moment tensor sources:  
+- isotropic (explosive, ISO),  
+- double couple (DC), and  
+- compensated linear vector dipole (CLVD),
+given by:
+
+```math
+M_{\text{ISO}} =
+\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & 1
+\end{bmatrix},
+\quad
+M_{\text{DC}} =
+\begin{bmatrix}
+0 & 1 & 0 \\
+1 & 0 & 0 \\
+0 & 0 & 0
+\end{bmatrix},
+\quad
+M_{\text{CLVD}} =
+\begin{bmatrix}
+1 & 0 & 0 \\
+0 & 1 & 0 \\
+0 & 0 & -2
+\end{bmatrix}.
+
+Analytical solutions can be obtained by convolving the moment tensors with the Green’s function.
+For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}$, and a receiver located at $x_{x,y,z}, we define:
+
+```math
+\begin{aligned}
+r_{x,y,z} &= \norm{\xi_{x,y,z} - x_{x,y,z}}, \\
+\gamma_{x,y,z} &= (\xi_{x,y,z} - x_{x,y,z})/r_{x,y,z}.
+\end{aligned}
+```
+
+The analytical displacement is then given by:
+
+```math
+\begin{aligned}
+u_n &= M_{pq} * G_{np,q} \\[1ex]
+    &= R_{ne} \, \frac{M_0}{4 \pi \rho r^4} 
+       \int_{r/v_s}^{r/v_p} \tau \, S(t - \tau) \, d\tau \\[1ex]
+    &\quad + R_{ip}^n \, \frac{1}{4 \pi \rho v_p^2 r^2} \, S(t - r/v_p) \\[1ex]
+    &\quad + R_{is}^n \, \frac{1}{4 \pi \rho v_s^2 r^2} \, S(t - r/v_s) \\[1ex]
+    &\quad + R_{fp}^n \, \frac{1}{4 \pi \rho v_p^3 r} \, \dot{S}(t - r/v_p) \\[1ex]
+    &\quad + R_{fs}^n \, \frac{1}{4 \pi \rho v_s^3 r} \, \dot{S}(t - r/v_s)
+\end{aligned}
+```
+with the near field term $R_{ne}$ give by: 
+```math
+\begin{aligned}
+R_{ne} =
+\left( 15 \gamma_n \gamma_p \gamma_q
+     - 3 \gamma_n \delta_{pq}
+     - 3 \gamma_p \delta_{nq}
+     - 3 \gamma_q \delta_{np} \right) M_{pq},
+
+\end{aligned}
+```
+the p-wave intermediate field term $R_{ip}$ give by: 
+
+```math
+\begin{aligned}
+R_{ip} =
+\left( 6 \gamma_n \gamma_p \gamma_q
+     - \gamma_n \delta_{pq}
+     - \gamma_p \delta_{nq}
+     - \gamma_q \delta_{np} \right) M_{pq},
+\end{aligned}
+```
+
+the s-wave intermediate field term $R_{is}$ give by: 
+
+```math
+\begin{aligned}
+R_{is} =
+-\left( 6 \gamma_n \gamma_p \gamma_q
+      - \gamma_n \delta_{pq}
+      - \gamma_p \delta_{nq}
+      - 2 \gamma_q \delta_{np} \right) M_{pq},
+
+\end{aligned}
+```
+
+the p-wave far field term $R_{fp}$ give by: 
+
+```math
+\begin{aligned}
+R_{fp}[n] = \left( \gamma_n \gamma_p \gamma_q \right) M_{pq},
+\end{aligned}
+```
+
+and the s-wave far field term $R_{fs}$ give by: 
+
+```math
+\begin{aligned}
+R_{fs}[n] = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq}
+\end{aligned}
+```
+
+The following figure compares numerically forward-modeled seismograms with analytical solutions for all three moment tensors.
+Analyitical velocities are obtained by differentiating the displacement.
+
+![comp](assets/validation.png)
+
+As shown, all errors remain within a reasonable range, confirming the correctness of the moment tensor source implementation and the elastic wave propagation.
 
 
 ## References 
