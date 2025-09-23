@@ -24,7 +24,7 @@ module dim3
 end
 export dim3
 
-# Helper 
+# Utils 
 using HDF5
 include(joinpath(@__DIR__, "shared/io.jl"))
 export load_results, print_h5_tree, config_template

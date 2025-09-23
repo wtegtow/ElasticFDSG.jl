@@ -1,9 +1,9 @@
-"""
-Leapfrog scheme:
-- Time and field staggered grid. 
-- Second order accurate in time. 
-"""
 function solve!(fdsg3d::FDSG3D; block_size=(7,7,7))
+    """
+    Leapfrog scheme:
+    - Time and field staggered grid. 
+    - Second order accurate in time. 
+    """
 
     kernel_params = kernel_args(fdsg3d);
     field_params = field_args(fdsg3d);

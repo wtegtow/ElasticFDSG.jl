@@ -24,7 +24,7 @@ Users can easily customize their simulations by creating velocity models and con
 - Save snapshots at specified time steps.
 - Easy-to-read source code.
 
-A step by step user guide can be found in the [here](https://wtegtow.github.io/ElasticFDSG.jl/dev/userguide/intro/).
+A step by step user guide can be found in the [User Guide](https://wtegtow.github.io/ElasticFDSG.jl/dev/userguide/intro/).
 
 Basic examples are included in the git-repository `examples/` folder. 
 
@@ -51,9 +51,11 @@ If you find this package helpful for your research, please consider citing:
 ```
 
 !!! note
-  This package is still in its early stages, and only limited testing has been done so far. Any bug report or suggestion is very welcomed.
+
+    This package is still in its early stages, and only limited testing has been done so far. Any bug report or suggestion is very welcomed.
 
 !!! note
-  Old scripts may need to be revised to be compatible with the latest version.
-  - With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
-  - With v1.0.2, 2D velocity models must now be saved as (Nx,Nz) arrays instead from previously (Nz,Nx). 
+
+    Old scripts may need to be revised to be compatible with the latest version.
+    - With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
+    - With v1.0.2, 2D velocity models must now be saved as (Nx,Nz) arrays instead from previously (Nz,Nx). 
