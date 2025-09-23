@@ -1,19 +1,3 @@
-function load_velmod(VELMODPATH)
-    if endswith(VELMODPATH,"npz")
-        velmodfile = npzread(joinpath(VELMODPATH))
-        velmod = velmodfile["velmod"];
-    elseif endswith(VELMODPATH,"npy")
-        velmod = npzread(joinpath(VELMODPATH))
-    elseif endswith(VELMODPATH,"jld2")
-        velmodfile = jldopen(joinpath(VELMODPATH))
-        velmod = velmodfile["velmod"];
-        close(velmodfile)
-    else
-        error("No valid velocity model file found.")
-    end;
-    return velmod 
-end 
-
 function print_h5_tree_rekursive(obj; indent=0, last=true, prefix="", show_header=true)
     if indent == 0 && show_header
     print("""\

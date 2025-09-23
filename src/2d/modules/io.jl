@@ -1,3 +1,19 @@
+function load_velmod(VELMODPATH)
+    if endswith(VELMODPATH,"npz")
+        velmodfile = npzread(joinpath(VELMODPATH))
+        velmod = velmodfile["velmod"];
+    elseif endswith(VELMODPATH,"npy")
+        velmod = npzread(joinpath(VELMODPATH))
+    elseif endswith(VELMODPATH,"jld2")
+        velmodfile = jldopen(joinpath(VELMODPATH))
+        velmod = velmodfile["velmod"];
+        close(velmodfile)
+    else
+        error("No valid velocity model file found.")
+    end;
+    return velmod 
+end 
+
 function check_configfile2d(config)
 
     function test_info_block(info_block::Dict, required_info_block)
