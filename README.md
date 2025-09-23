@@ -17,7 +17,7 @@ Users can easily customize their simulations by creating velocity models and con
 ## Features 
 
 - 2D and 3D elastic forward modelling on regular grids.
-- Vendor neutral CPU and GPU kernel (CPU, CUDA, Metal, AMDGPU, oneAPI) using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
+- Vendor neutral CPU and GPU kernel (CPU, CUDA, Metal, AMDGPU, oneAPI) using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
 - Spatial derivatives of order 1 to 10.
 - Second order time marching.
 - Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
@@ -32,6 +32,7 @@ Users can easily customize their simulations by creating velocity models and con
 - Easy-to-read source code.
 
 A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
+
 Basic examples are included in the git-repository `examples/` folder. 
 
 ![Demo](docs/src/assets/readme_animation.png)
@@ -62,4 +63,4 @@ This package is still in its early stages, and only limited testing has been don
 **Note:**
 Old scripts may need to be revised to be compatible with the latest version.
 - With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
-- With v1.0.2, 2D velocity models must now be saved as (Nx,Nz) arrays from previously (Nz,Nx). 
+- With v1.0.2, 2D velocity models must now be saved as (Nx,Nz) arrays instead of previously (Nz,Nx). 
