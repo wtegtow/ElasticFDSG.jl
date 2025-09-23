@@ -231,10 +231,10 @@ Accordingly, differential operators $\mathcal{D_{y}}$ and $\mathcal{D_{z}}$ are 
 
 ## Validation
 
-To validate the outputs of the application, numerically derived seismograms are compared with analytical solutions for a homogeneous medium for three different moment tensor sources:  
+To validate the implementation, numerically derived seismograms are compared with analytical solutions for a homogeneous medium for three different moment tensor sources:  
 - isotropic (explosive, ISO),  
 - double couple (DC), and  
-- compensated linear vector dipole (CLVD),
+- compensated linear vector dipole (CLVD),  
 given by:
 
 ```math
@@ -265,7 +265,7 @@ For a Cartesian coordinate system that origins at a source location $\xi_{x,y,z}
 
 ```math
 \begin{aligned}
-r_{x,y,z} &= \norm{\xi_{x,y,z} - x_{x,y,z}}, \\
+r_{x,y,z} &= |\xi_{x,y,z} - x_{x,y,z}|, \\
 \gamma_{x,y,z} &= (\xi_{x,y,z} - x_{x,y,z})/r_{x,y,z}.
 \end{aligned}
 ```
@@ -325,7 +325,7 @@ the p-wave far field term $R_{fp}$ give by:
 
 ```math
 \begin{aligned}
-R_{fp}[n] = \left( \gamma_n \gamma_p \gamma_q \right) M_{pq},
+R_{fp} = \left( \gamma_n \gamma_p \gamma_q \right) M_{pq},
 \end{aligned}
 ```
 
@@ -333,7 +333,7 @@ and the s-wave far field term $R_{fs}$ give by:
 
 ```math
 \begin{aligned}
-R_{fs}[n] = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq}
+R_{fs} = -\left( \gamma_n \gamma_p \gamma_q - \delta_{np} \gamma_q \right) M_{pq}
 \end{aligned}
 ```
 
@@ -342,8 +342,7 @@ Analyitical velocities are obtained by differentiating the displacement.
 
 ![valid](assets/validation.png)
 
-As shown, all errors remain within a reasonable range, confirming the correctness of the moment tensor source implementation and the elastic wave propagation.
-
+As shown, all errors remain within a reasonable range and confirm implementation of elastic wave propagation and moment tensor sources.
 
 ## References 
 
