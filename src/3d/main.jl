@@ -26,7 +26,7 @@ Optional Keyword Arguments:
                          True  -> Function returns FDSG3D struct.
 """
 function runsim(CONFIGPATH::String, VELMODPATH::String; block_size=(7,7,7), return_ = false)
-    settings = init_settings(CONFIGPATH);
+    settings = init_settings(CONFIGPATH; dim=3);
     velmod   = load_velmod(VELMODPATH);
     domain   = init_domain(settings, velmod);
     elastic  = init_elastic(settings, domain, velmod);

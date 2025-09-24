@@ -8,84 +8,94 @@ struct Settings{T1,T2,T3}
     device::String
     device_name::String
     array::T3
-    zeros::Function
-    ones::Function
 end
 
 
-function init_settings(CONFIGPATH)
+function init_settings(CONFIGPATH; dim=3)
 
     # read and check config file
     config = YAML.load_file(CONFIGPATH)
-    check_configfile2d(config) 
+    if dim == 2
+        check_configfile2d(config) 
+    elseif dim == 3
+        check_configfile2d(config) 
+    end
 
-    # set device with corresponding array types
+    # set device and corresponding array types
     device = String(config["settings"]["device"]) 
     name_  = nothing
     array_ = nothing 
-    zeros_ = nothing 
-    ones_  = nothing
 
     # cpu
     if device in ["cpu", "CPU","Cpu"]
         device = "cpu"
         name_  = "cpu"
-        array_ = Base.Array
-        zeros_ = (dims...) -> Base.zeros(float, dims...) 
-        ones_  = (dims...) -> Base.ones(float, dims...)
+        array_ = Array
     
     # nvidia gpu
     elseif device in ["gpu-cuda", "gpu_cuda", "cuda", "Cuda"]
+
+        if !isdefined(Main, :CUDA)
+            error("CUDA.jl not loaded in global scope.")
+        end
         device = "gpu-cuda"
-        device_ids = CUDA.devices()
+        device_ids = Main.CUDA.devices()
         if isempty(device_ids)
             error("Cuda device not found.")
         else
-            name_  = String(CUDA.name(CUDA.device!(0)))
-            array_ = CuArray
-            zeros_ = (dims...) -> CUDA.zeros(float, dims...) 
-            ones_  = (dims...) -> CUDA.ones(float, dims...) 
+            name_ = String(Main.CUDA.name(Main.CUDA.device!(0)))
+            array_ = Main.CuArray
+            test_array = array_([1,2,3])
         end
 
     # apple gpu
     elseif device in ["gpu-metal", "gpu_metal", "metal", "apple", "Apple", "MacBook", "Mac"]
-        device = "gpu-metal"
-        device_list = Metal.MTL.devices()
 
+        if !isdefined(Main, :Metal)
+            error("Metal.jl not loaded in global scope.")
+        end
+
+        device = "gpu-metal"
+        device_list = Main.Metal.MTL.devices()
         if isempty(device_list)
             error("Metal device not found.")
         else 
             name_  = String(device_list[1].name)
-            array_ = MtlArray
-            zeros_ = (dims...) -> Metal.zeros(float, dims...) 
-            ones_  = (dims...) -> Metal.ones(float, dims...) 
+            array_ = Main.MtlArray
+            test_array = array_([1,2,3])
         end
 
-    # AMD not testet 
+    # AMD (not testet)
     elseif device in ["gpu-amd", "gpu_rocm", "amd", "AMD"]
-        device = "gpu-amd"
-        try
-            AMDGPU.devices()
-        catch err
-            error("AMDGPU device not found: $err")
-        end
-        name_ = AMDGPU.devices()[1]
-        array_ = ROCArray
-        zeros_ = (dims...) -> AMDGPU.zeros(float, dims...)
-        ones_  = (dims...) -> AMDGPU.ones(float, dims...)
 
-    # oneAPI not testet yet  
-    elseif device in ["gpu-intel", "intel", "oneapi", "one_api"]
-        device = "gpu-intel"
-        try
-            oneAPI.device()
-        catch err
-            error("oneAPI device not found: $err")
+        if !isdefined(Main, :AMDGPU)
+            error("AMDGPU.jl not loaded in global scope.")
         end
-        name_ = oneAPI.device()[1]  
-        array_ = oneArray  
-        zeros_ = (dims...) -> oneAPI.zeros(float, dims...)
-        ones_  = (dims...) -> oneAPI.ones(float, dims...)
+
+        device = "gpu-amd"
+        device_list = Main.AMDGPU.devices()
+        if isempty(device_list)
+            error("AMD device not found.")
+        end
+        name_ = String(Main.AMDGPU.devices()[1])
+        array_ = Main.ROCArray
+        test_array = array_([1,2,3])
+
+    # oneAPI (not testet)  
+    elseif device in ["gpu-intel", "intel", "oneapi", "one_api"]
+
+        if !isdefined(Main, :oneAPI)
+            error("oneAPI.jl not loaded in global scope.")
+        end
+
+        device = "gpu-intel"
+        device_list = Main.oneAPI.device()
+        if isempty(device_list)
+            error("AMD device not found.")
+        end
+        name_ = String(Main.oneAPI.device()[1])
+        array_ = Main.oneArray  
+        test_array = array_([1,2,3])
 
     else 
         error("Device: $device not found. Valid device names are ['cpu', 'gpu_metal', 'gpu_cuda']")
@@ -114,7 +124,7 @@ function init_settings(CONFIGPATH)
     T2 = typeof(c)
     T3 = typeof(array_)
 
-    settings = Settings{T1,T2,T3}(config, showinfo, float, output_path, N, c, device, name_, array_, zeros_, ones_)
+    settings = Settings{T1,T2,T3}(config, showinfo, float, output_path, N, c, device, name_, array_)
     
     return settings
 end;

@@ -1,5 +1,4 @@
 include(joinpath(@__DIR__, "io.jl"))
-include(joinpath(@__DIR__, "settings.jl"))
 include(joinpath(@__DIR__, "domain.jl"))
 include(joinpath(@__DIR__, "elastic.jl"))
 include(joinpath(@__DIR__, "time.jl"))
