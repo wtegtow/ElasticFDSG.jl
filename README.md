@@ -8,7 +8,6 @@
 
 ElasticFDSG.jl is a Julia package for solving the elastic wave equation in the velocity–stress formulation using the finite-difference method on a staggered grid.
 
-
 But why another implementation? In many existing tools, installing dependencies, configuring simulation setups, defining model parameters, and accessing results can be already complicated tasks — particularly for inexperienced users who are looking for a quick and straightforward workflow.
 ElasticFDSG was developed to offer a user-friendly experience while also maintaining flexibility to be applied to a wide variety of simulation scenarios.
 Users can easily customize their simulations by creating velocity models and configuration files in a straightforward manner, that can be directly passed to the solvers.
