@@ -1,7 +1,7 @@
 name = "ElasticFDSG"
 uuid = "5b8de370-2f65-449b-a80a-5b10b09533c5"
 authors = ["William Tegtow <w.tegtow@gmail.com> and contributors"]
-version = "1.0.2"
+version = "1.0.3"
 
 [deps]
 Einsum = "b7d42ee7-0b51-5a75-98ca-779d3107e4c0"
