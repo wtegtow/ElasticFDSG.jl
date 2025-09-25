@@ -14,6 +14,7 @@ end
 include(joinpath(@__DIR__, "../shared/__export__.jl"))
 include(joinpath(@__DIR__, "modules/__export__.jl"))
 
+
 """
 ElasticFDSG.dim2.runsim(CONFIGPATH, VELMODPATH)
 Run the 2D elastic forward simulation using the specified configuration and velocity model.

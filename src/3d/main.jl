@@ -10,9 +10,9 @@ mutable struct FDSG3D{a,b,c,d,e,f,g,h,i,j}
     das::i 
     snapshots::j
 end
-
 include(joinpath(@__DIR__, "../shared/__export__.jl"))
 include(joinpath(@__DIR__, "modules/__export__.jl"))
+
 
 """
 ElasticFDSG.dim3.runsim(CONFIGPATH, VELMODPATH)

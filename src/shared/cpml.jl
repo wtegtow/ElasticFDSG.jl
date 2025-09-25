@@ -2,13 +2,11 @@
 _________________________________________________________________________
 This file contains recycled code from: 
 https://github.com/geodynamics/seismic_cpml
-_________________________________________________________________________
 Roland Martin and Dimitri Komatitsch and Stephen D. Gedney,
 A variational formulation of a stabilized unsplit convolutional perfectly
 matched layer for the isotropic or anisotropic seismic wave equation.
 _________________________________________________________________________
-"""
-
+""";
 function cmpl(N, 
               npoints_pml, 
               use_pml_start,

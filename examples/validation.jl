@@ -7,11 +7,13 @@ for a given source-receiver geometry. The analytical solutions are then compared
 """;
 
 using ElasticFDSG
-using Metal, CUDA # GPU Backend
-device = "cuda" # set device
+using Metal # GPU Backend
+
 using JLD2, YAML 
+
 using GLMakie
 Makie.inline!(true)
+
 using LinearAlgebra, Einsum, UnPack, Statistics
 
 # create velocity model 
@@ -49,7 +51,7 @@ rcv_x, rcv_y, rcv_z = ([x["x"] for x in rcv], [y["y"] for y in rcv], [z["z"] for
 # create configuration templates for 3 different moment tensor sources 
 config = Dict(
     "settings" => Dict(
-        "device" => device,                 
+        "device" => "metal",                 
         "precision" => "Float32",            
         "spatial_derivative_order" => 4,      
         "show_progress_in_console" => true,   

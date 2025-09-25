@@ -64,7 +64,6 @@ function load_results(filename::String)
     end
 end
 
-
 """
 ElasticFDSG.config_template(path, dim)
 
