@@ -95,7 +95,7 @@ function init_settings(CONFIGPATH; dim=3)
         array_ = Main.oneArray  
 
     else 
-        error("Device: $device not found. Valid device names are ['cpu', 'gpu_metal', 'gpu_cuda']")
+        error("Device: $device not found. Valid device names are ['cpu', 'cuda', 'metal', 'amd', 'oneapi]")
     end
 
     # test array operations
