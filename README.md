@@ -63,4 +63,4 @@ This package is still in its early stages, and only limited testing has been don
 **Note:**
 Old scripts may need to be revised to be compatible with the latest version.
 - With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
-- With v1.0.2, 2D velocity models must now be saved as $n_{x},n_{z}$ arrays instead from previously $n_{z},n_{x}$. 
+- With v1.0.2, 2D velocity models must now be saved as ($n_{x},n_{z}$) arrays instead from previously ($n_{z},n_{x}$). 
