@@ -348,7 +348,8 @@ Analyitical velocities are obtained by differentiating the displacement.
 
 ![valid](assets/validation.png)
 
-As shown, all errors remain within a reasonable range and confirm implementation of elastic wave propagation and moment tensor sources.
+As shown, all errors remain within a reasonable range. 
+
 
 ## References 
 
@@ -363,4 +364,3 @@ Shi, P., Angus, D., Nowacki, A., Yuan, S., & Wang, Y. (2018). Microseismic full 
 Tsvankin, I. (1997). Anisotropic parameters and P-wave velocity for orthorhombic media. Geophysics, 62(4), 1292-1309.
 
 Virieux, J. (1984). SH-wave propagation in heterogeneous media: Velocity-stress finite-difference method. Geophysics, 49(11), 1933-1942. 
-

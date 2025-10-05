@@ -17,7 +17,7 @@ Users can easily customize their simulations by creating velocity models and con
 ## Features 
 
 - 2D and 3D elastic forward modelling on regular grids.
-- Vendor neutral CPU and GPU kernel (CPU, CUDA, Metal, AMDGPU, oneAPI) using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
+- Vendor neutral CPU and GPU kernel (CUDA, Metal, AMDGPU, oneAPI) using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
 - Spatial derivatives of order 1 to 10.
 - Second order time marching.
 - Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
@@ -63,4 +63,4 @@ This package is still in its early stages, and only limited testing has been don
 **Note:**
 Old scripts may need to be revised to be compatible with the latest version.
 - With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
-- With v1.0.2, 2D velocity models must now be saved as (Nx,Nz) arrays instead of previously (Nz,Nx). 
+- With v1.0.2, 2D velocity models must now be saved as $n_{x},n_{z}$ arrays instead from previously $n_{z},n_{x}$. 

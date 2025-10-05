@@ -1,4 +1,4 @@
-struct Settings{T1,T2,T3}
+struct Settings{T1,T2,T3} 
     config::T1
     showinfo::Bool
     float::DataType
@@ -99,7 +99,7 @@ function init_settings(CONFIGPATH; dim=3)
     end
 
     # test array operations
-    try
+    try 
         array_([1,2,3]) + array_([1,2,3])
     catch e
         throw(ErrorException("Array-Addition not working. Please ensure your backend is working correctly. $e"))
