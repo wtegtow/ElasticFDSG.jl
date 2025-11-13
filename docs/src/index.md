@@ -34,7 +34,7 @@ Basic examples are included in the git-repository `examples/` folder.
 
 ```julia-repl
 using Pkg
-Pkg.add(ElasticFDSG)
+Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
 ```
 
 ## Citing

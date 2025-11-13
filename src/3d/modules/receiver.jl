@@ -172,9 +172,9 @@ function register_fibers(settings::Settings, domain::Domain, elastic::Elastic, t
                 is_liquid = c55 == 0 || c44 == 0
                 if is_liquid
                     Cinv[channel_idx, :, :] .= 0.0   
-                    #Cinv[channel_idx,1,1] = 1/c11       # exx = sxx / c11
-                    #Cinv[channel_idx,2,2] = 1/c22       # eyy = syy / c22
-                    #Cinv[channel_idx,3,3] = 1/c33       # ezz = szz / c33
+                    Cinv[channel_idx,1,1] = 1/c11       # exx = sxx / c11
+                    Cinv[channel_idx,2,2] = 1/c22       # eyy = syy / c22
+                    Cinv[channel_idx,3,3] = 1/c33       # ezz = szz / c33
 
                 else
                 C = [c11 c12 c13;
