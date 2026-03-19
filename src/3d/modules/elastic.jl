@@ -167,31 +167,42 @@ function init_elastic(settings::Settings, domain::Domain, velmod)
 
     vmax = 0.0
     vmin = Inf
-    for c in eachrow(deepcopy(c_tensors))
-        c ./= c[end] # density normalized stiffness
-        c11, c12, c13, c22, c23, c33, c44, c55, c66, rho_ = c 
 
-        if c55 == 0 || c44 == 0 # skip liquid layer
-            continue 
-        end
+    # if there are not too many unique c-tensors, we can calculate the group velocities for all of them to get a better estimate of vmax and vmin
+    if length(unique_c) <= 100  
+        for c in eachrow(deepcopy(c_tensors))
+            c ./= c[end] # density normalized stiffness
+            c11, c12, c13, c22, c23, c33, c44, c55, c66, rho_ = c 
 
-        for theta in angles_theta
-            for phi in angles_phi
-                n = SVector(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi))
-                n = n/norm(n)
-                gp, gs1, gs2 = group_velocity(VpVs, UpUs, c11, c12, c13, c22, c23, c33, c44, c55, c66, n)
-                comb = [norm(gp), norm(gs1), norm(gs2)]
-                vmax_ = maximum(comb)
-                vmin_ = minimum(comb)
-                if vmax_ > vmax 
-                    vmax = vmax_
-                end
-                if vmin_ < vmin 
-                    vmin = vmin_
-                end
-            end 
+            if c55 == 0 || c44 == 0 # skip liquid layer
+                continue 
+            end
+
+            for theta in angles_theta
+                for phi in angles_phi
+                    n = SVector(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi))
+                    n = n/norm(n)
+                    gp, gs1, gs2 = group_velocity(VpVs, UpUs, c11, c12, c13, c22, c23, c33, c44, c55, c66, n)
+                    comb = [norm(gp), norm(gs1), norm(gs2)]
+                    vmax_ = maximum(comb)
+                    vmin_ = minimum(comb)
+                    if vmax_ > vmax 
+                        vmax = vmax_
+                    end
+                    if vmin_ < vmin 
+                        vmin = vmin_
+                    end
+                end 
+            end
+        end;
+    else 
+        # otherwhise, take max vp with a 10% buffer 
+        vmax = maximum(vp) * 1.1
+        vmin = minimum(vs) 
+        if vmin == 0.0 
+            vmin = minimum(vp) * 0.9
         end
-    end;
+    end
 
     # fallback (if all nodes are liquids)
     if vmax == 0.0 

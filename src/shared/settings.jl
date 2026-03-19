@@ -1,3 +1,8 @@
+function log_progress(msg::String)
+    print("\r" * msg * "\u001b[K")
+    flush(stdout)
+end
+
 struct Settings{T1,T2,T3} 
     config::T1
     showinfo::Bool

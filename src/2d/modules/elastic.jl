@@ -128,37 +128,47 @@ function init_elastic(settings::Settings, domain::Domain, velmod)
         @warn "P-wave velocity somewhere zero. This may cause numerical issues."
     end
 
-    angles_theta = deg2rad.(0:2:360)
-    VpVs = MVector{2,Float64}(undef)
-    UpUs = MMatrix{2,2,Float64}(undef)
-
     vmax = 0.0
     vmin = Inf
-    for c in eachrow(deepcopy(c_tensors))
-        c ./= c[end] # density normalized stiffness
-        c11, c13, c33, c55, rho_ = c 
+    
+    # if there are not too many unique c-tensors, we can calculate the group velocities for all of them to get a better estimate of vmax and vmin
+    if length(unique_c) <= 1000  
+        angles_theta = deg2rad.(0:2:360)
+        VpVs = MVector{2,Float64}(undef)
+        UpUs = MMatrix{2,2,Float64}(undef)
+        for c in eachrow(deepcopy(c_tensors))
+            c ./= c[end] # density normalized stiffness
+            c11, c13, c33, c55, rho_ = c 
 
-        if c55 == 0  # skip liquid layer
-            continue 
-        end
-
-        for theta in angles_theta
-            
-            n = SVector(cos(theta), sin(theta))
-            n = n/norm(n)
-            gp, gs1 = group_velocity(VpVs, UpUs, c11, c13, c33, c55, n)
-            comb = [norm(gp), norm(gs1)]
-            vmax_ = maximum(comb)
-            vmin_ = minimum(comb)
-            if vmax_ > vmax 
-                vmax = vmax_
+            if c55 == 0  # skip liquid layer
+                continue 
             end
-            if vmin_ < vmin 
-                vmin = vmin_
+        
+            for theta in angles_theta
+                
+                n = SVector(cos(theta), sin(theta))
+                n = n/norm(n)
+                gp, gs1 = group_velocity(VpVs, UpUs, c11, c13, c33, c55, n)
+                comb = [norm(gp), norm(gs1)]
+                vmax_ = maximum(comb)
+                vmin_ = minimum(comb)
+                if vmax_ > vmax 
+                    vmax = vmax_
+                end
+                if vmin_ < vmin 
+                    vmin = vmin_
+                end
+                
             end
-             
+        end;
+    else 
+        # otherwhise, take max vp with a 10% buffer 
+        vmax = maximum(vp) * 1.1
+        vmin = minimum(vs) 
+        if vmin == 0.0 
+            vmin = minimum(vp) * 0.9
         end
-    end;
+    end
 
     # fallback (if all nodes are liquids)
     if vmax == 0.0 

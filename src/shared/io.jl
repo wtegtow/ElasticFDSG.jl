@@ -1,8 +1,3 @@
-function log_progress(msg::String)
-    print("\r" * msg * "\u001b[K")
-    flush(stdout)
-end
-
 function print_h5_tree_rekursive(obj; indent=0, last=true, prefix="", show_header=true)
     if indent == 0 && show_header
     print("""\
