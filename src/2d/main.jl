@@ -50,6 +50,7 @@ function runsim(CONFIGPATH::String, VELMODPATH::String; block_size=(32,32), retu
     fdsg2d = FDSG2D{Settings, Domain, Elastic, Fields, Time, Source, Pml, Geophones, DAS, Snapshots}(
                     settings, domain, elastic, fields, time, source, pml, geophones, das, snapshots);
     if settings.showinfo log_progress(" >FDSG2D struct initialized") end
+    if settings.showinfo log_progress("") end
     iwindow(fdsg2d)
     solve!(fdsg2d; block_size=block_size)
     if !return_
