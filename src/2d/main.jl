@@ -28,18 +28,28 @@ Optional Keyword Arguments:
 """
 function runsim(CONFIGPATH::String, VELMODPATH::String; block_size=(32,32), return_ = false)
     settings = init_settings(CONFIGPATH; dim=2);
+    if settings.showinfo log_progress(" >Log setup...") end
     velmod   = load_velmod(VELMODPATH);
+    if settings.showinfo log_progress(" >velocity model initialized") end
     domain   = init_domain(settings, velmod);
+    if settings.showinfo log_progress(" >domain initialized") end
     elastic  = init_elastic(settings, domain, velmod);
+    if settings.showinfo log_progress(" >elastic parameters initialized") end
     fields   = init_fields(settings, domain);
+    if settings.showinfo log_progress(" >fields initialized") end
     velmod = nothing; # free memory 
     time     = init_time(settings, elastic, domain);
+    if settings.showinfo log_progress(" >time initialized") end
     source   = init_source(settings, domain, elastic, time);
+    if settings.showinfo log_progress(" >source initialized") end
     pml      = init_pml(settings, domain, elastic, time, source);
+    if settings.showinfo log_progress(" >pml initialized") end
     geophones, das, snapshots = init_receiver(settings, domain, elastic, time);
+    if settings.showinfo log_progress(" >receivers initialized") end
 
     fdsg2d = FDSG2D{Settings, Domain, Elastic, Fields, Time, Source, Pml, Geophones, DAS, Snapshots}(
                     settings, domain, elastic, fields, time, source, pml, geophones, das, snapshots);
+    if settings.showinfo log_progress(" >FDSG2D struct initialized") end
     iwindow(fdsg2d)
     solve!(fdsg2d; block_size=block_size)
     if !return_
