@@ -6,61 +6,85 @@
 [![Build Status](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/wtegtow/ElasticFDSG.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![DOI](https://zenodo.org/badge/923201339.svg)](https://doi.org/10.5281/zenodo.14872584)
 
-ElasticFDSG.jl is a Julia package for solving the elastic wave equation in the velocity–stress formulation using the finite-difference method on a staggered grid.
+**ElasticFDSG.jl** is a Julia package for simulating elastic wave propagation in 2D and 3D heterogeneous anisotropic media.
+It solves the elastic wave equation in the velocity–stress formulation using a finite-difference staggered-grid (FDSG) scheme.
 
-
-But why another implementation? In many existing tools, installing dependencies, configuring simulation setups, defining model parameters, and accessing results can be already complicated tasks — particularly for inexperienced users who are looking for a quick and straightforward workflow.
-ElasticFDSG was developed to offer a user-friendly experience while also maintaining flexibility to be applied to a wide variety of simulation scenarios.
-Users can easily customize their simulations by creating velocity models and configuration files in a straightforward manner, that can be directly passed to the solvers.
-
-
-## Features 
+## Features
 
 - 2D and 3D elastic forward modelling on regular grids.
-- Vendor neutral CPU and GPU kernel (CUDA, Metal, AMDGPU, oneAPI) using [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
-- Spatial derivatives of order 1 to 10.
-- Second order time marching.
-- Elastic isotropic or vertical transversal isotrop (VTI) 2D models using 2D Thomson parameter.
-- Elastic isotropic, VTI or orthorhombic (ORT) 3D models using Tsvankin parameter.
-- Elastic properties defined on full integer grid points.
-- Solver can handle fully heterogeneous media.
-- Absorbing boundaries using Convolutional-Perfectly-Matched-Layer.
-- Moment tensor sources. 
-- Save geophone receiver (velocity point sensors). 
-- Save Distributed Acoustic Sensing (DAS) receiver, aligned with model coordinate axis (strain-profiles).
-- Save snapshots at specified time steps.
-- Easy-to-read source code.
+- Vendor-neutral CPU and GPU kernels (CUDA, Metal, AMDGPU, oneAPI) via [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
+- Spatial finite-difference operators of order 1-10.
+- Second-order leapfrog time integration.
+- Isotropic and VTI 2D models (Thomsen parameters ε, δ).
+- Isotropic, VTI, and orthorhombic 3D models (Tsvankin parameters).
+- Fully heterogeneous media with compressed stiffness-tensor storage.
+- Convolutional Perfectly Matched Layer (C-PML) absorbing boundaries.
+- Moment tensor sources.
+- Geophone receivers (point particle velocity).
+- DAS receivers (axial strain along coordinate-aligned profiles).
+- Wavefield snapshots at arbitrary time steps.
+- Results saved to HDF5 or returned as a Julia struct.
 
-A step by step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
+Full documentation: [https://wtegtow.github.io/ElasticFDSG.jl/dev/](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 
-Basic examples are included in the git-repository `examples/` folder. 
-
-![Demo](docs/src/assets/readme_animation.png)
+Working examples are in the [`examples/`](examples/) folder.
 
 ## Installation
 
 ```julia-repl
-using Pkg
-Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
+julia> using Pkg
+julia> Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
+```
+
+## Quick start
+
+```julia
+using ElasticFDSG
+
+# --- 2D velocity model (7 × nx × nz) ---
+nx, nz = 200, 200;  h = 10.0
+xc = range(0.0, step=h, length=nx);  zc = range(0.0, step=h, length=nz)
+X  = repeat(xc, 1, nz);  Z = repeat(reshape(zc,1,:), nx, 1)
+
+velmod = zeros(7, nx, nz)
+velmod[1,:,:] .= X;    velmod[2,:,:] .= Z
+velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800;  velmod[5,:,:] .= 2500
+
+# --- Configuration ---
+config = config_template_2d(
+    device="cpu", precision="Float32", fd_order=4, verbose=true,
+    output_file="path_to_results.h5",
+    t_start=0.0, t_end=0.5, dt=0.001,
+    fdom=30.0, wavelet="ricker", wavelet_center=0.05,
+    seismic_moment=1e9,
+    src_x=1000.0, src_z=500.0,
+    Mxx=0.0, Mxz=1.0, Mzz=0.0, anisotropic=false,
+    xstart="absorbing",  xend="absorbing",
+    zstart="reflecting", zend="absorbing",
+    pml_layer=10,
+    geophones=[Dict("x"=>1500.0,"z"=>500.0)],
+    das_x_aligned=[], 
+    das_z_aligned=[
+      Dict(
+            "x" => 50,
+            "z" => Dict("start"=>100, "step"=>5, "end"=>900)
+        ),
+    ],
+    snapshot_times=[0.25, 0.5], snapshot_fields=["vx","vz"],
+)
+
+ElasticFDSG.runsim(config, velmod)
 ```
 
 ## Citing
-If you find this package helpful for your research, please consider citing:
 
-```
+```bibtex
 @misc{ElasticFDSG,
-  author       = {William Tegtow},
-  title        = {ElasticFDSG.jl: Simulating elastic wave propagation in 2D and 3D anisotropic media.},
-  year         = {2025},
-  doi          = {https://doi.org/10.5281/zenodo.14872584}
+  author = {William Tegtow},
+  title  = {ElasticFDSG.jl: Simulating elastic wave propagation in 2D and 3D anisotropic media.},
+  year   = {2025},
+  doi    = {https://doi.org/10.5281/zenodo.14872584}
 }
-
 ```
 
-**Note:**
-This package is still in its early stages, and only limited testing has been done so far. Any bug report or suggestion is very welcomed.
-
-**Note:**
-Old scripts may need to be revised to be compatible with the latest version.
-- With v1.0.2, the structure of the configuration.yaml files has slightly changed. 
-- With v1.0.2, 2D velocity models must now be saved as ($n_{x},n_{z}$) arrays instead from previously ($n_{z},n_{x}$). 
+> **Note:** This package is under active development. Bug reports and suggestions are very welcome.

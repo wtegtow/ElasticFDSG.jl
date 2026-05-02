@@ -1,4 +1,4 @@
-## API Reference
+# API Reference
 
 ```@contents
 Pages = ["reference.md"]
@@ -12,30 +12,24 @@ Pages = ["reference.md"]
 CurrentModule = ElasticFDSG
 ```
 
+## Running simulations
+
+```@docs
+runsim
+```
+
+## Configuration helpers
+
+```@docs
+config_template_2d
+```
+
+```@docs
+config_template_3d
+```
+
+## Loading results
+
 ```@docs
 load_results
-```
-
-```@docs
-print_h5_tree
-```
-
-```@docs
-config_template
-```
-
-```@meta
-CurrentModule = ElasticFDSG.dim2
-```
-
-```@docs
-runsim
-```
-
-```@meta
-CurrentModule = ElasticFDSG.dim3
-```
-
-```@docs
-runsim
 ```

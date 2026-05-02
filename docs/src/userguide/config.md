@@ -1,157 +1,217 @@
 # Configurations
 
-Empty template configuration.yaml files can be generated with:
-- [ElasticFDSG.config_template()](@ref ElasticFDSG.config_template).
-The contents of these files must then be fully completed by the user, either manually or with self-written scripts (see [examples](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples)).
+Configurations are plain Julia dictionaries that follow a fixed schema.
+They can be constructed programmatically using the helper functions
+[`config_template_2d`](@ref) and [`config_template_3d`](@ref), or written by hand as YAML files.
 
+Both functions **return a `Dict`** — no file is written unless you serialise the dict yourself.
+The dimension is determined by which helper you call; it is then verified against the velocity model inside `runsim`.
 
+---
 
-## 2D 
+## 2D configuration
 
-```julia 
-using ElasticFDSG 
+```julia
+using ElasticFDSG
 
-ElasticFDSG.config_template(CONFIGFILE_PATH; dim=2)
+config = config_template_2d(
+    # ── Settings ──────────────────────────────────────────────────────────
+    device    = "cpu",          # "cpu" | "cuda" | "metal" | "amd" | "intel"
+    precision = "Float32",      # "Float32" | "Float64"
+    fd_order  = 4,              # stencil half-width 1–10  (4 recommended)
+    verbose   = true,           # print simulation summary before run
+    output_file = nothing,      # String path ending in .h5, or nothing
 
+    # ── Time ──────────────────────────────────────────────────────────────
+    t_start = 0.0,
+    t_end   = 1.0,
+    dt      = 0.001,            # will be reduced automatically if CFL is violated
+
+    # ── Source ────────────────────────────────────────────────────────────
+    fdom           = 30.0,      # dominant frequency [Hz]
+    wavelet        = "ricker",  # "ricker" | "gauss1d"
+    wavelet_center = 0.05,      # peak time of the wavelet [s]  (≥ 1.25/fdom)
+    seismic_moment = 1e9,       # scalar seismic moment M₀ [N·m]
+    src_x = 500.0,              # source x-coordinate [m]
+    src_z = 500.0,              # source z-coordinate [m]
+    # 2D moment tensor components (symmetric, z is depth axis)
+    Mxx = 0.0, Mxz = 1.0, Mzz = 0.0,
+    anisotropic = false,        # if true, use anisotropic source radiation
+
+    # ── Boundaries ────────────────────────────────────────────────────────
+    # "absorbing" | "free" | "none"
+    xstart = "absorbing", xend = "absorbing",
+    zstart = "free",      zend = "absorbing",  # free surface at top
+    pml_layer = 10,       # number of PML grid cells per absorbing boundary
+
+    # ── Receivers ─────────────────────────────────────────────────────────
+    # Geophones — list of (x, z) locations
+    geophones = [
+        Dict("x" => 800.0, "z" => 300.0),
+        Dict("x" => 900.0, "z" => 300.0),
+    ],
+
+    # DAS — axis-aligned strain profiles
+    # x_aligned: fibers running along x at fixed z
+    das_x_aligned = [
+        Dict("x" => Dict("start"=>100.0, "step"=>5.0, "end"=>900.0), "z"=>400.0),
+    ],
+    # z_aligned: fibers running along z at fixed x
+    das_z_aligned = [],
+
+    # Snapshots
+    snapshot_times  = [0.25, 0.5, 0.75, 1.0],          # times [s] to snapshot
+    snapshot_fields = ["vx", "vz", "sxx", "sxz", "szz"],
+)
 ```
 
-This saves an empty .yaml file, with hopefully self-explaining configurations:
+### Available snapshot field names (2D)
+
+| Name | Description |
+|------|-------------|
+| `"vx"` | Particle velocity, x-component |
+| `"vz"` | Particle velocity, z-component |
+| `"sxx"` | Normal stress $\sigma_{xx}$ |
+| `"szz"` | Normal stress $\sigma_{zz}$ |
+| `"sxz"` | Shear stress $\sigma_{xz}$ |
+
+---
+
+## 3D configuration
+
+```julia
+using ElasticFDSG
+
+config = config_template_3d(
+    # ── Settings ──────────────────────────────────────────────────────────
+    device    = "cuda",
+    precision = "Float32",
+    fd_order  = 4,
+    verbose   = true,
+    output_file = "/path/to/output.h5",
+
+    # ── Time ──────────────────────────────────────────────────────────────
+    t_start = 0.0,
+    t_end   = 0.8,
+    dt      = 0.0005,
+
+    # ── Source ────────────────────────────────────────────────────────────
+    fdom           = 40.0,
+    wavelet        = "ricker",
+    wavelet_center = 0.04,
+    seismic_moment = 1e10,
+    src_x = 500.0, src_y = 125.0, src_z = 250.0,
+    # Full 3D moment tensor
+    Mxx = -1.0, Mxy = 0.0, Mxz = 0.0,
+    Myy =  0.0, Myz = 0.0, Mzz = 1.0,
+    anisotropic = false,
+
+    # ── Boundaries ────────────────────────────────────────────────────────
+    xstart = "absorbing", xend = "absorbing",
+    ystart = "absorbing", yend = "absorbing",
+    zstart = "free",      zend = "absorbing",
+    pml_layer = 10,
+
+    # ── Receivers ─────────────────────────────────────────────────────────
+    geophones = [
+        Dict("x"=>950.0, "y"=>20.0, "z"=>250.0),
+    ],
+    das_x_aligned = [],
+    das_y_aligned = [],
+    das_z_aligned = [
+        Dict("x"=>950.0, "y"=>50.0,
+             "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+    ],
+
+    # Snapshot planes — one entry per centre point; each centre produces
+    # an XY-, XZ-, and YZ-plane snapshot
+    snapshot_positions = [
+        Dict("x"=>500.0, "y"=>125.0, "z"=>250.0),
+    ],
+    snapshot_times  = [0.4, 0.8],
+    snapshot_fields = ["vx", "vy", "vz"],
+)
+```
+
+### Available snapshot field names (3D)
+
+| Name | Description |
+|------|-------------|
+| `"vx"` / `"vy"` / `"vz"` | Particle velocity components |
+| `"sxx"` / `"syy"` / `"szz"` | Normal stress components |
+| `"sxy"` / `"sxz"` / `"syz"` | Shear stress components |
+
+---
+
+## Using a YAML file
+
+Instead of constructing the dict in Julia you can write a `.yaml` file and pass its path to `runsim`:
 
 ```yaml
-# This is a template configuration.yaml file for a 2D ElasticFDSG simulation.
-# Any other configuration file can be prepared in the same manner.
-# The user must fill them before running a simulation. 
-# The velocity model is prepared in another file.
-
+# config2d.yaml
 settings:
-    device: cpu                         # cpu / cuda / metal / intel / amd  
-    precision: Float64                  # Float64 / Float32
-    spatial_derivative_order: 4         # 1-10, but 4 recommended 
-    show_progress_in_console: true      # true / false 
-    output_file: path/to/my/output/file 
+    device: cpu
+    precision: Float32
+    spatial_derivative_order: 4
+    verbose: true
+    output_file: /path/to/output.h5
+
 time:
-    start: 0              
-    end: 1              
-    timestep: 0.005  # (will be checked and changed if unstable)
+    start: 0.0
+    end:   1.0
+    timestep: 0.001
 
 source:
-    dominant_frequency:                
-    wavelet_type: ricker               # ricker / gauss1d 
-    wavelet_center:                    # (should be ≥ 1.25/fdom) 
-    seismic_moment: 
+    dominant_frequency: 30
+    wavelet_type: ricker
+    wavelet_center: 0.05
+    seismic_moment: 1.0e9
     location:
-        x: 0                                                        
-        z: 0                          
+        x: 500.0
+        z: 500.0
     moment_tensor:
-        Mxx: 0
-        Mxz: 0
-        Mzz: 0
-        anisotropic: false       # true / false 
+        Mxx: 0.0
+        Mxz: 1.0
+        Mzz: 0.0
+        anisotropic: false
 
-boundaries: # (absorbing / else)
-    xstart: absorbing      
-    xend:   absorbing         
-    zstart: absorbing        
+boundaries:
+    xstart: absorbing
+    xend:   absorbing
+    zstart: free
     zend:   absorbing
-    pml_layer: 10          
+    pml_layer: 10
 
 receivers:
     geophones:
-        - { x: 0, z: 0 }
-        - { x: 0, z: 0 }
+        - { x: 800.0, z: 300.0 }
 
     das:
         x_aligned:
-            - { x: { start: 0, step: 5, end: 100 }, z: 0 }
-            - { x: { start: 0, step: 5, end: 100 }, z: 0 }
-
-        z_aligned:
-            - { x: 0, z: { start: 0, step: 5, end: 100 } }
+            - { x: { start: 100, step: 5, end: 900 }, z: 400 }
+        z_aligned: []
 
     snapshots:
-        # 2D plane snapshots XZ-plane
-        fields: ["vx", "vz", "sxx", "sxz", "szz"]
-        times: [0, 0.1, 1]
-
+        fields: ["vx", "vz"]
+        times:  [0.5, 1.0]
 ```
 
-
-## 3D 
-
-```julia 
-using ElasticFDSG 
-
-ElasticFDSG.config_template(CONFIGFILE_PATH; dim=3)
-
+```julia
+runsim("config2d.yaml", "velmod2d.jld2")
 ```
 
-This saves an empty .yaml file, with hopefully self-explaining configurations:
+---
 
-```yaml
-# This is a template configuration.yaml file for a 3D ElasticFDSG simulation.
-# Any other configuration file can be prepared in the same manner.
-# The user must fill them before running a simulation. 
-# The velocity model is prepared in another file.
+## Stability and discretisation guidelines
 
-settings:
-    device: cpu                         # cpu / cuda / metal / intel / amd  
-    precision: Float64                  # Float64 / Float32
-    spatial_derivative_order: 4         # 1-10, but 4 recommended 
-    show_progress_in_console: true      # true / false 
-    output_file: path/to/my/output/file 
-time:
-    start: 0              
-    end: 1              
-    timestep: 0.005  # (will be checked and changed if unstable)
+The solver automatically checks the **CFL condition** and reduces `dt` if necessary.
+For spatial discretisation, a common rule of thumb is:
 
-source:
-    dominant_frequency:                
-    wavelet_type: ricker               # ricker / gauss1d 
-    wavelet_center:                    # (should be ≥ 1.25/fdom) 
-    seismic_moment: 
-    location:
-        x: 0                             
-        y: 0                            
-        z: 0                          
-    moment_tensor:
-        Mxx: 0
-        Mxy: 0
-        Mxz: 0
-        Myy: 0
-        Myz: 0
-        Mzz: 0
-        anisotropic: false       # true / false 
+$$\Delta x \leq \frac{V_\mathrm{min}}{10 \, f_\mathrm{max}}$$
 
-boundaries: # (absorbing / else)
-    xstart: absorbing      
-    xend:   absorbing       
-    ystart: absorbing       
-    yend:   absorbing         
-    zstart: absorbing        
-    zend:   absorbing
-    pml_layer: 10          
+where $V_\mathrm{min}$ is the minimum phase velocity in the model and $f_\mathrm{max}$ is the maximum
+frequency content of the wavelet (typically $\approx 2 \, f_\mathrm{dom}$ for a Ricker wavelet).
 
-receivers:
-    geophones:
-        - { x: 0, y: 0, z: 0 }
-        - { x: 0, y: 0, z: 0 }
-
-    das:
-        x_aligned:
-            - { x: { start: 0, step: 5, end: 100 }, y: 0, z: 0 }
-            - { x: { start: 0, step: 5, end: 100 }, y: 0, z: 0 }
-
-        y_aligned: # empty, if no receiver is required
-
-        z_aligned:
-            - { x: 0, y: 0, z: { start: 0, step: 5, end: 100 } }
-
-    snapshots:
-        # 2D plane snapshots | XY, XZ, YZ - planes centered at plane_positions
-        fields: ["vx", "vy", "vz", "sxx", "sxy", "syy", "szz"]
-        times: [0, 0.1, 1]
-        plane_positions:
-            - { x: 100, y: 0, z: 0 }
-            - { x: 0, y:100, z: 0 }
-
-```
+The PML thickness should be at least 10 grid cells; thicker layers improve absorption.
+For strongly anisotropic media, PML instabilities may occur for certain parameter combinations —
+in such cases, increasing the PML thickness often mitigates the issue (see [Method](../method.md)).

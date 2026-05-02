@@ -1,6 +1,9 @@
 /Manifest.toml
 /docs/Manifest.toml
 /docs/build/
+/test/dev.jl
 .vscode/
+.container/
+.venv/
 .DS_Store
-/dev
+reference/

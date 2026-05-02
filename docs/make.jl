@@ -1,10 +1,10 @@
-using ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3
+using ElasticFDSG
 using Documenter
 
 DocMeta.setdocmeta!(ElasticFDSG, :DocTestSetup, :(using ElasticFDSG); recursive=true)
 
 makedocs(;
-    modules=[ElasticFDSG, ElasticFDSG.dim2, ElasticFDSG.dim3],
+    modules=[ElasticFDSG],
     authors="William Tegtow <w.tegtow@gmail.com> and contributors",
     sitename="ElasticFDSG.jl",
     format=Documenter.HTML(;
@@ -15,12 +15,12 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "User Guide" => [
-            "General Usage" => "userguide/intro.md",
-            "Velocity Models" => "userguide/velmod.md",
-            "Configurations" => "userguide/config.md",
+            "General Usage"    => "userguide/intro.md",
+            "Velocity Models"  => "userguide/velmod.md",
+            "Configurations"   => "userguide/config.md",
         ],
-        "Method" => "method.md",
-        "API Reference" => "reference.md"
+        "Method"       => "method.md",
+        "API Reference" => "reference.md",
     ],
 )
 
