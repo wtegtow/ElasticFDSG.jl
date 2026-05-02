@@ -66,16 +66,6 @@ The dictionary mirrors the HDF5 group structure:
 | `"das"` | `x_aligned/fiber_i/data` — `(nch, nt)`; analogous for `z_aligned` (and `y_aligned` in 3D) |
 | `"snapshots"` | `XZ` — `(ntime, nfields, nx, nz)` in 2D; per-plane datasets in 3D |
 
-## Verbosity and dev mode
-
-Setting `verbose: true` in the configuration prints a simulation summary before the run starts.
-
-For low-level debugging, developer logging can be enabled with:
-
-```julia
-ElasticFDSG.devmode!(true)
-```
-
 ## Examples
 
 A fully worked 2D example is available in

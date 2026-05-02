@@ -264,6 +264,7 @@ elseif h == 10
     @test all(val_ar .> -0.38)  
 end;
 
+"""
 # figure 
 plot_misfit = false
 if plot_misfit
@@ -311,3 +312,4 @@ if plot_misfit
     display(fig)
     #GLMakie.save(joinpath(@__DIR__, "validation.png"), fig)
 end
+""";

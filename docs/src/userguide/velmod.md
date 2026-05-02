@@ -60,39 +60,6 @@ velmod[7,:,:] .= del
 jldsave("velmod2d.jld2"; velmod)
 ```
 
-### Example — 2D layered model
-
-```julia
-using JLD2
-
-h = 5.0
-xc = range(0.0, step=h, length=500)
-zc = range(0.0, step=h, length=400)
-nx, nz = length(xc), length(zc)
-
-X = repeat(xc, 1, nz)
-Z = repeat(reshape(zc, 1, :), nx, 1)
-
-vp  = zeros(nx, nz)
-vs  = zeros(nx, nz)
-rho = zeros(nx, nz)
-
-# layer 1: z < 1000 m
-mask1 = Z .< 1000
-vp[mask1]  .= 3000;  vs[mask1]  .= 1700;  rho[mask1]  .= 2400
-
-# layer 2: z ≥ 1000 m
-mask2 = .!mask1
-vp[mask2]  .= 4500;  vs[mask2]  .= 2500;  rho[mask2]  .= 2700
-
-velmod = zeros(7, nx, nz)
-velmod[1,:,:] .= X;    velmod[2,:,:] .= Z
-velmod[3,:,:] .= vp;   velmod[4,:,:] .= vs;  velmod[5,:,:] .= rho
-# ε and δ are zero → isotropic
-
-jldsave("velmod2d_layered.jld2"; velmod)
-```
-
 ---
 
 ## 3D velocity model

@@ -1,7 +1,7 @@
 # Method
 
-This section gives a concise overview of the numerical method implemented in ElasticFDSG.
-For a thorough mathematical treatment readers are referred to
+This section gives an overview of the numerical method implemented in ElasticFDSG.
+For a comprehensive treatment of related subjects readers are referred to
 Virieux (1986), Levander (1988), and Komatitsch & Martin (2007).
 
 ---
@@ -59,59 +59,85 @@ For 2D models the standard Thomsen parameterisation is used instead ($\epsilon$,
 ## Staggered-grid discretisation
 
 Field components are not co-located but distributed across the unit cell following the
-standard staggered-grid layout of Virieux (1986):
+standard staggered-grid layout of Virieux (1986).
+The diagram below shows the elementary cell from $(i,j,k)$ to $(i+1,j+1,k+1)$,
+with all 9 field components placed at their staggered positions:
 
 ```
-3D cell (one octant shown):
-
-      ↑ z               field           grid position
-      │                 ─────────────────────────────────────
-   k  ● ─────── ■       σxx, σyy, σzz   (i,   j,   k)
-      ╎         ╎       vx              (i-½, j,   k)
-      ╎    ◆    ╎       vy              (i,   j-½, k)
-      ╎         ╎       vz              (i,   j,   k-½)
-      □ ─────── ○ ── → x   σxy          (i-½, j-½, k)
-     /                  σxz             (i-½, j,   k-½)
-    / ── y               σyz            (i,   j-½, k-½)
-  i,j
+Elementary staggered-grid cell  (to be inserted)
 ```
 
-The discrete **leapfrog** update scheme advances velocities and stresses alternately
-at half-integer time steps ($t^{n}$ and $t^{n+\frac{1}{2}}$):
+The discrete **leapfrog** scheme advances velocities and stresses alternately
+at half-integer time steps.
 
-**Velocity update** (at time $t^{n+\frac{1}{2}}$):
+**Velocity updates** (evaluated at staggered positions, using stresses at time $n$):
 
 ```math
-v_{x(I)}^{n+\frac{1}{2}} = v_{x(I)}^{n-\frac{1}{2}}
-    + \frac{\Delta t}{\rho_{(I)}}
-      \!\left(\partial_x \sigma_{xx} + \partial_y \sigma_{xy} + \partial_z \sigma_{xz}\right)\!\bigg|_{(I)}^{n},
-\quad I = \!\left(i{-}\tfrac{1}{2},j,k\right)
+\begin{aligned}
+v_{x}^{n+\frac{1}{2}}\big|_{(i-\frac{1}{2},\,j,\,k)}
+  &= v_{x}^{n-\frac{1}{2}}\big|_{(i-\frac{1}{2},\,j,\,k)}
+   + \frac{\Delta t}{\rho_{(i-\frac{1}{2},j,k)}}
+     \Big(\partial_x\sigma_{xx} + \partial_y\sigma_{xy} + \partial_z\sigma_{xz}\Big)\Big|_{(i-\frac{1}{2},\,j,\,k)}^{n}
+\\[6pt]
+v_{y}^{n+\frac{1}{2}}\big|_{(i,\,j-\frac{1}{2},\,k)}
+  &= v_{y}^{n-\frac{1}{2}}\big|_{(i,\,j-\frac{1}{2},\,k)}
+   + \frac{\Delta t}{\rho_{(i,j-\frac{1}{2},k)}}
+     \Big(\partial_x\sigma_{xy} + \partial_y\sigma_{yy} + \partial_z\sigma_{yz}\Big)\Big|_{(i,\,j-\frac{1}{2},\,k)}^{n}
+\\[6pt]
+v_{z}^{n+\frac{1}{2}}\big|_{(i,\,j,\,k-\frac{1}{2})}
+  &= v_{z}^{n-\frac{1}{2}}\big|_{(i,\,j,\,k-\frac{1}{2})}
+   + \frac{\Delta t}{\rho_{(i,j,k-\frac{1}{2})}}
+     \Big(\partial_x\sigma_{xz} + \partial_y\sigma_{yz} + \partial_z\sigma_{zz}\Big)\Big|_{(i,\,j,\,k-\frac{1}{2})}^{n}
+\end{aligned}
 ```
 
-(analogously for $v_y$ and $v_z$).
-
-**Stress update** (at time $t^{n+1}$):
+**Stress updates** (evaluated at staggered positions, using velocities at time $n+\frac{1}{2}$):
 
 ```math
-\sigma_{xx(I)}^{n+1} = \sigma_{xx(I)}^{n}
-    + \Delta t \!\left(C_{11}\,\partial_x v_x + C_{12}\,\partial_y v_y + C_{13}\,\partial_z v_z\right)\!\bigg|_{(I)}^{n+\frac{1}{2}},
-\quad I = (i,j,k)
+\begin{aligned}
+\sigma_{xx}^{n+1}\big|_{(i,j,k)}
+  &= \sigma_{xx}^{n}\big|_{(i,j,k)}
+   + \Delta t\Big(C_{11}\,\partial_x v_x + C_{12}\,\partial_y v_y + C_{13}\,\partial_z v_z\Big)\Big|_{(i,j,k)}^{n+\frac{1}{2}}
+\\[4pt]
+\sigma_{yy}^{n+1}\big|_{(i,j,k)}
+  &= \sigma_{yy}^{n}\big|_{(i,j,k)}
+   + \Delta t\Big(C_{12}\,\partial_x v_x + C_{22}\,\partial_y v_y + C_{23}\,\partial_z v_z\Big)\Big|_{(i,j,k)}^{n+\frac{1}{2}}
+\\[4pt]
+\sigma_{zz}^{n+1}\big|_{(i,j,k)}
+  &= \sigma_{zz}^{n}\big|_{(i,j,k)}
+   + \Delta t\Big(C_{13}\,\partial_x v_x + C_{23}\,\partial_y v_y + C_{33}\,\partial_z v_z\Big)\Big|_{(i,j,k)}^{n+\frac{1}{2}}
+\\[4pt]
+\sigma_{xy}^{n+1}\big|_{(i-\frac{1}{2},\,j-\frac{1}{2},\,k)}
+  &= \sigma_{xy}^{n}\big|_{(i-\frac{1}{2},\,j-\frac{1}{2},\,k)}
+   + \Delta t\,C_{66}\Big(\partial_x v_y + \partial_y v_x\Big)\Big|_{(i-\frac{1}{2},\,j-\frac{1}{2},\,k)}^{n+\frac{1}{2}}
+\\[4pt]
+\sigma_{xz}^{n+1}\big|_{(i-\frac{1}{2},\,j,\,k-\frac{1}{2})}
+  &= \sigma_{xz}^{n}\big|_{(i-\frac{1}{2},\,j,\,k-\frac{1}{2})}
+   + \Delta t\,C_{55}\Big(\partial_x v_z + \partial_z v_x\Big)\Big|_{(i-\frac{1}{2},\,j,\,k-\frac{1}{2})}^{n+\frac{1}{2}}
+\\[4pt]
+\sigma_{yz}^{n+1}\big|_{(i,\,j-\frac{1}{2},\,k-\frac{1}{2})}
+  &= \sigma_{yz}^{n}\big|_{(i,\,j-\frac{1}{2},\,k-\frac{1}{2})}
+   + \Delta t\,C_{44}\Big(\partial_y v_z + \partial_z v_y\Big)\Big|_{(i,\,j-\frac{1}{2},\,k-\frac{1}{2})}^{n+\frac{1}{2}}
+\end{aligned}
 ```
 
-(analogously for the remaining five stress components).
-
-Spatial derivatives are approximated by central differences of order $N$:
+The central difference operators for accuracy order $N$ with coefficients $k_l$ are:
 
 ```math
-\partial_x f \big|_{(i,j,k)} \approx \sum_{n=1}^{N} \frac{k_n}{\Delta x}
-    \Bigl(f(x_{i+n},y_j,z_k) - f(x_{i-n},y_j,z_k)\Bigr)
+\begin{aligned}
+\partial_x f\big|_{(i,j,k)} &\approx \sum_{l=1}^{N} \frac{k_l}{\Delta x}
+  \Bigl(f_{(i+l,\,j,\,k)} - f_{(i-l,\,j,\,k)}\Bigr) \\[4pt]
+\partial_y f\big|_{(i,j,k)} &\approx \sum_{l=1}^{N} \frac{k_l}{\Delta y}
+  \Bigl(f_{(i,\,j+l,\,k)} - f_{(i,\,j-l,\,k)}\Bigr) \\[4pt]
+\partial_z f\big|_{(i,j,k)} &\approx \sum_{l=1}^{N} \frac{k_l}{\Delta z}
+  \Bigl(f_{(i,\,j,\,k+l)} - f_{(i,\,j,\,k-l)}\Bigr)
+\end{aligned}
 ```
 
-with coefficients $k_n$ optimised for maximum wavenumber accuracy.
-The combination of staggered spatial and temporal grids yields **second-order accuracy in both space and time**, $\mathcal{O}(\Delta t^2, \Delta x^{2N})$, without requiring intermediate storage states.
+The combination of staggered spatial and temporal grids yields **second-order accuracy in both space and time**, $\mathcal{O}(\Delta t^2,\, \Delta x^{2N})$, without requiring intermediate solution states.
 
-Since density and stiffness are defined at integer nodes (not staggered), effective values
-at the staggered positions are obtained by averaging the values from neighboring grid points.
+Since density $\rho$ and stiffness $C_{ij}$ are defined at integer nodes, effective values
+at staggered positions are obtained by averaging neighboring grid points.
 
 ---
 
