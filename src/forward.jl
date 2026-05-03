@@ -72,7 +72,7 @@ function diff_coeff(M::Int)
     elseif M == 10
         [0.1264362e+1, -0.1327958e+0, 0.4264687e-1, -0.1824918e-1, 0.8656223e-2, -0.4200034e-2, 0.1989180e-2, -0.8686637e-3, 0.3342741e-3, -0.8854090e-4]
     else
-        error("diff_coeff: M must be between 2 and 10, got $M")
+        error("diff_coeff: M must be between 1 and 10, got $M")
     end
     return coeffs
 end
