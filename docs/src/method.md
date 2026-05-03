@@ -32,7 +32,6 @@ velocity–stress system:
 
 The nine independent stiffness coefficients $C_{11}, C_{12}, C_{13}, C_{22}, C_{23}, C_{33}, C_{44}, C_{55}, C_{66}$
 describe the most general symmetry supported: **orthorhombic (ORT)**.
-VTI and isotropic models are special cases.
 
 ### Stiffness from Tsvankin parameters
 
@@ -51,8 +50,8 @@ C_{23} &= \sqrt{2C_{33}(C_{33}-C_{44})\,\delta_1 + (C_{33}-C_{44})^2} - C_{44} \
 C_{12} &= \sqrt{2C_{11}(C_{11}-C_{66})\,\delta_3 + (C_{11}-C_{66})^2} - C_{66}
 \end{aligned}
 ```
-
-For 2D models the standard Thomsen parameterisation is used instead ($\epsilon$, $\delta$ — see fwm.tex for details).
+VTI and isotropic models are special cases that can be constructed by the appropiate choice of Tsvankin parameter (see [User Guide](userguide/velmod.md))
+For 2D models the standard Thomsen parameterisation is used instead ($\epsilon$, $\delta$).
 
 ---
 
@@ -60,15 +59,13 @@ For 2D models the standard Thomsen parameterisation is used instead ($\epsilon$,
 
 Field components are not co-located but distributed across the unit cell following the
 standard staggered-grid layout of Virieux (1986).
-The diagram below shows the elementary cell from $(i,j,k)$ to $(i+1,j+1,k+1)$,
-with all 9 field components placed at their staggered positions:
+The diagram below shows the elementary cell with all 9 field components placed at their staggered positions:
 
 ```
 Elementary staggered-grid cell  (to be inserted)
 ```
 
-The discrete **leapfrog** scheme advances velocities and stresses alternately
-at half-integer time steps.
+The discrete **leapfrog** scheme advances velocities and stresses alternately at half-integer time steps.
 
 **Velocity updates** (evaluated at staggered positions, using stresses at time $n$):
 
@@ -134,10 +131,10 @@ The central difference operators for accuracy order $N$ with coefficients $k_l$ 
 \end{aligned}
 ```
 
-The combination of staggered spatial and temporal grids yields **second-order accuracy in both space and time**, $\mathcal{O}(\Delta t^2,\, \Delta x^{2N})$, without requiring intermediate solution states.
+The combination of staggered spatial and temporal grids yields **second-order accuracy in both space and time**, $\mathcal{O}(\Delta t^2,\, \Delta x^{2N})$.
 
-Since density $\rho$ and stiffness $C_{ij}$ are defined at integer nodes, effective values
-at staggered positions are obtained by averaging neighboring grid points.
+Note that since density $\rho$ and stiffness $C_{ij}$ are defined at integer nodes, effective values
+at staggered positions are obtained by averaging neighboring grid points, introducing a non-physical smoothing of material discontinuities.
 
 ---
 
@@ -151,7 +148,7 @@ extended in two stages:
    stencil at every interior point.
 
 Material properties in the extended region are filled by nearest-neighbour replication from
-the physical domain, avoiding artificial impedance contrasts.
+the physical domain.
 
 ---
 

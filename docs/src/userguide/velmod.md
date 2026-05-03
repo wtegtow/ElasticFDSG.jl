@@ -5,7 +5,7 @@ It must be provided as a multi-dimensional array — either passed directly as a
 or loaded from a `.jld2` (Julia) or `.npy` / `.npz` (NumPy) file.
 
 !!! note
-    All elastic parameters are defined at **full integer grid points** (co-located with $v_x$).
+    All elastic parameters are defined at **full integer grid points** (co-located with normal stresses).
     The solver interpolates effective values at staggered positions internally.
 
 ---
@@ -120,6 +120,7 @@ velmod[5,:,:,:] .= vs
 velmod[6,:,:,:] .= rho
 # indices 7–13 (Tsvankin parameters) remain zero → isotropic
 
+# save — the array must be stored under the key "velmod"
 jldsave("velmod3d.jld2"; velmod)
 ```
 

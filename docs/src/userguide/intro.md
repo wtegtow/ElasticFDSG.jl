@@ -13,12 +13,11 @@ and a 4-dimensional array (`13 × nx × ny × nz`) triggers a 3D simulation.
 
 ```julia
 using ElasticFDSG
-
 # config and velmod can each be a file path (String) or a Julia object (Dict / Array)
 result = runsim(config, velmod)
 ```
 
-If the configuration has `output_file = nothing`, `runsim` returns the populated `FDSG` struct directly, which contains all field data.
+If the configuration has `output_file = nothing`, `runsim` returns the populated `FDSG` struct directly, which contains all field data.  
 If an `output_file` path is provided (must end in `.h5`), the results are written to HDF5 and `runsim` returns `nothing`.
 
 ### Example — passing objects directly
@@ -65,9 +64,3 @@ The dictionary mirrors the HDF5 group structure:
 | `"geophones"` | `geophone_i/data` — `(ncomp, nt)` array; `geophone_i/location` |
 | `"das"` | `x_aligned/fiber_i/data` — `(nch, nt)`; analogous for `z_aligned` (and `y_aligned` in 3D) |
 | `"snapshots"` | `XZ` — `(ntime, nfields, nx, nz)` in 2D; per-plane datasets in 3D |
-
-## Examples
-
-A fully worked 2D example is available in
-[`examples/demo2d.ipynb`](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples).
-A 3D example (`demo3d`) is planned and will be added to the same folder.

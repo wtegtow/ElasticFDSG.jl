@@ -1,11 +1,11 @@
 # Configurations
 
 Configurations are plain Julia dictionaries that follow a fixed schema.
-They can be constructed programmatically using the helper functions
-[`config_template_2d`](@ref) and [`config_template_3d`](@ref), or written by hand as YAML files.
+They can be created programmatically using the helper functions [`config_template_2d`](@ref) and [`config_template_3d`](@ref).
+These functions require all necessary information as keyword arguments.
+Below are two examples of how to use the template functions.
 
-Both functions **return a `Dict`** — no file is written unless you serialise the dict yourself.
-The dimension is determined by which helper you call; it is then verified against the velocity model inside `runsim`.
+Alternativly, configurations can be written by hand as YAML files.
 
 ---
 
@@ -18,8 +18,8 @@ config = config_template_2d(
     # ── Settings ──────────────────────────────────────────────────────────
     device    = "cpu",          # "cpu" | "cuda" | "metal" | "amd" | "intel"
     precision = "Float32",      # "Float32" | "Float64"
-    fd_order  = 4,              # stencil half-width 1–10  (4 recommended)
-    verbose   = true,           # print simulation summary before run
+    fd_order  = 4,              # stencil half-width 1–10  
+    verbose   = true,           # print simulation summary and progress
     output_file = nothing,      # String path ending in .h5, or nothing
 
     # ── Time ──────────────────────────────────────────────────────────────
@@ -39,25 +39,25 @@ config = config_template_2d(
     anisotropic = false,        # if true, use anisotropic source radiation
 
     # ── Boundaries ────────────────────────────────────────────────────────
-    # "absorbing" | "free" | "none"
-    xstart = "absorbing", xend = "absorbing",
-    zstart = "free",      zend = "absorbing",  # free surface at top
+    # "absorbing" | "else"
+    xstart = "absorbing", xend = "absorbing",  
+    zstart = "else",      zend = "absorbing",  # reflecting surface at top
     pml_layer = 10,       # number of PML grid cells per absorbing boundary
 
     # ── Receivers ─────────────────────────────────────────────────────────
-    # Geophones — list of (x, z) locations
+    # Geophones — [list of dicts] with x,z locations
     geophones = [
         Dict("x" => 800.0, "z" => 300.0),
         Dict("x" => 900.0, "z" => 300.0),
     ],
 
     # DAS — axis-aligned strain profiles
-    # x_aligned: fibers running along x at fixed z
+    # x_aligned: [list of dicts] fibers running along x at fixed z
     das_x_aligned = [
         Dict("x" => Dict("start"=>100.0, "step"=>5.0, "end"=>900.0), "z"=>400.0),
     ],
-    # z_aligned: fibers running along z at fixed x
-    das_z_aligned = [],
+    # z_aligned: [list of dicts] fibers running along z at fixed x
+    das_z_aligned = [], # if no receiver is needed, pass an empty list 
 
     # Snapshots
     snapshot_times  = [0.25, 0.5, 0.75, 1.0],          # times [s] to snapshot
@@ -101,7 +101,7 @@ config = config_template_3d(
     wavelet_center = 0.04,
     seismic_moment = 1e10,
     src_x = 500.0, src_y = 125.0, src_z = 250.0,
-    # Full 3D moment tensor
+    # 3D moment tensor
     Mxx = -1.0, Mxy = 0.0, Mxz = 0.0,
     Myy =  0.0, Myz = 0.0, Mzz = 1.0,
     anisotropic = false,
@@ -115,18 +115,27 @@ config = config_template_3d(
     # ── Receivers ─────────────────────────────────────────────────────────
     geophones = [
         Dict("x"=>950.0, "y"=>20.0, "z"=>250.0),
+        Dict("x"=>750.0, "y"=>20.0, "z"=>250.0),
+        Dict("x"=>550.0, "y"=>20.0, "z"=>250.0),
+        # ...
     ],
-    das_x_aligned = [],
+    das_x_aligned = [
+        Dict("x"=>Dict("start"=>0, "step"=>5.0, "end"=>"500.0"), "y"=>50.0, "z"=>500.0)
+        # ...
+    ],
     das_y_aligned = [],
     das_z_aligned = [
-        Dict("x"=>950.0, "y"=>50.0,
-             "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+        Dict("x"=>950.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+        Dict("x"=>250.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+        # ...
     ],
 
     # Snapshot planes — one entry per centre point; each centre produces
     # an XY-, XZ-, and YZ-plane snapshot
     snapshot_positions = [
         Dict("x"=>500.0, "y"=>125.0, "z"=>250.0),
+        Dict("x"=>250.0, "y"=>250.0, "z"=>250.0),
+        # ...
     ],
     snapshot_times  = [0.4, 0.8],
     snapshot_fields = ["vx", "vy", "vz"],
@@ -178,7 +187,7 @@ source:
 boundaries:
     xstart: absorbing
     xend:   absorbing
-    zstart: free
+    zstart: else
     zend:   absorbing
     pml_layer: 10
 

@@ -25,7 +25,7 @@ It solves the elastic wave equation in the velocity–stress formulation using a
 - Wavefield snapshots at arbitrary time steps.
 - Results saved to HDF5 or returned as a Julia struct.
 
-Full documentation: [https://wtegtow.github.io/ElasticFDSG.jl/dev/](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
+A step-by-step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
 
 Working examples are in the [`examples/`](examples/) folder.
 
@@ -41,39 +41,53 @@ julia> Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
 ```julia
 using ElasticFDSG
 
-# --- 2D velocity model (7 × nx × nz) ---
-nx, nz = 200, 200;  h = 10.0
-xc = range(0.0, step=h, length=nx);  zc = range(0.0, step=h, length=nz)
-X  = repeat(xc, 1, nz);  Z = repeat(reshape(zc,1,:), nx, 1)
+# Build a minimal 2D velocity model (7 × nx × nz)
+nx, nz = 200, 200
+h = 10.0   # grid spacing [m]
+xc = range(0.0, step=h, length=nx)
+zc = range(0.0, step=h, length=nz)
+X  = repeat(xc,  1, nz)
+Z  = repeat(reshape(zc, 1, :), nx, 1)
 
 velmod = zeros(7, nx, nz)
 velmod[1,:,:] .= X;    velmod[2,:,:] .= Z
-velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800;  velmod[5,:,:] .= 2500
+velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800    # vp, vs [m/s]
+velmod[5,:,:] .= 2500                           # density [kg/m³]
+# indices 6 & 7 (Thomsen ε, δ) left at zero → isotropic
 
-# --- Configuration ---
+# Build a configuration dictionary
 config = config_template_2d(
-    device="cpu", precision="Float32", fd_order=4, verbose=true,
-    output_file="path_to_results.h5",
-    t_start=0.0, t_end=0.5, dt=0.001,
-    fdom=30.0, wavelet="ricker", wavelet_center=0.05,
-    seismic_moment=1e9,
-    src_x=1000.0, src_z=500.0,
-    Mxx=0.0, Mxz=1.0, Mzz=0.0, anisotropic=false,
-    xstart="absorbing",  xend="absorbing",
-    zstart="reflecting", zend="absorbing",
-    pml_layer=10,
-    geophones=[Dict("x"=>1500.0,"z"=>500.0)],
-    das_x_aligned=[], 
-    das_z_aligned=[
-      Dict(
-            "x" => 50,
-            "z" => Dict("start"=>100, "step"=>5, "end"=>900)
-        ),
+    device       = "cpu",
+    precision    = "Float32",
+    fd_order     = 4,
+    verbose      = true,
+    output_file  = nothing,           # return struct instead of saving
+    t_start      = 0.0,
+    t_end        = 0.5,
+    dt           = 0.001,
+    fdom         = 30.0,
+    wavelet      = "ricker",
+    wavelet_center = 0.05,
+    seismic_moment = 1e6,
+    src_x        = 1000.0,
+    src_z        = 500.0,
+    Mxx = 0.0, Mxz = 1.0, Mzz = 0.0,
+    anisotropic  = false,
+    xstart = "absorbing", xend = "absorbing",
+    zstart = "absorbing", zend = "absorbing",
+    pml_layer    = 10,
+    geophones    = [Dict("x"=>1500.0,"z"=>500.0)],
+    das_x_aligned = [
+        Dict("x" => 500, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
+        Dict("x" => 250, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
     ],
-    snapshot_times=[0.25, 0.5], snapshot_fields=["vx","vz"],
+    das_z_aligned = [],
+    snapshot_times  = [0.25, 0.5],
+    snapshot_fields = ["vx", "vz"],
 )
 
-ElasticFDSG.runsim(config, velmod)
+# Run simulation — dimension is auto-detected from the velmod array
+fdsg = runsim(config, velmod) 
 ```
 
 ## Citing
@@ -87,4 +101,4 @@ ElasticFDSG.runsim(config, velmod)
 }
 ```
 
-> **Note:** This package is under active development. Bug reports and suggestions are very welcome.
+> **Note:** This package is under active development and subject to changes. Bug reports and suggestions are very welcome.

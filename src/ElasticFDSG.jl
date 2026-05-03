@@ -59,13 +59,14 @@ module ElasticFDSG
     a `(7, nx, nz)` array triggers a 2D run; a `(13, nx, ny, nz)` array triggers 3D.
 
     # Returns
-    - The populated `FDSG` struct when `settings.output_file` is `nothing`.
+    - The populated `FDSG` struct when `config["settings"]["output_file"]` is `nothing`.
     - `nothing` when an output file path is given (results are written to HDF5).
 
     # Example
     ```julia
     fdsg = runsim(config_dict, velmod_array)
-    runsim("config.yaml", "velmod.jld2")   # saves to HDF5
+    runsum(config, velmod)                  # from dict and array 
+    runsim("config.yaml", "velmod.jld2")    # from file paths
     ```
     """
     function runsim(

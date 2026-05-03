@@ -46,9 +46,9 @@ Z  = repeat(reshape(zc, 1, :), nx, 1)
 
 velmod = zeros(7, nx, nz)
 velmod[1,:,:] .= X;    velmod[2,:,:] .= Z
-velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800   # vp, vs [m/s]
+velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800    # vp, vs [m/s]
 velmod[5,:,:] .= 2500                           # density [kg/m³]
-# layers 6 & 7 (Thomsen ε, δ) left at zero → isotropic
+# indices 6 & 7 (Thomsen ε, δ) left at zero → isotropic
 
 # Build a configuration dictionary
 config = config_template_2d(
@@ -72,19 +72,22 @@ config = config_template_2d(
     zstart = "absorbing", zend = "absorbing",
     pml_layer    = 10,
     geophones    = [Dict("x"=>1500.0,"z"=>500.0)],
-    das_x_aligned = [],
+    das_x_aligned = [
+        Dict("x" => 500, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
+        Dict("x" => 250, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
+    ],
     das_z_aligned = [],
     snapshot_times  = [0.25, 0.5],
     snapshot_fields = ["vx", "vz"],
 )
 
 # Run simulation — dimension is auto-detected from the velmod array
-fdsg = runsim(config, velmod)
+fdsg = runsim(config, velmod) 
 ```
 
 ## Citing
 
-If you use ElasticFDSG.jl in your research, please cite:
+If you find ElasticFDSG.jl usefull for your research, consider citing:
 
 ```bibtex
 @misc{ElasticFDSG,
