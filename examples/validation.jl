@@ -1,7 +1,10 @@
 #= 
-This script validates the numerical solution of ElasticFDSG against the analytical solution for a point moment tensor source in a homogeneous medium. It runs three simulations with different moment tensor types (ISO, DC, CLVD) and compares the seismograms at the receiver locations to the analytical solution using cross-correlation and amplitude ratio metrics.
+This script validates the numerical solution of ElasticFDSG against the 
+analytical solution for a point moment tensor source in a homogeneous medium. 
+It runs three simulations with different moment tensor types (ISO, DC, CLVD) 
+and compares the seismograms at the receiver locations to the analytical 
+solution using cross-correlation and amplitude ratio metrics.
 =#
-
 
 # NOTE: due to the project structure, i must switch back and forth to import dependencies 
 using Pkg; Pkg.activate(joinpath(@__DIR__, ".."))
@@ -12,6 +15,7 @@ using Test, LinearAlgebra, Statistics
 using Pkg; Pkg.activate(joinpath(@__DIR__, "..", "test"))
 using JLD2, YAML, Einsum, UnPack
 
+# not in the repo, but needed for plotting at the end
 using Pkg; Pkg.activate(joinpath(@__DIR__, "..", ".dev"))
 using GLMakie, LaTeXStrings, Metal
 

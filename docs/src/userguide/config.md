@@ -39,9 +39,9 @@ config = config_template_2d(
     anisotropic = false,        # if true, use anisotropic source radiation
 
     # ── Boundaries ────────────────────────────────────────────────────────
-    # "absorbing" | "else"
+    # "absorbing" | "none"
     xstart = "absorbing", xend = "absorbing",  
-    zstart = "else",      zend = "absorbing",  # reflecting surface at top
+    zstart = "none",      zend = "absorbing",  # reflecting surface at top
     pml_layer = 10,       # number of PML grid cells per absorbing boundary
 
     # ── Receivers ─────────────────────────────────────────────────────────
@@ -109,7 +109,7 @@ config = config_template_3d(
     # ── Boundaries ────────────────────────────────────────────────────────
     xstart = "absorbing", xend = "absorbing",
     ystart = "absorbing", yend = "absorbing",
-    zstart = "free",      zend = "absorbing",
+    zstart = "none",      zend = "absorbing",
     pml_layer = 10,
 
     # ── Receivers ─────────────────────────────────────────────────────────
@@ -187,7 +187,7 @@ source:
 boundaries:
     xstart: absorbing
     xend:   absorbing
-    zstart: else
+    zstart: none
     zend:   absorbing
     pml_layer: 10
 

@@ -50,7 +50,7 @@ C_{23} &= \sqrt{2C_{33}(C_{33}-C_{44})\,\delta_1 + (C_{33}-C_{44})^2} - C_{44} \
 C_{12} &= \sqrt{2C_{11}(C_{11}-C_{66})\,\delta_3 + (C_{11}-C_{66})^2} - C_{66}
 \end{aligned}
 ```
-VTI and isotropic models are special cases that can be constructed by the appropiate choice of Tsvankin parameter (see [User Guide](userguide/velmod.md))
+VTI and isotropic models are special cases that can be constructed by the appropiate choice of Tsvankin parameter (see [User Guide](userguide/velmod.md)).
 For 2D models the standard Thomsen parameterisation is used instead ($\epsilon$, $\delta$).
 
 ---
@@ -61,9 +61,7 @@ Field components are not co-located but distributed across the unit cell followi
 standard staggered-grid layout of Virieux (1986).
 The diagram below shows the elementary cell with all 9 field components placed at their staggered positions:
 
-```
-Elementary staggered-grid cell  (to be inserted)
-```
+![Staggered-grid unit cell](assets/staggeredgrid.svg)
 
 The discrete **leapfrog** scheme advances velocities and stresses alternately at half-integer time steps.
 
