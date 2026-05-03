@@ -61,7 +61,9 @@ Field components are not co-located but distributed across the unit cell followi
 standard staggered-grid layout of Virieux (1986).
 The diagram below shows the elementary cell with all 9 field components placed at their staggered positions:
 
+```@raw html
 <img src="assets/staggergrid.png" alt="Staggered-grid unit cell" width="60%"/>
+```
 
 The discrete **leapfrog** scheme advances velocities and stresses alternately at half-integer time steps.
 
