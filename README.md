@@ -25,7 +25,7 @@ It solves the elastic wave equation in the velocity–stress formulation using a
 - Wavefield snapshots at arbitrary time steps.
 - Results saved to HDF5 or returned as a Julia struct.
 
-A step-by-step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/)
+A step-by-step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
 
 Working examples are in the [`examples/`](examples/) folder.
 
