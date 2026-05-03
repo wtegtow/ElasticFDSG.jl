@@ -42,7 +42,6 @@ function to_host!(fdsg::FDSG)
     return fdsg
 end
 
-
 function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
 
     fdsg = to_device!(fdsg)

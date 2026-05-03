@@ -41,7 +41,6 @@ function _fill_outer_domain!(arr::AbstractArray{<:Any, N}, domain::Domain{N}) wh
     end
 end
 
-
 function _init_stiffness(vm::VelocityModel2D, domain::Domain{2}, fp)
     shape = domain.shape
     inner = domain.inner_ids

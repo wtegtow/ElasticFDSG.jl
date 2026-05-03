@@ -5,17 +5,14 @@
 #   2D: field[i_x, i_z]         @index returns (x, z)
 #   3D: field[i_x, i_y, i_z]    @index returns (x, y, z)
 #
-# Each kernel handles both inner-domain and PML boundary points in a single
-# pass.  The PML branch is taken only when pml_lookup[...] > 0.
-#
 # Stiffness flat-matrix column layout:
-#   2D  (5 cols): c11, c13, c33, c44, rho
-#   3D (10 cols): c11, c12, c13, c22, c23, c33, c44, c55, c66, rho
+#   2D: c11, c13, c33, c44, rho
+#   3D: c11, c12, c13, c22, c23, c33, c44, c55, c66, rho
 #
 # CPML coefficient table layout (3 × n matrix):
-#   row 1: a  (coefficient for memory-variable advance:  ψ ← b·ψ + a·d_raw)
-#   row 2: b  (decay factor)
-#   row 3: K  (coordinate stretching: d_corr = d_raw/K + ψ)
+#   row 1: a  
+#   row 2: b  
+#   row 3: K  
 # ─────────────────────────────────────────────────────────────────────────────
 
 # 2D: columns = (c11, c13, c33, c44, rho)

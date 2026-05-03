@@ -1,11 +1,12 @@
 function cmpl(N, npoints_pml, use_pml_start, use_pml_end, domain_, 
               vmax, fdom, dt, rcoef, FLOAT)
 
-    # This function contains recycled code from: 
-    # https://github.com/geodynamics/seismic_cpml
-    # Roland Martin and Dimitri Komatitsch and Stephen D. Gedney,
-    # A variational formulation of a stabilized unsplit convolutional perfectly
-    # matched layer for the isotropic or anisotropic seismic wave equation.
+    #= This function contains recycled code from: 
+     https://github.com/geodynamics/seismic_cpml
+     Roland Martin and Dimitri Komatitsch and Stephen D. Gedney,
+     A variational formulation of a stabilized unsplit convolutional perfectly
+     matched layer for the isotropic or anisotropic seismic wave equation.
+    =#
 
     # params
     K_max = 1

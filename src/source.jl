@@ -43,7 +43,6 @@ struct Source3D{T, A<:AbstractVector}
     Myy::T;   Myz::T;   Mzz::T
 end
 
-
 function _check_source_in_domain(locs, domain::Domain)
     for (loc, coords) in zip(locs, domain.coordinates)
         if loc < first(coords) || loc > last(coords)
@@ -80,7 +79,6 @@ function _build_stf(wavelet_type, t, ts, fdom, μ0::T, dt) where T
     stf_d1[end] = ( 3*stf[end] - 4*stf[end-1] + stf[end-2]) / (2*dt)
     return stf, stf_d1
 end
-
 
 function init_source(config::Config, domain::Domain{2}, elastic::Elastic, time::SimTime)
     fp   = eval(Symbol(config.dict["settings"]["precision"]))
@@ -122,7 +120,6 @@ function init_source(config::Config, domain::Domain{2}, elastic::Elastic, time::
 
     return Source2D(x, z, sx, sz, fdom, rhosrc, stf, stf_d1, Mxx, Mxz, Mzz)
 end
-
 
 function init_source(config::Config, domain::Domain{3}, elastic::Elastic, time::SimTime)
     fp   = eval(Symbol(config.dict["settings"]["precision"]))

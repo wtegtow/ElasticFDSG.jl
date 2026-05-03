@@ -42,7 +42,6 @@ module ElasticFDSG
     include(joinpath(@__DIR__, "solver.jl"))
     include(joinpath(@__DIR__, "io.jl"))
 
-
     """
         runsim(config, velmod) -> FDSG or nothing
 

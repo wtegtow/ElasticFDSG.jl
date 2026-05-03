@@ -17,7 +17,6 @@ function _stress_glut_source!(fields::Fields2D, source::Source2D,
     fields.sxz[sx+1, sz+1] -= dt / (4*V)   * source.Mxz * S
 end
 
-
 function _stress_glut_source!(fields::Fields3D, source::Source3D,
                          domain::Domain{3}, time::SimTime, ti::Int)
 

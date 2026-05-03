@@ -104,6 +104,7 @@ function config_template_2d(;
     )
 end
 
+
 """
     config_template_3d(; device, precision, fd_order, verbose, output_file,
                          t_start, t_end, dt,

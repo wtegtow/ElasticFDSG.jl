@@ -109,7 +109,6 @@ function save_results(fdsg::FDSG)
     return path
 end
 
-
 """
     load_results(path) -> Dict{String, Any}
 

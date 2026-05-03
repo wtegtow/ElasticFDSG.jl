@@ -6,7 +6,6 @@ struct SimTime{T}
     t::StepRangeLen{T}
 end
 
-
 function init_time(config::Config, domain::Domain, elastic::Elastic)
     fp   = eval(Symbol(config.dict["settings"]["precision"]))
     tcfg = config.dict["time"]

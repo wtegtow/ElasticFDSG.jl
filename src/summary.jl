@@ -1,5 +1,4 @@
 function _print_summary(fdsg::FDSG)
-
         # unpack
         c  = fdsg.config
         d  = fdsg.domain

@@ -5,6 +5,7 @@ struct Domain{N}
     pml_lookup::AbstractArray{Int, N}
 end 
 
+
 # dim-specific helpers
 _coord_vecs(vm::VelocityModel2D, fp) = (fp.(vm.X[:, 1]),   fp.(vm.Z[1, :]))
 _coord_vecs(vm::VelocityModel3D, fp) = (fp.(vm.X[:, 1, 1]), fp.(vm.Y[1, :, 1]), fp.(vm.Z[1, 1, :]))
