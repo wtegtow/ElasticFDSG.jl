@@ -2,6 +2,7 @@
 /docs/Manifest.toml
 /test/Manifest.toml
 /docs/build/
-.dev/
+dev/
 .vscode/
 .DS_Store
+todo.txt

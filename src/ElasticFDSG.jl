@@ -1,5 +1,5 @@
 module ElasticFDSG
-
+   
     export devmode!
     export runsim
     export load_results
@@ -70,7 +70,8 @@ module ElasticFDSG
     """
     function runsim(
         config::Union{String, Dict},
-        velmod::Union{String, AbstractArray},
+        velmod::Union{String, AbstractArray};
+        solve::Bool=true
     )
         
         _log("Hello from ElasticFDSG!")
@@ -117,9 +118,11 @@ module ElasticFDSG
             _print_summary(fdsg)
         end
 
-        solve!(fdsg)
-        _log("Simulation complete")
-    
+        if solve 
+            solve!(fdsg) 
+            _log("Solved")
+        end
+
         if isnothing(get(fdsg.config.dict["settings"], "output_file", nothing)) 
             return fdsg # return the FDSG struct if no output file specified
         else

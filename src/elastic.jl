@@ -63,7 +63,7 @@ function _init_stiffness(vm::VelocityModel2D, domain::Domain{2}, fp)
     c11 = @. c33 * (2*eps + 1)
     c13 = @. (c33 - 2*c44) + del * c33
 
-    # Bécache 2003 stability conditions for XZ-plane C-PML
+    # Bécache 2003 stability conditions for XZ-plane
     s1 = @. ((c13+c44)^2 - c11*(c33-c44)) * ((c13+c44)^2 + c44*(c33-c44))
     s2 = @. (c13 + 2*c44)^2 - c11*c33
     s3 = @. (c13+c44)^2 - c11*c33 - c44^2
@@ -78,8 +78,14 @@ function _init_stiffness(vm::VelocityModel2D, domain::Domain{2}, fp)
     c_lookup = [c_lud[cdata[i,j]] for i in 1:shape[1], j in 1:shape[2]]
 
     vmax = fp(maximum(vp) * 1.1) # simply 10% since phase velocity is function of direction, and i dont want to compute it explicitly
-    vmin = fp(any(vs .> 0) ? minimum(vs[vs .> 0]) : minimum(vp) * 0.9)
+    
+    # handle liquid nodes 
+    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
+    solid_vs = vs[vs .> liquid_tol]
+    vmin = fp(!isempty(solid_vs) ? minimum(solid_vs) : minimum(vp))
+    vmin = vmin * 0.9 # same as above. 
 
+    println(vmax, " ", vmin)
     return unique_c, c_lookup, vmax, vmin
 end
 
@@ -130,9 +136,9 @@ function _init_stiffness(vm::VelocityModel3D, domain::Domain{3}, fp)
     yz2 = @. (c23 + 2*c44)^2 - c22*c33
     yz3 = @. (c23+c44)^2 - c22*c33 - c44^2
 
-    if any(xz1.>0)||any(xz2.>0)||any(xz3.>0) ||
-       any(xy1.>0)||any(xy2.>0)||any(xy3.>0) ||
-       any(yz1.>0)||any(yz2.>0)||any(yz3.>0)
+    if  any(xz1 .> 0) || any(xz2 .> 0) || any(xz3 .> 0) ||
+        any(xy1 .> 0) || any(xy2 .> 0) || any(xy3 .> 0) ||
+        any(yz1 .> 0) || any(yz2 .> 0) || any(yz3 .> 0)
         @warn "Stiffness tensor violates C-PML stability at some grid points." _module=nothing _file=nothing _line=nothing
     end
 
@@ -144,9 +150,14 @@ function _init_stiffness(vm::VelocityModel3D, domain::Domain{3}, fp)
     c_lud    = Dict(t => Int32(idx) for (idx, t) in enumerate(unique_c))
     c_lookup = [c_lud[cdata[i,j,k]] for i in 1:shape[1], j in 1:shape[2], k in 1:shape[3]]
 
-    vmax = fp(maximum(vp) * 1.1) # simply 10% since phase velocity is function of direction, and i dont want to compute it explicitly
-    vmin = fp(any(vs .> 0) ? minimum(vs[vs .> 0]) : minimum(vp) * 0.9)
-
+    vmax = fp(maximum(vp) * 1.1) # simply 10% since phase velocity is function of direction, and i dont want to compute it explicitly for all nodes and directions ... 
+    
+    # handle liquid nodes 
+    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
+    solid_vs = vs[vs .> liquid_tol]
+    vmin = fp(!isempty(solid_vs) ? minimum(solid_vs) : minimum(vp))
+    vmin = vmin * 0.9 # same as above
+    println(vmax, " ", vmin)
     return unique_c, c_lookup, vmax, vmin
 end
 

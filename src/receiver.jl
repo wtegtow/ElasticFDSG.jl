@@ -99,12 +99,32 @@ mutable struct DAS
 end
 
 function _cinv_from_stiffness(s::Stiffness2D, fp)
-    s.c44 == 0 && return fp.(diagm([1/s.c11, 1/s.c33]))
-    return fp.(inv([s.c11 s.c13; s.c13 s.c33]))
+    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
+    vs44 = sqrt(max(s.c44 / s.rho, zero(fp)))
+    is_fluid = vs44 < liquid_tol
+
+    if is_fluid
+        return fp.(diagm([1/s.c11, 1/s.c33]))
+    end
+    return fp.(inv([s.c11 s.c13;
+                    s.c13 s.c33]))
 end
 
+
 function _cinv_from_stiffness(s::Stiffness3D, fp)
-    (s.c55 == 0 || s.c44 == 0) && return fp.(diagm([1/s.c11, 1/s.c22, 1/s.c33]))
+    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
+
+    vs44 = sqrt(max(s.c44 / s.rho, zero(fp)))
+    vs55 = sqrt(max(s.c55 / s.rho, zero(fp)))
+    vs66 = sqrt(max(s.c66 / s.rho, zero(fp)))
+
+    is_fluid = (vs44 < liquid_tol) &&
+               (vs55 < liquid_tol) &&
+               (vs66 < liquid_tol)
+
+    if is_fluid
+        return fp.(diagm([1/s.c11, 1/s.c22, 1/s.c33]))
+    end
     return fp.(inv([s.c11 s.c12 s.c13;
                     s.c12 s.c22 s.c23;
                     s.c13 s.c23 s.c33]))
