@@ -1,22 +1,22 @@
-struct Stiffness2D
-    c11::Real
-    c13::Real
-    c33::Real
-    c44::Real
-    rho::Real
+struct Stiffness2D{T<:AbstractFloat}
+    c11::T
+    c13::T
+    c33::T
+    c44::T
+    rho::T
 end
 
-struct Stiffness3D
-    c11::Real
-    c12::Real
-    c13::Real
-    c22::Real
-    c23::Real
-    c33::Real
-    c44::Real
-    c55::Real
-    c66::Real
-    rho::Real
+struct Stiffness3D{T<:AbstractFloat}
+    c11::T
+    c12::T
+    c13::T
+    c22::T
+    c23::T
+    c33::T
+    c44::T
+    c55::T
+    c66::T
+    rho::T
 end
 
 struct Stiffness
@@ -27,10 +27,9 @@ end
 struct Elastic{N}
     c_tensors::Vector{Stiffness} # unique stiffness tensors in the model
     c_lookup::AbstractArray{Int, N} # maps each grid point to an index in c_tensors
-    vmax::Real
-    vmin::Real
+    vmax::AbstractFloat
+    vmin::AbstractFloat
 end
-
 
 function _fill_outer_domain!(arr::AbstractArray{<:Any, N}, domain::Domain{N}) where N
     inner_mins = map(ids -> ids[begin], domain.inner_ids)
@@ -68,9 +67,9 @@ function _init_stiffness(vm::VelocityModel2D, domain::Domain{2}, fp)
     inner = domain.inner_ids
 
     # Float64 is required here to prevent catastrophic cancellation.
-    vp  = zeros(shape);  vs  = zeros(shape)
-    rho = zeros(shape);  eps = zeros(shape)
-    del = zeros(shape)
+    vp  = zeros(Float64, shape);  vs  = zeros(Float64, shape)
+    rho = zeros(Float64, shape);  eps = zeros(Float64, shape)
+    del = zeros(Float64, shape)
 
     vp[inner...]  .= vm.vp
     vs[inner...]  .= vm.vs
@@ -161,10 +160,10 @@ function _init_stiffness(vm::VelocityModel3D, domain::Domain{3}, fp)
     inner = domain.inner_ids
 
     # f64 needed here to prevent "Catastrophic cancellation"  
-    vp   = zeros(shape);  vs   = zeros(shape);  rho  = zeros(shape)
-    eps1 = zeros(shape);  eps2 = zeros(shape)
-    gam1 = zeros(shape);  gam2 = zeros(shape)
-    del1 = zeros(shape);  del2 = zeros(shape);  del3 = zeros(shape)
+    vp   = zeros(Float64, shape);  vs   = zeros(Float64, shape);  rho  = zeros(Float64, shape)
+    eps1 = zeros(Float64, shape);  eps2 = zeros(Float64, shape)
+    gam1 = zeros(Float64, shape);  gam2 = zeros(Float64, shape)
+    del1 = zeros(Float64, shape);  del2 = zeros(Float64, shape);  del3 = zeros(Float64, shape)
 
     vp[inner...]   .= vm.vp;      vs[inner...]   .= vm.vs
     rho[inner...]  .= vm.rho
