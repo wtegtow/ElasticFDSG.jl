@@ -1,7 +1,3 @@
-# ============================================================
-# Shared helpers
-# ============================================================
-
 function _nearest_id(val, coords)
     argmin(abs.(coords .- val))
 end
@@ -25,7 +21,6 @@ function _field_dict(fields::Fields3D)
          "sxx" => fields.sxx, "sxy" => fields.sxy, "sxz" => fields.sxz,
          "syy" => fields.syy, "syz" => fields.syz, "szz" => fields.szz)
 end
-
 
 # ============================================================
 # Geophones

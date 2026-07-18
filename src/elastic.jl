@@ -85,7 +85,6 @@ function _init_stiffness(vm::VelocityModel2D, domain::Domain{2}, fp)
     vmin = fp(!isempty(solid_vs) ? minimum(solid_vs) : minimum(vp))
     vmin = vmin * 0.9 # same as above. 
 
-    println(vmax, " ", vmin)
     return unique_c, c_lookup, vmax, vmin
 end
 
@@ -120,7 +119,6 @@ function _init_stiffness(vm::VelocityModel3D, domain::Domain{3}, fp)
     c12 = @. sqrt(2*c11*(c11-c66)*del3 + (c11-c66)^2) - c66
 
     # Bécache 2003 stability conditions, all three propagation planes.
-
     # XZ: P=c11,c33 / cross=c13 / shear=c55
     xz1 = @. ((c13+c55)^2 - c11*(c33-c55)) * ((c13+c55)^2 + c55*(c33-c55))
     xz2 = @. (c13 + 2*c55)^2 - c11*c33
@@ -157,7 +155,7 @@ function _init_stiffness(vm::VelocityModel3D, domain::Domain{3}, fp)
     solid_vs = vs[vs .> liquid_tol]
     vmin = fp(!isempty(solid_vs) ? minimum(solid_vs) : minimum(vp))
     vmin = vmin * 0.9 # same as above
-    println(vmax, " ", vmin)
+
     return unique_c, c_lookup, vmax, vmin
 end
 

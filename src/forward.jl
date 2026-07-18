@@ -1,10 +1,5 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# Staggered-grid finite-difference update kernels for elastic wave propagation.
-#
-# Array index convention
-#   2D: field[i_x, i_z]         @index returns (x, z)
-#   3D: field[i_x, i_y, i_z]    @index returns (x, y, z)
-#
+# Staggered-grid finite-difference update kernels
+
 # Stiffness flat-matrix column layout:
 #   2D: c11, c13, c33, c44, rho
 #   3D: c11, c12, c13, c22, c23, c33, c44, c55, c66, rho
@@ -13,9 +8,7 @@
 #   row 1: a  
 #   row 2: b  
 #   row 3: K  
-# ─────────────────────────────────────────────────────────────────────────────
 
-# 2D: columns = (c11, c13, c33, c44, rho)
 function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{2}, fp::DataType)
     n   = length(tensors)
     mat = Matrix{fp}(undef, n, 5)
@@ -30,7 +23,6 @@ function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{2}, fp::DataType)
     return mat
 end
 
-# 3D: columns = (c11, c12, c13, c22, c23, c33, c44, c55, c66, rho)
 function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{3}, fp::DataType)
     n   = length(tensors)
     mat = Matrix{fp}(undef, n, 10)
@@ -51,7 +43,8 @@ function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{3}, fp::DataType)
 end
 
 function diff_coeff(M::Int)
-    coeffs = if M == 1
+    coeffs = 
+    if M == 1
         [1.0]
     elseif M == 2
         [0.1129136e+1, -0.4304542e-1]
@@ -93,18 +86,8 @@ function init_simparams(fdsg::FDSG)
     return SimParams{dim, fp, typeof(c_fd), typeof(c_data)}(N, c_fd, c_data)
 end
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 2D KERNELS  
-# ══════════════════════════════════════════════════════════════════════════════
 
-# ──────────────────────────────────────────────────────────────────────────────
-# sxx, szz  (normal stresses)
-# guard:  N ≤ x ≤ nx−N,   N+1 ≤ z ≤ nz−N
-# c_eff:  average along x  ([x,z] + [x+1,z])
-# stencils:
-#   vx_x → x_odd   (forward in x)
-#   vz_z → z_evn   (backward in z)
-# ──────────────────────────────────────────────────────────────────────────────
+# 2D KERNELS  
 @kernel inbounds=true function _sxx_szz_2d!(
         sxx, szz, vx, vz,
         c_data, c_lookup, pml_lookup,
@@ -142,14 +125,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# sxz  (shear stress)
-# guard:  N+1 ≤ x ≤ nx−N+1,   N ≤ z ≤ nz−N
-# c_eff:  average along z  ([x,z] + [x,z+1])
-# stencils:
-#   vz_x → x_evn   (backward in x)
-#   vx_z → z_odd   (forward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _sxz_2d!(
         sxz, vx, vz,
         c_data, c_lookup, pml_lookup,
@@ -184,14 +159,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# vx  (x-velocity)
-# guard:  N+1 ≤ x ≤ nx−N+1,   N+1 ≤ z ≤ nz−N+1
-# rho:    direct lookup, no averaging
-# stencils:
-#   sxx_x → x_evn   (backward in x)
-#   sxz_z → z_evn   (backward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _vx_2d!(
         vx, sxx, sxz,
         c_data, c_lookup, pml_lookup,
@@ -225,14 +192,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# vz  (z-velocity)
-# guard:  N ≤ x ≤ nx−N,   N ≤ z ≤ nz−N
-# rho:    4-point average [x,z],[x+1,z],[x,z+1],[x+1,z+1]
-# stencils:
-#   sxz_x → x_odd   (forward in x)
-#   szz_z → z_odd   (forward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _vz_2d!(
         vz, sxz, szz,
         c_data, c_lookup, pml_lookup,
@@ -270,20 +229,7 @@ end
     end
 end
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 # 3D KERNELS  
-# ══════════════════════════════════════════════════════════════════════════════
-
-# ──────────────────────────────────────────────────────────────────────────────
-# sxx, syy, szz  (normal stresses)
-# guard:  N ≤ x ≤ nx−N,   N+1 ≤ y ≤ ny−N,   N+1 ≤ z ≤ nz−N
-# c_eff:  average along x  ([x,y,z] + [x+1,y,z])
-# stencils:
-#   vx_x → x_odd   (forward in x)
-#   vy_y → y_evn   (backward in y)
-#   vz_z → z_evn   (backward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _sxx_syy_szz_3d!(
         sxx, syy, szz, vx, vy, vz,
         c_data, c_lookup, pml_lookup,
@@ -328,14 +274,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# sxy  (XY-shear stress)
-# guard:  N+1 ≤ x ≤ nx−N+1,   N ≤ y ≤ ny−N,   1 ≤ z ≤ nz
-# c_eff:  average along y  ([x,y,z] + [x,y+1,z])
-# stencils:
-#   vy_x → x_evn   (backward in x)
-#   vx_y → y_odd   (forward in y)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _sxy_3d!(
         sxy, vx, vy,
         c_data, c_lookup, pml_lookup,
@@ -370,14 +308,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# sxz  (XZ-shear stress)
-# guard:  N+1 ≤ x ≤ nx−N+1,   1 ≤ y ≤ ny,   N ≤ z ≤ nz−N
-# c_eff:  average along z  ([x,y,z] + [x,y,z+1])
-# stencils:
-#   vz_x → x_evn   (backward in x)
-#   vx_z → z_odd   (forward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _sxz_3d!(
         sxz, vx, vz,
         c_data, c_lookup, pml_lookup,
@@ -412,14 +342,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# syz  (YZ-shear stress)
-# guard:  1 ≤ x ≤ nx,   N ≤ y ≤ ny−N,   N ≤ z ≤ nz−N
-# c_eff:  4-point c44 average [x,y,z],[x,y+1,z],[x,y,z+1],[x,y+1,z+1]
-# stencils:
-#   vz_y → y_odd   (forward in y)
-#   vy_z → z_odd   (forward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _syz_3d!(
         syz, vy, vz,
         c_data, c_lookup, pml_lookup,
@@ -457,15 +379,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# vx  (x-velocity in 3D)
-# guard:  N+1 ≤ x ≤ nx−N+1,   N+1 ≤ y ≤ ny−N+1,   N+1 ≤ z ≤ nz−N+1
-# rho:    direct lookup
-# stencils:
-#   sxx_x → x_evn   (backward in x)
-#   sxy_y → y_evn   (backward in y)
-#   sxz_z → z_evn   (backward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _vx_3d!(
         vx, sxx, sxy, sxz,
         c_data, c_lookup, pml_lookup,
@@ -502,15 +415,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# vy  (y-velocity in 3D)
-# guard:  N ≤ x ≤ nx−N,   N ≤ y ≤ ny−N,   N+1 ≤ z ≤ nz−N+1
-# rho:    4-point average [x,y,z],[x,y+1,z],[x+1,y,z],[x+1,y+1,z]
-# stencils:
-#   sxy_x → x_odd   (forward in x)
-#   syy_y → y_odd   (forward in y)
-#   syz_z → z_evn   (backward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _vy_3d!(
         vy, sxy, syy, syz,
         c_data, c_lookup, pml_lookup,
@@ -551,15 +455,6 @@ end
     end
 end
 
-# ──────────────────────────────────────────────────────────────────────────────
-# vz  (z-velocity in 3D)
-# guard:  N ≤ x ≤ nx−N,   N+1 ≤ y ≤ ny−N+1,   N ≤ z ≤ nz−N
-# rho:    4-point average [x,y,z],[x+1,y,z],[x,y,z+1],[x+1,y,z+1]
-# stencils:
-#   sxz_x → x_odd   (forward in x)
-#   syz_y → y_evn   (backward in y)
-#   szz_z → z_odd   (forward in z)
-# ──────────────────────────────────────────────────────────────────────────────
 @kernel inbounds=true function _vz_3d!(
         vz, sxz, syz, szz,
         c_data, c_lookup, pml_lookup,
@@ -600,10 +495,7 @@ end
     end
 end
 
-
-# ══════════════════════════════════════════════════════════════════════════════
 # DISPATCHER 
-# ══════════════════════════════════════════════════════════════════════════════
 T_spacing(coords::AbstractVector) = eltype(coords)(step(coords))
 
 function _launch(kernel_fn, backend, block_size, ndrange, args...)

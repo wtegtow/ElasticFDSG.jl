@@ -15,19 +15,19 @@ Alternativly, configurations can be written by hand as YAML files.
 using ElasticFDSG
 
 config = config_template_2d(
-    # ── Settings ──────────────────────────────────────────────────────────
+    # Settings
     device    = "cpu",          # "cpu" | "cuda" | "metal" | "amd" | "intel"
     precision = "Float32",      # "Float32" | "Float64"
     fd_order  = 4,              # stencil half-width 1–10  
     verbose   = true,           # print simulation summary and progress
     output_file = nothing,      # String path ending in .h5, or nothing
 
-    # ── Time ──────────────────────────────────────────────────────────────
+    # Time
     t_start = 0.0,
     t_end   = 1.0,
     dt      = 0.001,            # will be reduced automatically if CFL is violated
 
-    # ── Source ────────────────────────────────────────────────────────────
+    # Source
     fdom           = 30.0,      # dominant frequency [Hz]
     wavelet        = "ricker",  # "ricker" | "gauss1d"
     wavelet_center = 0.05,      # peak time of the wavelet [s]  (≥ 1.25/fdom)
@@ -38,13 +38,13 @@ config = config_template_2d(
     Mxx = 0.0, Mxz = 1.0, Mzz = 0.0,
     anisotropic = false,        # if true, use anisotropic source radiation
 
-    # ── Boundaries ────────────────────────────────────────────────────────
+    # Boundaries
     # "absorbing" | "none"
     xstart = "absorbing", xend = "absorbing",  
     zstart = "none",      zend = "absorbing",  # reflecting surface at top
     pml_layer = 10,       # number of PML grid cells per absorbing boundary
 
-    # ── Receivers ─────────────────────────────────────────────────────────
+    # Receivers
     # Geophones — [list of dicts] with x,z locations
     geophones = [
         Dict("x" => 800.0, "z" => 300.0),
@@ -83,19 +83,19 @@ config = config_template_2d(
 using ElasticFDSG
 
 config = config_template_3d(
-    # ── Settings ──────────────────────────────────────────────────────────
+    # Settings
     device    = "cuda",
     precision = "Float32",
     fd_order  = 4,
     verbose   = true,
     output_file = "/path/to/output.h5",
 
-    # ── Time ──────────────────────────────────────────────────────────────
+    # Time
     t_start = 0.0,
     t_end   = 0.8,
     dt      = 0.0005,
 
-    # ── Source ────────────────────────────────────────────────────────────
+    # Source
     fdom           = 40.0,
     wavelet        = "ricker",
     wavelet_center = 0.04,
@@ -106,13 +106,13 @@ config = config_template_3d(
     Myy =  0.0, Myz = 0.0, Mzz = 1.0,
     anisotropic = false,
 
-    # ── Boundaries ────────────────────────────────────────────────────────
+    # Boundaries
     xstart = "absorbing", xend = "absorbing",
     ystart = "absorbing", yend = "absorbing",
     zstart = "none",      zend = "absorbing",
     pml_layer = 10,
 
-    # ── Receivers ─────────────────────────────────────────────────────────
+    # Receivers
     geophones = [
         Dict("x"=>950.0, "y"=>20.0, "z"=>250.0),
         Dict("x"=>750.0, "y"=>20.0, "z"=>250.0),
@@ -208,7 +208,11 @@ receivers:
 ```julia
 runsim("config2d.yaml", "velmod2d.jld2")
 ```
+---
 
+!!! note
+    The config reader is yet sensitive to correct receiver formatting. If a receiver type is not required, simply pass an empty vector to the corresponding field in the configuration, e.g., x_aligned = [], fields = [], times = [] , etc... (like shown above).
+    
 ---
 
 ## Stability and discretisation guidelines

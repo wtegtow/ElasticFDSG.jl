@@ -1,3 +1,4 @@
+""" Run a 3D FWM, test numerical against analytical solution """;
 using ElasticFDSG
 ElasticFDSG.devmode!(true)
 using Test, LinearAlgebra, Statistics

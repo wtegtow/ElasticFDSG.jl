@@ -9,17 +9,16 @@ The package was developed with a focus on a clean, user-friendly workflow: simul
 
 - 2D and 3D elastic forward modelling on regular grids.
 - Vendor-neutral CPU and GPU kernels (CUDA, Metal, AMDGPU, oneAPI) via [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl).
-- Spatial finite-difference operators of order 2 to 20 (stencil half-width 1–10).
+- Spatial finite-difference operators of order 1-10.
 - Second-order leapfrog time integration.
-- Elastic isotropic and VTI 2D models parameterised via Thomsen parameters ($\epsilon$, $\delta$).
-- Elastic isotropic, VTI, and orthorhombic 3D models parameterised via Tsvankin parameters ($\epsilon_{1,2}$, $\gamma_{1,2}$, $\delta_{1,2,3}$).
-- Fully heterogeneous media — stiffness tensors are compressed using a unique-tensor lookup.
+- Heterogeneous isotropic and VTI 2D models (Thomsen parameters).
+- Heterogeneous isotropic, VTI, and orthorhombic 3D models (Tsvankin parameters).
 - Convolutional Perfectly Matched Layer (C-PML) absorbing boundaries.
-- Moment tensor sources with Ricker or Gaussian derivative wavelets.
+- Moment tensor sources.
 - Geophone receivers (point particle velocity).
 - DAS receivers (axial strain along coordinate-aligned profiles).
-- Wavefield snapshots at arbitrary time steps.
-- Results serialised to HDF5 or returned directly as a Julia struct.
+- Wavefield snapshots.
+- Results saved to HDF5 or returned as a Julia struct.
 
 A step-by-step user guide can be found in the [User Guide](userguide/intro.md).
 Working examples are available in the [`examples/`](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples) directory of the repository.
@@ -34,33 +33,39 @@ julia> Pkg.add(url="https://github.com/wtegtow/ElasticFDSG.jl")
 ## Quick start
 
 ```julia
-using ElasticFDSG
+using ElasticFDSG, GLMakie
 
 # Build a minimal 2D velocity model (7 × nx × nz)
-nx, nz = 200, 200
-h = 10.0   # grid spacing [m]
-xc = range(0.0, step=h, length=nx)
-zc = range(0.0, step=h, length=nz)
+h = 10 
+x = 0:h:2000
+z = 0:h:2000
 X  = repeat(xc,  1, nz)
 Z  = repeat(reshape(zc, 1, :), nx, 1)
 
+# Set velocities 
+vp0 = 4400 
+vs0 = 2200
+rho0 = 2000 
+
 velmod = zeros(7, nx, nz)
-velmod[1,:,:] .= X;    velmod[2,:,:] .= Z
-velmod[3,:,:] .= 3000; velmod[4,:,:] .= 1800    # vp, vs [m/s]
-velmod[5,:,:] .= 2500                           # density [kg/m³]
+velmod[1,:,:] .= X
+velmod[2,:,:] .= Z
+velmod[3,:,:] .= vp0
+velmod[4,:,:] .= vs0    
+velmod[5,:,:] .= rho0                      
 # indices 6 & 7 (Thomsen ε, δ) left at zero → isotropic
 
 # Build a configuration dictionary
 config = config_template_2d(
     device       = "cpu",
-    precision    = "Float32",
+    precision    = "Float64",
     fd_order     = 4,
     verbose      = true,
-    output_file  = nothing,           # return struct instead of saving
+    output_file  = nothing,   # return struct instead of saving
     t_start      = 0.0,
-    t_end        = 0.5,
+    t_end        = 0.4,
     dt           = 0.001,
-    fdom         = 30.0,
+    fdom         = 25.0,
     wavelet      = "ricker",
     wavelet_center = 0.05,
     seismic_moment = 1e6,
@@ -71,18 +76,36 @@ config = config_template_2d(
     xstart = "absorbing", xend = "absorbing",
     zstart = "absorbing", zend = "absorbing",
     pml_layer    = 10,
-    geophones    = [Dict("x"=>1500.0,"z"=>500.0)],
-    das_x_aligned = [
-        Dict("x" => 500, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
-        Dict("x" => 250, "z" => Dict("start"=>0, "step"=>5, "end"=>2000)),
+    geophones    = [Dict("x"=>1500.0,"z"=>500.0)
+                    # ... add more here
     ],
-    das_z_aligned = [],
-    snapshot_times  = [0.25, 0.5],
+    das_x_aligned = [], 
+    das_z_aligned = [
+        Dict("x" => 500, "z" => Dict("start"=>500, "step"=>5, "end"=>15000)),
+        # ... add more here 
+    ],
+    snapshot_times  = [0.25, 0.3],
     snapshot_fields = ["vx", "vz"],
 )
 
 # Run simulation — dimension is auto-detected from the velmod array
-fdsg = runsim(config, velmod) 
+fdsg = runsim(config, velmod); 
+
+# Unpack from fdsg struct 
+geophones = fdsg.geophones;
+time = fdsg.time.t
+geo_data = fdsg.geophones.data 
+
+# Visualize
+fig = Figure(size=(800,300))
+ax1 = Axis(fig[1,1], title="vx"); ax2 = Axis(fig[1,2], title="vz")
+lines!(ax1, time, geo_data[1,1,:], color="black")
+lines!(ax2, time, geo_data[1,2,:], color="black")
+display(fig)
+```
+
+```@raw html
+<img src="../assets/demo.png" alt="demo" width="80%"/>
 ```
 
 ## Citing

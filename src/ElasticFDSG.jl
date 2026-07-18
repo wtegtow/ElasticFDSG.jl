@@ -54,9 +54,6 @@ module ElasticFDSG
     - `velmod`: velocity model — either a Julia `AbstractArray` or a file path
       (`String`) to a `.jld2`, `.npy`, or `.npz` file.
 
-    The simulation dimension (2D / 3D) is detected automatically:
-    a `(7, nx, nz)` array triggers a 2D run; a `(13, nx, ny, nz)` array triggers 3D.
-
     # Returns
     - The populated `FDSG` struct when `config["settings"]["output_file"]` is `nothing`.
     - `nothing` when an output file path is given (results are written to HDF5).
@@ -71,7 +68,7 @@ module ElasticFDSG
     function runsim(
         config::Union{String, Dict},
         velmod::Union{String, AbstractArray};
-        solve::Bool=true
+        solve::Bool=true 
     )
         
         _log("Hello from ElasticFDSG!")

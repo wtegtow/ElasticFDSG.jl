@@ -233,15 +233,15 @@ M_{yz} &= -\!\bigl(\cos\delta\cos\lambda\sin\Phi - \cos 2\delta\sin\lambda\cos\P
 
 ## Receivers
 
-### Geophones
+### Velocity Point Sensors (Geophones)
 
 Point receivers record the three particle velocity components $v_x$, $v_y$, $v_z$ at each time step.
 Due to the staggered arrangement, each component is sampled at its natural staggered grid location
 (offset by half a cell from the nominal receiver position).
 
-### DAS
+### Strain Profiles (DAS)
 
-Distributed acoustic sensing (DAS) receivers record **axial strain** along coordinate-aligned profiles.
+DAS receivers record **axial strain** along coordinate-aligned profiles.
 Within the staggered-grid framework, strain can be reconstructed from the co-located normal stress
 components via the compliance relation:
 
@@ -253,7 +253,7 @@ components via the compliance relation:
 
 The axial strain component along the fiber orientation is extracted from the resulting vector.
 Gauge-length integration or conversion to strain rate can be performed in post-processing.
-Only fibers aligned with the $x$-, $y$-, or $z$-axis are supported.
+Only fibers aligned with the $x$-, $y$-, or $z$-axis are supported. 
 
 ---
 
