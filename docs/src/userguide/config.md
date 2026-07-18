@@ -211,7 +211,7 @@ runsim("config2d.yaml", "velmod2d.jld2")
 ---
 
 !!! note
-    The config reader is yet sensitive to correct receiver formatting. If a receiver type is not required, simply pass an empty vector to the corresponding field in the configuration, e.g., x_aligned = [], fields = [], times = [] , etc... (like shown above).
+    The config reader yet requires correct receiver formatting. If a receiver type is not needed, simply pass an empty vector to the corresponding field in the configuration, e.g., x_aligned = [], fields = [], times = [] , etc... (like shown above).
     
 ---
 

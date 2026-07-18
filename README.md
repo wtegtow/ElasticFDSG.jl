@@ -109,7 +109,7 @@ lines!(ax2, time, geo_data[1,2,:], color="black")
 display(fig)
 
 ```
-<img src="docs/src/assets/demo.png" width="600" height="300">
+<img src="docs/src/assets/demo.png" width="800" height="300">
 
 ## Citing
 

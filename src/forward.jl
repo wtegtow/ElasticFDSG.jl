@@ -1,14 +1,6 @@
 # Staggered-grid finite-difference update kernels
 
-# Stiffness flat-matrix column layout:
-#   2D: c11, c13, c33, c44, rho
-#   3D: c11, c12, c13, c22, c23, c33, c44, c55, c66, rho
-#
-# CPML coefficient table layout (3 × n matrix):
-#   row 1: a  
-#   row 2: b  
-#   row 3: K  
-
+# need to make (unique) c-tensor array, since gpu-kernel can not work with structs
 function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{2}, fp::DataType)
     n   = length(tensors)
     mat = Matrix{fp}(undef, n, 5)
@@ -85,7 +77,6 @@ function init_simparams(fdsg::FDSG)
     c_data = AT(_flatten_stiffness(fdsg.elastic.c_tensors, Val(dim), fp))
     return SimParams{dim, fp, typeof(c_fd), typeof(c_data)}(N, c_fd, c_data)
 end
-
 
 # 2D KERNELS  
 @kernel inbounds=true function _sxx_szz_2d!(

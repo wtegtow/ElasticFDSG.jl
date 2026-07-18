@@ -1,5 +1,8 @@
+const RCOEF = 1e-8 # adjust reflection coefficient here 
+const KMAX = 1     # adjust CPML-K (if needed), 1 = classic PML (see Paper)
+
 function cmpl(N, npoints_pml, use_pml_start, use_pml_end, domain_, 
-              vmax, fdom, dt, rcoef, FLOAT)
+              vmax, fdom, dt, FLOAT)
 
     #= This function contains recycled code from: 
      https://github.com/geodynamics/seismic_cpml
@@ -9,7 +12,8 @@ function cmpl(N, npoints_pml, use_pml_start, use_pml_end, domain_,
     =#
 
     # params
-    K_max = 1
+    rcoef = RCOEF
+    K_max = KMAX
     α_max = π * fdom  
     NPOW = 3
 
@@ -140,8 +144,11 @@ mutable struct CPML3D{T<:AbstractVector, M<:AbstractMatrix}
 end
 
 function _cpml_coeff_table(fp, N, npoints_pml, use_s, use_e, coords, vmax, fdom, dt)
+    # CPML coefficient table layout (3 × n matrix):
+    #   row 1: a, row 2: b, row 3: K  
+
     K_evn, K_odd, a_evn, a_odd, b_evn, b_odd = cmpl(
-        N, npoints_pml, use_s, use_e, collect(coords), vmax, fdom, dt, fp(1e-10), fp)
+        N, npoints_pml, use_s, use_e, collect(coords), vmax, fdom, dt, fp)
     n   = length(coords)
     evn = zeros(fp, 3, n);  evn[1,:] .= a_evn;  evn[2,:] .= b_evn;  evn[3,:] .= K_evn
     odd = zeros(fp, 3, n);  odd[1,:] .= a_odd;  odd[2,:] .= b_odd;  odd[3,:] .= K_odd

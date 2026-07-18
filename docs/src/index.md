@@ -104,9 +104,6 @@ lines!(ax2, time, geo_data[1,2,:], color="black")
 display(fig)
 ```
 
-```@raw html
-<img src="../assets/demo.png" alt="demo" width="80%"/>
-```
 
 ## Citing
 
