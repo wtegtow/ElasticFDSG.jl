@@ -8,8 +8,9 @@ or loaded from a `.jld2` (Julia) or `.npy` / `.npz` (NumPy) file.
     All elastic parameters are defined at **full integer grid points** (co-located with normal stresses).
     The solver interpolates effective values at staggered positions internally.
 
-!!! note 
+!!! warning 
     Only solid material nodes should be defined. Liquids or gases do not cause the program to crash, but they currently introduce numerical artifacts.
+    
 ---
 
 ## 2D velocity model
