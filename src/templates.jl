@@ -32,7 +32,6 @@ function config_template_2d(;
     Mxx::Real,
     Mxz::Real,
     Mzz::Real,
-    anisotropic::Bool,
     xstart::String,
     xend::String,
     zstart::String,
@@ -80,7 +79,6 @@ function config_template_2d(;
                 "Mxx"        => Mxx,
                 "Mxz"        => Mxz,
                 "Mzz"        => Mzz,
-                "anisotropic" => anisotropic,
             ),
         ),
         "boundaries" => Dict(
@@ -144,7 +142,6 @@ function config_template_3d(;
     Myy::Real,
     Myz::Real,
     Mzz::Real,
-    anisotropic::Bool,
     xstart::String,
     xend::String,
     ystart::String,
@@ -200,7 +197,6 @@ function config_template_3d(;
                 "Myy"        => Myy,
                 "Myz"        => Myz,
                 "Mzz"        => Mzz,
-                "anisotropic" => anisotropic,
             ),
         ),
         "boundaries" => Dict(

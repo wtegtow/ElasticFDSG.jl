@@ -39,9 +39,9 @@ module ElasticFDSG
     include(joinpath(@__DIR__, "io.jl"))
 
     """
-        runsim(config, velmod) -> FDSG or nothing
+        runsim(config, velmod) -> nothing
 
-    Run an elastic forward simulation.
+    Run an elastic forward simulation and save results to disk.
 
     # Arguments
     - `config`: simulation configuration — either a `Dict` (built with
@@ -51,8 +51,7 @@ module ElasticFDSG
       (`String`) to a `.jld2`, `.npy`, or `.npz` file.
 
     # Returns
-    - The populated `FDSG` struct when `config["settings"]["output_file"]` is `nothing`.
-    - `nothing` when an output file path is given (results are written to HDF5).
+    - results are written to HDF5 as specified in config.
 
     # Example
     ```julia
@@ -65,7 +64,8 @@ module ElasticFDSG
         config::Union{String, Dict},
         velmod::Union{String, AbstractArray};
         log_level::Symbol=:warn,
-        solve::Bool=true 
+        solve::Bool=true,
+        _return::Bool=false
     )
         set_log_level!(log_level)
         @logger :debug "Hello from ElasticFDSG"
@@ -74,30 +74,21 @@ module ElasticFDSG
         device = parse_device(config)
         velmod = parse_velmod(velmod)
 
-        domain = init_domain(config, velmod)
+        domain  = init_domain(config, velmod)
         elastic = init_elastic(config, domain, velmod)
         velmod = nothing # free memory 
         GC.gc()
-        fields = init_fields(config, domain)
-        time = init_time(config, domain, elastic)
-        source = init_source(config, domain, elastic, time)
-        pml = init_cpml(config, domain, elastic, time, source)
-        geophones, das, snapshots = init_receiver(config, domain, elastic, time)
+    
+        time                        = init_time(config, domain, elastic)
+        source                      = init_source(config, domain, elastic, time)
+        geophones, das, snapshots   = init_receiver(config, domain, elastic, time)
+        fields                      = init_fields(config, domain)
+        pml                         = init_cpml(config, domain, elastic, time, source)
 
         fdsg = FDSG(config, device, domain, elastic, fields, time, source, pml, geophones, das, snapshots)
-        if get(config.dict["settings"], "verbose", true)
-            _print_summary(fdsg)
-        end
-
-        if solve 
-            solve!(fdsg) 
-        end
-
-        if isnothing(get(fdsg.config.dict["settings"], "output_file", nothing)) 
-            return fdsg # return the FDSG struct if no output file specified
-        else
-            save_results(fdsg)
-            return  
-        end
+        config.dict["settings"]["verbose"] && _print_summary(fdsg)
+        solve!(fdsg) 
+        save_results(fdsg)
+        _return && return fdsg 
     end;
 end

@@ -245,25 +245,15 @@ mutable struct Snapshots2D{T<:AbstractFloat}
     tid_map::Dict{Int,Int}
 end
 
-mutable struct Snapshots3D{T<:AbstractFloat}
-    n::Int
-    XY::Array{T,5}             # (nsnaps, ntime, nfields, nx, ny)
-    XZ::Array{T,5}             # (nsnaps, ntime, nfields, nx, nz)
-    YZ::Array{T,5}             # (nsnaps, ntime, nfields, ny, nz)
-    fieldnames::Vector{String}
-    tid_map::Dict{Int,Int}
-    grid_ids::Vector{Vector{Int}}  # per-snap: [ix, iy, iz]
-end
-
 function init_snapshots(config::Config, domain::Domain{2}, time::SimTime)
     fp    = eval(Symbol(config.dict["settings"]["precision"]))
-    scfg  = something(get(get(config.dict, "receivers", Dict()), "snapshots", nothing), Dict())
-    tsnap = get(scfg, "times",  nothing)
-    flds  = get(scfg, "fields", nothing)
 
-    if isnothing(tsnap) || isnothing(flds)
+    scfg = get(config.dict["receivers"], "snapshots", nothing)
+    if isnothing(scfg) # default case if empty
         return Snapshots2D{fp}(0, zeros(fp, 0, 0, 0, 0), String[], Dict{Int,Int}())
     end
+    tsnap = scfg["times"]
+    flds  = scfg["fields"]
 
     nx, nz  = domain.shape
     ntime   = length(tsnap)
@@ -275,17 +265,40 @@ function init_snapshots(config::Config, domain::Domain{2}, time::SimTime)
     return Snapshots2D(ntime * nfields, data, String.(flds), tid_map)
 end
 
+function save_snapshots!(snap::Snapshots2D, fields::Fields2D, ti)
+    
+    # new guard
+    snap.n == 0 && return
+    haskey(snap.tid_map, ti) || return
+
+    tid = snap.tid_map[ti]
+    fd  = _field_dict(fields)
+    for (fi, name) in enumerate(snap.fieldnames)
+        snap.data[tid, fi, :, :] .= Array(fd[name]) # Array() to avoid GPU-host issues if fields on device
+    end
+end
+
+mutable struct Snapshots3D{T<:AbstractFloat}
+    n::Int
+    XY::Array{T,5}             # (nsnaps, ntime, nfields, nx, ny)
+    XZ::Array{T,5}             # (nsnaps, ntime, nfields, nx, nz)
+    YZ::Array{T,5}             # (nsnaps, ntime, nfields, ny, nz)
+    fieldnames::Vector{String}
+    tid_map::Dict{Int,Int}
+    grid_ids::Vector{Vector{Int}}  # per-snap: [ix, iy, iz]
+end
+
 function init_snapshots(config::Config, domain::Domain{3}, time::SimTime)
     fp     = eval(Symbol(config.dict["settings"]["precision"]))
-    scfg   = something(get(get(config.dict, "receivers", Dict()), "snapshots", nothing), Dict())
-    tsnap  = get(scfg, "times",          nothing)
-    flds   = get(scfg, "fields",         nothing)
-    planes = get(scfg, "plane_positions", nothing)
 
-    if isnothing(tsnap) || isnothing(flds) || isnothing(planes)
+    scfg = get(config.dict["receivers"], "snapshots", nothing)
+    if isnothing(scfg) # default case if empty
         empty5 = zeros(fp, 0, 0, 0, 0, 0)
         return Snapshots3D{fp}(0, empty5, empty5, empty5, String[], Dict{Int,Int}(), Vector{Int}[])
     end
+    tsnap   = scfg["times"]
+    flds    = scfg["fields"]
+    planes  = scfg["plane_positions"]
 
     nx, ny, nz = domain.shape
     nsnaps  = length(planes)
@@ -304,17 +317,12 @@ function init_snapshots(config::Config, domain::Domain{3}, time::SimTime)
     return Snapshots3D(nsnaps * ntime * nfields, XY, XZ, YZ, String.(flds), tid_map, grid_ids)
 end
 
-function save_snapshots!(snap::Snapshots2D, fields::Fields2D, ti)
-    snap.n == 0 || !haskey(snap.tid_map, ti) && return
-    tid = snap.tid_map[ti]
-    fd  = _field_dict(fields)
-    for (fi, name) in enumerate(snap.fieldnames)
-        snap.data[tid, fi, :, :] .= Array(fd[name]) # Array() to avoid GPU-host issues if fields on device
-    end
-end
-
 function save_snapshots!(snap::Snapshots3D, fields::Fields3D, ti)
-    snap.n == 0 || !haskey(snap.tid_map, ti) && return
+    
+    # new guard
+    snap.n == 0 && return
+    haskey(snap.tid_map, ti) || return
+
     tid = snap.tid_map[ti]
     fd  = _field_dict(fields)
     for n in 1:length(snap.grid_ids)
@@ -328,19 +336,15 @@ function save_snapshots!(snap::Snapshots3D, fields::Fields3D, ti)
     end
 end
 
-
-# ============================================================
-# Top-level init
-# ============================================================
-
 function init_receiver(config::Config, domain::Domain, elastic::Elastic, time::SimTime)
+
     geophones = init_geophones(config, domain, time)
     das       = init_das(config, domain, elastic, time)
     snapshots = init_snapshots(config, domain, time)
 
     nrec = geophones.n + sum(f.n for f in das.fibers) + snapshots.n
     if nrec == 0
-        @warn "Receiver list is empty. No data will be saved." _module=nothing _file=nothing _line=nothing
+        @logger :warn "Receiver list is empty. No data will be saved."
     end
 
     return geophones, das, snapshots

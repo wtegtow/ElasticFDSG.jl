@@ -4,7 +4,6 @@ function get_wavelet(wavelet_type::String, t, ts, fdom)
         return ricker(t, ts, fdom)
     elseif wavelet_type == "gauss1d"
         return gauss1d(t, ts, fdom)
-
     # register new wavelet types here
 
     else
@@ -23,7 +22,6 @@ function gauss1d(t, ts, fdom)
     wavelet ./= maximum(abs.(wavelet))
     return wavelet 
 end
-
 
 # source 
 struct Source2D{T, A<:AbstractVector}
@@ -53,7 +51,7 @@ end
 
 function _check_wavelet(ts, fdom)
     if ts < (1.25 / fdom)
-        @warn "Wavelet is not fully included in the source-time function (ts < 1.25/fdom). This may cause oscillatory behavior." _module=nothing _file=nothing _line=nothing
+        @logger :warn "Wavelet is not fully included in the source-time function (ts < 1.25/fdom). This may cause numerical artefacts."
     end
 end
 
@@ -62,7 +60,7 @@ function _check_dispersion(domain::Domain, elastic::Elastic, fdom, pts_per_lambd
     dx_safe = λ_dom / pts_per_lambda
     dx_min  = minimum(map(c -> abs(step(c)), domain.coordinates))
     if dx_min > dx_safe
-        @warn "Grid may be too coarse for numerical accuracy. Safe Δh ≤ $(round(dx_safe, digits=2)), current Δh = $dx_min." _module=nothing _file=nothing _line=nothing
+        @logger :warn "Grid may be too coarse for numerical accuracy. Safe Δh ≤ $(round(dx_safe, digits=2)), current Δh = $dx_min." 
     end
 end
 
@@ -102,21 +100,9 @@ function init_source(config::Config, domain::Domain{2}, elastic::Elastic, time::
     μ0           = fp(scfg["seismic_moment"])
     wavelet_type = scfg["wavelet_type"]
     stf, stf_d1  = _build_stf(wavelet_type, time.t, ts, fdom, μ0, time.dt)
-
     Mxx = fp(scfg["moment_tensor"]["Mxx"])
     Mxz = fp(scfg["moment_tensor"]["Mxz"])
     Mzz = fp(scfg["moment_tensor"]["Mzz"])
-
-    if get(scfg["moment_tensor"], "anisotropic", false)
-        C = [s.c11 s.c13 fp(0);
-             s.c13 s.c33 fp(0);
-             fp(0) fp(0) s.c44]
-        Mv = [Mxx, Mzz, Mxz]' * C
-        Mxx, Mzz, Mxz = Mv[1], Mv[2], Mv[3]
-    end
-
-    M   = normalize([Mxx Mxz; Mxz Mzz])
-    Mxx, Mzz, Mxz = M[1,1], M[2,2], M[1,2]
 
     return Source2D(x, z, sx, sz, fdom, rhosrc, stf, stf_d1, Mxx, Mxz, Mzz)
 end
@@ -151,21 +137,6 @@ function init_source(config::Config, domain::Domain{3}, elastic::Elastic, time::
     Myy = fp(scfg["moment_tensor"]["Myy"])
     Myz = fp(scfg["moment_tensor"]["Myz"])
     Mzz = fp(scfg["moment_tensor"]["Mzz"])
-
-    if get(scfg["moment_tensor"], "anisotropic", false)
-        C = [s.c11 s.c12 s.c13 fp(0) fp(0) fp(0);
-             s.c12 s.c22 s.c23 fp(0) fp(0) fp(0);
-             s.c13 s.c23 s.c33 fp(0) fp(0) fp(0);
-             fp(0) fp(0) fp(0) s.c44 fp(0) fp(0);
-             fp(0) fp(0) fp(0) fp(0) s.c55 fp(0);
-             fp(0) fp(0) fp(0) fp(0) fp(0) s.c66]
-        Mv = [Mxx, Myy, Mzz, Myz, Mxz, Mxy]' * C
-        Mxx, Myy, Mzz, Myz, Mxz, Mxy = Mv[1], Mv[2], Mv[3], Mv[4], Mv[5], Mv[6]
-    end
-
-    M   = normalize([Mxx Mxy Mxz; Mxy Myy Myz; Mxz Myz Mzz])
-    Mxx, Myy, Mzz = M[1,1], M[2,2], M[3,3]
-    Mxy, Mxz, Myz = M[1,2], M[1,3], M[2,3]
 
     return Source3D(
         x, y, z, 

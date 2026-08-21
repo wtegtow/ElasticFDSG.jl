@@ -33,7 +33,6 @@ const _REQUIRED_SOURCE_2D = [
         ("Mxx",        Real),
         ("Mxz",        Real),
         ("Mzz",        Real),
-        ("anisotropic", Bool),
     ]),
 ]
 
@@ -54,7 +53,6 @@ const _REQUIRED_SOURCE_3D = [
         ("Myy",        Real),
         ("Myz",        Real),
         ("Mzz",        Real),
-        ("anisotropic", Bool),
     ]),
 ]
 
@@ -77,36 +75,41 @@ const _REQUIRED_BOUNDARIES_3D = [
 ]
 
 const _REQUIRED_RECEIVERS_2D = [
-    ("geophones", Any),
+    ("geophones", Vector{<:AbstractDict}),
     ("das", [
-        ("x_aligned", Any),
-        ("z_aligned", Any),
+        ("x_aligned", Vector{<:AbstractDict}),
+        ("z_aligned", Vector{<:AbstractDict}),
     ]),
     ("snapshots", [
-        ("times",  Any),
-        ("fields", Any),
+        ("times",  Vector{<:Real}),
+        ("fields", Vector{String}),
     ]),
 ]
 
 const _REQUIRED_RECEIVERS_3D = [
-    ("geophones", Any),
+    ("geophones", Vector{<:AbstractDict}),
     ("das", [
-        ("x_aligned", Any),
-        ("y_aligned", Any),
-        ("z_aligned", Any),
+        ("x_aligned", Vector{<:AbstractDict}),
+        ("y_aligned", Vector{<:AbstractDict}),
+        ("z_aligned", Vector{<:AbstractDict}),
     ]),
     ("snapshots", [
-        ("plane_positions", Any),
-        ("times",           Any),
-        ("fields",          Any),
+        ("plane_positions", Vector{<:AbstractDict}),
+        ("times",  Vector{<:Real}),
+        ("fields", Vector{String}),
     ]),
 ]
 
-
+# type checking only
 function _check_block(block::Dict, schema, context::String="")
     for (key, expected) in schema
-        if !haskey(block, key)
-            error("Config check failed: missing key \"$key\"$(isempty(context) ? "" : " in \"$context\"")")
+        if !haskey(block, key) 
+            # this allows children: {geophones, snapshots and "i"_aligned} to be undefined 
+            if context in ["receivers", "das"]
+                continue 
+            else # otherwhise crash the programm
+                error("Config check failed: missing key \"$key\"$(isempty(context) ? "" : " in \"$context\"")")
+            end
         end
         value = block[key]
 
@@ -135,21 +138,18 @@ function _check_block(block::Dict, schema, context::String="")
     end
 end
 
-
 function _check_config(dict::Dict, dim::Int)
     for section in ("settings", "time", "source", "boundaries", "receivers")
         if !haskey(dict, section)
             error("Config check failed: missing top-level key \"$section\"")
         end
     end
-
-    _check_block(dict["settings"],   _REQUIRED_SETTINGS,               "settings")
-    _check_block(dict["time"],       _REQUIRED_TIME,                   "time")
+    _check_block(dict["settings"],  _REQUIRED_SETTINGS, "settings")
+    _check_block(dict["time"],      _REQUIRED_TIME,     "time")
     _check_block(dict["source"],     dim == 2 ? _REQUIRED_SOURCE_2D     : _REQUIRED_SOURCE_3D,     "source")
     _check_block(dict["boundaries"], dim == 2 ? _REQUIRED_BOUNDARIES_2D : _REQUIRED_BOUNDARIES_3D, "boundaries")
     _check_block(dict["receivers"],  dim == 2 ? _REQUIRED_RECEIVERS_2D  : _REQUIRED_RECEIVERS_3D,  "receivers")
 end
-
 
 function _detect_dim(dict::Dict)::Int
     try
@@ -179,15 +179,15 @@ function parse_config(input::Union{String, Dict})::Config
     dim = _detect_dim(dict)
     _check_config(dict, dim)
 
-    # additional checks
-    path = get(dict["settings"], "output_file", nothing)
+    # some small additional checks
+    path = dict["settings"]["output_file"]
 
-    if !(isnothing(path) || path == "null") 
+    if !(isnothing(path))
         output_file = String(path)
         output_dir = dirname(output_file)
 
         if !isdir(output_dir)
-            # we dont allow creating new directories
+            # dont allow creating new directories
             error("Output directory does not exist: $output_dir")
         end
 
@@ -196,11 +196,9 @@ function parse_config(input::Union{String, Dict})::Config
         end
 
         if isfile(output_file)            
-            @warn "Output file: $output_file already exists and will be overwritten"    
+            @logger :warn "Output file: $output_file already exists and will be overwritten"    
         end
     end
-
-
 
     return Config(dict, dim)
 end
@@ -345,7 +343,7 @@ end
 # ============================================================
 
 struct Device
-    name::String        # human-readable device name
+    name::String    
     backend             # KernelAbstractions backend instance
     array               # Array constructor (Array, CuArray, MtlArray, …)
 end

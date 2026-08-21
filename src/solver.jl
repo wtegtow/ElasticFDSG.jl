@@ -67,7 +67,7 @@ function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
 
     showinfo  = get(fdsg.config.dict["settings"], "verbose", true)
     if showinfo
-        prog = Progress(time.nt; showspeed=true, desc="Running solver... ")
+        prog = Progress(time.nt; showspeed=true, desc="Solving... ")
     end
 
     for ti in 1:time.nt
