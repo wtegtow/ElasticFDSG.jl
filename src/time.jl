@@ -19,7 +19,7 @@ function init_time(config::Config, domain::Domain, elastic::Elastic)
     dt_stable  = courant / (elastic.vmax * sqrt(sum(1/d^2 for d in spacings)))
 
     if dt > dt_stable
-        @warn "Given Δt=$dt does not satisfy the CFL criterion. Δt changed to $dt_stable." _module=nothing _file=nothing _line=nothing
+        @logger :warn "Given Δt=$dt does not satisfy the CFL criterion. Δt changed to $dt_stable."
         dt = dt_stable
     end
 

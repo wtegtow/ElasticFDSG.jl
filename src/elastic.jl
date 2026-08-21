@@ -55,7 +55,7 @@ function _check_cpml_stability(c11, c13, c33, c44)
         s3 = (c13_ + c44_)^2 - c11_ * c33_ - c44_^2
 
         if s1 > 0 || s2 > 0 || s3 > 0
-            @warn "Stiffness tensor violates C-PML stability at some grid points." _module=nothing _file=nothing _line=nothing
+            @logger :warn "Stiffness tensor violates C-PML stability at some grid points."
             return 
         end
     end
@@ -148,7 +148,7 @@ function _check_cpml_stability(c11, c12, c13, c22, c23, c33, c44, c55, c66)
            xy1 > 0 || xy2 > 0 || xy3 > 0 ||
            yz1 > 0 || yz2 > 0 || yz3 > 0
 
-            @warn "Stiffness tensor violates C-PML stability at some grid points." _module=nothing _file=nothing _line=nothing
+            @logger :warn "Stiffness tensor violates C-PML stability at some grid points."
             return 
         end
     end

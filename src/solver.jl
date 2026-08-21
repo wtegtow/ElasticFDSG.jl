@@ -45,8 +45,6 @@ end
 function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
 
     fdsg = to_device!(fdsg)
-    _log("Arrays moved to device: $(fdsg.device.name)")
-
     params = init_simparams(fdsg)
 
     if isnothing(backend)
@@ -92,7 +90,6 @@ function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
     end
 
     fdsg = to_host!(fdsg)
-    _log("Arrays moved to host")
 
     return fdsg
 end

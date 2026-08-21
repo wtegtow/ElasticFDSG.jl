@@ -1,19 +1,15 @@
 module ElasticFDSG
-   
-    export devmode!
+
     export runsim
     export load_results
     export config_template_2d, config_template_3d
 
     using YAML, HDF5, NPZ, JLD2
-    using LinearAlgebra, Printf
+    using LinearAlgebra, Printf, Dates
     using KernelAbstractions, GPUArrays
     using ProgressMeter
 
-    const _DEV = Ref(false)
-    devmode!(on::Bool=true) = (_DEV[] = on)
-    _log(msg) = _DEV[] && println("  [dev] ", msg)
-
+    include(joinpath(@__DIR__, "utils.jl"))
     include(joinpath(@__DIR__, "parser.jl"))
     include(joinpath(@__DIR__, "templates.jl"))
     include(joinpath(@__DIR__, "domain.jl"))
@@ -68,56 +64,33 @@ module ElasticFDSG
     function runsim(
         config::Union{String, Dict},
         velmod::Union{String, AbstractArray};
+        log_level::Symbol=:warn,
         solve::Bool=true 
     )
-        
-        _log("Hello from ElasticFDSG!")
+        set_log_level!(log_level)
+        @logger :debug "Hello from ElasticFDSG"
 
         config = parse_config(config)
-        _log("Config parsed successfully")
-
         device = parse_device(config)
-        _log("Running on: $(device.name)")
-
         velmod = parse_velmod(velmod)
-        _log("Velocity model parsed successfully")
-
-        @assert config.dim == velmod.dim "Dimension mismatch between config and velocity model" 
 
         domain = init_domain(config, velmod)
-        _log("Domain initialized with shape $(domain.shape)")
-
         elastic = init_elastic(config, domain, velmod)
-        _log("Elastic parameters initialized")
-
         velmod = nothing # free memory 
         GC.gc()
-
         fields = init_fields(config, domain)
-        _log("Fields initialized")
-
         time = init_time(config, domain, elastic)
-        _log("Time parameters initialized")
-
         source = init_source(config, domain, elastic, time)
-        _log("Source initialized")
-
         pml = init_cpml(config, domain, elastic, time, source)
-        _log("PML initialized")
-
         geophones, das, snapshots = init_receiver(config, domain, elastic, time)
-        _log("Receivers initialized")
 
         fdsg = FDSG(config, device, domain, elastic, fields, time, source, pml, geophones, das, snapshots)
-        _log("FDSG struct initialized")
-
         if get(config.dict["settings"], "verbose", true)
             _print_summary(fdsg)
         end
 
         if solve 
             solve!(fdsg) 
-            _log("Solved")
         end
 
         if isnothing(get(fdsg.config.dict["settings"], "output_file", nothing)) 
