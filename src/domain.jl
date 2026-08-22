@@ -5,16 +5,14 @@ struct Domain{N}
     pml_lookup::AbstractArray{Int, N}
 end 
 
-
-# dim-specific helpers
+# some helper
 _coord_vecs(vm::VelocityModel2D, fp) = (fp.(vm.X[:, 1]),   fp.(vm.Z[1, :]))
 _coord_vecs(vm::VelocityModel3D, fp) = (fp.(vm.X[:, 1, 1]), fp.(vm.Y[1, :, 1]), fp.(vm.Z[1, 1, :]))
 _axis_names(::VelocityModel2D) = ("x", "z")
 _axis_names(::VelocityModel3D) = ("x", "y", "z")
 
-_expand_coords(inner, pad_s, pad_e, d) =
+_expand_coords(inner, pad_s, pad_e, d) = 
     LinRange(inner[begin] - pad_s * d, inner[end] + pad_e * d, length(inner) + pad_s + pad_e)
-
 _inner_ids(inner, expanded) = [argmin(abs.(v .- expanded)) for v in inner]
 
 function _pml_ranges(abs_s, abs_e, N, nlayer, id_start, id_end)
@@ -58,5 +56,7 @@ function init_domain(config::Config, velmod::VelocityModel)::Domain
         end
     end
 
-    return Domain{N}(Tuple(shape), coords, inner_ids, pml_lookup)
+    domain = Domain{N}(Tuple(shape), coords, inner_ids, pml_lookup)
+    @logger :debug "Domain initialized"
+    return domain
 end;

@@ -21,9 +21,13 @@ function _print_summary(fdsg::FDSG)
         # CFL / Nyquist
         spacings  = map(c -> step(c), d.coordinates)
         dx_min    = minimum(spacings)
-        courant   = t.dt * e.vmax * sqrt(N / dx_min^2)
+        courant   = t.dt * e.vmax * sqrt(sum(1 ./ spacings.^2))
+        courant_max = N == 2 ? 0.7 : 0.6
+
+        # dispersion
         λ_min     = e.vmin / s.fdom
         ppw       = λ_min / dx_min
+        ppw_max   = N == 2 ? MIN_PTS_PER_DOM_LAMBDA_2D : MIN_PTS_PER_DOM_LAMBDA_3D
 
         # boundaries
         bnd       = c.dict["boundaries"]
@@ -70,8 +74,8 @@ function _print_summary(fdsg::FDSG)
         println(head("Time"))
         print(row("Interval", @sprintf("%.4f : %.2e : %.4f", t.t0, t.dt, t.tend)))
         print(row("Timesteps", t.nt))
-        print(row("CFL number", @sprintf("%.3f %s", courant, courant > 1 ? "⚠ UNSTABLE" : "✓")))
-        print(row("Points/wavelength", @sprintf("%.1f %s", ppw, ppw < 5 ? "⚠ LOW" : "✓")))
+        print(row("CFL number", @sprintf("%.3f %s", courant, courant > courant_max ? "⚠ UNSTABLE" : "✓")))
+        print(row("Points/dom. wavelength", @sprintf("%.1f %s", ppw, ppw < ppw_max ? "⚠ LOW" : "✓")))
         println(div)
         println(head("Source"))
         if N == 2

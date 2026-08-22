@@ -55,7 +55,10 @@ function _check_wavelet(ts, fdom)
     end
 end
 
-function _check_dispersion(domain::Domain, elastic::Elastic, fdom, pts_per_lambda)
+# NOTE: This is dominant wavelength, not minimum wavelength of fmax. So need to set pts_per_lambda a bit larger than recommended 
+const MIN_PTS_PER_DOM_LAMBDA_2D = 8
+const MIN_PTS_PER_DOM_LAMBDA_3D = 12
+function _check_dispersion(domain::Domain, elastic::Elastic, fdom, pts_per_lambda) 
     λ_dom   = elastic.vmin / fdom
     dx_safe = λ_dom / pts_per_lambda
     dx_min  = minimum(map(c -> abs(step(c)), domain.coordinates))
@@ -89,8 +92,7 @@ function init_source(config::Config, domain::Domain{2}, elastic::Elastic, time::
 
     _check_source_in_domain((x, z), domain)
     _check_wavelet(ts, fdom)
-    points_per_lambda = 6
-    _check_dispersion(domain, elastic, fdom, points_per_lambda)
+    _check_dispersion(domain, elastic, fdom, MIN_PTS_PER_DOM_LAMBDA_2D)
 
     sx, sz = _source_indices((x, z), domain.coordinates)
 
@@ -119,8 +121,7 @@ function init_source(config::Config, domain::Domain{3}, elastic::Elastic, time::
 
     _check_source_in_domain((x, y, z), domain)
     _check_wavelet(ts, fdom)
-    points_per_lambda = 10
-    _check_dispersion(domain, elastic, fdom, points_per_lambda)
+    _check_dispersion(domain, elastic, fdom, MIN_PTS_PER_DOM_LAMBDA_3D)
 
     sx, sy, sz = _source_indices((x, y, z), domain.coordinates)
 

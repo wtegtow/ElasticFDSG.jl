@@ -19,7 +19,11 @@ macro logger(level, msg)
             local timestamp = Dates.format(now(), "yyyy-mm-dd HH:MM:SS")
             local file = basename($(String(__source__.file)))
             local line = $(__source__.line)
-            println("[$(uppercase(String(level)))] [$timestamp] $($(esc(msg))) ($file:$line)")
+            if LOG_LEVELS[level] >= 3
+                println("[$(uppercase(String(level)))] [$timestamp] $($(esc(msg)))")
+            else 
+                println("[$(uppercase(String(level)))] [$timestamp] $($(esc(msg))) ($file:$line)")
+            end
         end
     end
 end

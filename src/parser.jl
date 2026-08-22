@@ -100,7 +100,7 @@ const _REQUIRED_RECEIVERS_3D = [
     ]),
 ]
 
-# type checking only
+# type checking only: all other mismatches should hopefully trigger self-explaining errors.
 function _check_block(block::Dict, schema, context::String="")
     for (key, expected) in schema
         if !haskey(block, key) 
@@ -114,7 +114,7 @@ function _check_block(block::Dict, schema, context::String="")
         value = block[key]
 
         if isa(expected, Vector) && all(x -> x isa Tuple, expected)
-            # sub-block: recurse
+            # sub-block: do recursive until type check
             if !(value isa Dict)
                 error("Config check failed: \"$key\" must be a sub-block (Dict), got $(typeof(value))")
             end
@@ -126,11 +126,8 @@ function _check_block(block::Dict, schema, context::String="")
                 error("Config check failed: value \"$value\" for key \"$key\" not in allowed values $expected")
             end
 
-        elseif expected === Any
-            nothing  # no constraint
-
         else
-            # type check
+            # perform type check
             if !(value isa expected)
                 error("Config check failed: \"$key\" must be a $(expected), got $(typeof(value))")
             end
@@ -199,8 +196,9 @@ function parse_config(input::Union{String, Dict})::Config
             @logger :warn "Output file: $output_file already exists and will be overwritten"    
         end
     end
-
-    return Config(dict, dim)
+    config = Config(dict, dim)
+    @logger :info "Config initialized"
+    return config
 end
 
 
@@ -334,7 +332,9 @@ function parse_velmod(input::Union{String, AbstractArray})
         input
     end
     _check_velmod(arr)
-    return _build_velmod(arr)
+    vm = _build_velmod(arr)
+    @logger :info "Velocity model initialized"
+    return vm
 end
 
 
@@ -353,7 +353,7 @@ function parse_device(config::Config)::Device
 
     # CPU 
     if device_str in ["cpu", "CPU", "Cpu"]
-        return Device("cpu", KernelAbstractions.CPU(), Array)    
+        dvc = Device("cpu", KernelAbstractions.CPU(), Array) 
         
     # NVIDIA CUDA
     elseif device_str in ["cuda", "gpu-cuda", "gpu_cuda", "CUDA", "Cuda"]
@@ -361,7 +361,7 @@ function parse_device(config::Config)::Device
         devs = Main.CUDA.devices()
         isempty(devs) && error("No CUDA device found.")
         name = String(Main.CUDA.name(Main.CUDA.device!(0)))
-        return Device(name, Main.CUDA.CUDABackend(), Main.CuArray)
+        dvc = Device(name, Main.CUDA.CUDABackend(), Main.CuArray)
 
     # Apple Metal
     elseif device_str in ["metal", "gpu-metal", "gpu_metal", "Metal", "apple", "Apple", "Mac"]
@@ -369,7 +369,7 @@ function parse_device(config::Config)::Device
         devs = Main.Metal.MTL.devices()
         isempty(devs) && error("No Metal device found.")
         name = String(devs[1].name)
-        return Device(name, Main.Metal.MetalBackend(), Main.MtlArray)
+        dvc = Device(name, Main.Metal.MetalBackend(), Main.MtlArray)
 
     # AMD ROCm (not tested, but added for completeness)
     elseif device_str in ["amd", "rocm", "gpu-amd", "gpu_rocm", "AMD"]
@@ -377,7 +377,7 @@ function parse_device(config::Config)::Device
         devs = Main.AMDGPU.devices()
         isempty(devs) && error("No AMD device found.")
         name = String(devs[1])
-        return Device(name, Main.AMDGPU.ROCBackend(), Main.ROCArray)
+        dvc = Device(name, Main.AMDGPU.ROCBackend(), Main.ROCArray)
 
     # Intel oneAPI (not tested, but added for completeness)
     elseif device_str in ["intel", "oneapi", "one_api", "gpu-intel"]
@@ -385,9 +385,12 @@ function parse_device(config::Config)::Device
         dev = Main.oneAPI.device()
         isnothing(dev) && error("No oneAPI device found.")
         name = String(dev)
-        return Device(name, Main.oneAPI.oneAPIBackend(), Main.oneArray)
+        dvc = Device(name, Main.oneAPI.oneAPIBackend(), Main.oneArray)
 
     else
         error("Unknown device: \"$device_str\". Valid options: cpu, cuda, metal, amd, oneapi")
     end
+
+    @logger :info "Device $(dvc.name) initialized"
+    return dvc
 end

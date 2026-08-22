@@ -1,7 +1,6 @@
 module ElasticFDSG
 
-    export runsim
-    export load_results
+    export runsim, load_results
     export config_template_2d, config_template_3d
 
     using YAML, HDF5, NPZ, JLD2
@@ -41,17 +40,14 @@ module ElasticFDSG
     """
         runsim(config, velmod) -> nothing
 
-    Run an elastic forward simulation and save results to disk.
+    Run an elastic forward simulation and save results to HDF5 as specified in config.
 
     # Arguments
-    - `config`: simulation configuration — either a `Dict` (built with
+    - `config`: simulation configuration — either a `Dict` (can be built with
       [`config_template_2d`](@ref) / [`config_template_3d`](@ref)) or a
       file path (`String`) to a `.yaml` / `.yml` file.
     - `velmod`: velocity model — either a Julia `AbstractArray` or a file path
       (`String`) to a `.jld2`, `.npy`, or `.npz` file.
-
-    # Returns
-    - results are written to HDF5 as specified in config.
 
     # Example
     ```julia
@@ -64,31 +60,30 @@ module ElasticFDSG
         config::Union{String, Dict},
         velmod::Union{String, AbstractArray};
         log_level::Symbol=:warn,
-        solve::Bool=true,
-        _return::Bool=false
-    )
+        _return::Bool=false)
+        
         set_log_level!(log_level)
-        @logger :debug "Hello from ElasticFDSG"
+        @logger :info "Hello from ElasticFDSG"
 
         config = parse_config(config)
         device = parse_device(config)
         velmod = parse_velmod(velmod)
 
-        domain  = init_domain(config, velmod)
-        elastic = init_elastic(config, domain, velmod)
-        velmod = nothing # free memory 
-        GC.gc()
-    
+        domain                      = init_domain(config, velmod)
+        elastic                     = init_elastic(config, domain, velmod)
         time                        = init_time(config, domain, elastic)
         source                      = init_source(config, domain, elastic, time)
         geophones, das, snapshots   = init_receiver(config, domain, elastic, time)
+        velmod = nothing; GC.gc()   # free velocity model from memory before allocating new fields
         fields                      = init_fields(config, domain)
         pml                         = init_cpml(config, domain, elastic, time, source)
 
         fdsg = FDSG(config, device, domain, elastic, fields, time, source, pml, geophones, das, snapshots)
         config.dict["settings"]["verbose"] && _print_summary(fdsg)
+        
         solve!(fdsg) 
         save_results(fdsg)
         _return && return fdsg 
-    end;
+    end
+
 end

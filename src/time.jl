@@ -13,7 +13,7 @@ function init_time(config::Config, domain::Domain, elastic::Elastic)
     t0   = fp(tcfg["start"])
     tend = fp(tcfg["end"])
     dt   = fp(tcfg["timestep"])
-
+    
     courant    = fp(0.6)
     spacings   = map(c -> fp(step(c)), domain.coordinates)
     dt_stable  = courant / (elastic.vmax * sqrt(sum(1/d^2 for d in spacings)))
