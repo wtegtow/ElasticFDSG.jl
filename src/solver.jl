@@ -42,15 +42,12 @@ function to_host!(fdsg::FDSG)
     return fdsg
 end
 
-function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
+function solve!(fdsg::FDSG, block_size=nothing)
 
     fdsg = to_device!(fdsg)
     params = init_simparams(fdsg)
-
-    if isnothing(backend)
-        backend = fdsg.device.backend
-    end
-
+    backend = fdsg.device.backend
+    
     if isnothing(block_size)
         block_size = fdsg.config.dim == 2 ? (32, 32) : (8, 8, 8)
     end
@@ -67,7 +64,7 @@ function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
 
     showinfo  = get(fdsg.config.dict["settings"], "verbose", true)
     if showinfo
-        prog = Progress(time.nt; showspeed=true, desc="Solving... ")
+        prog = Progress(time.nt; showspeed=true, desc="Solving...")
     end
 
     for ti in 1:time.nt
@@ -78,15 +75,13 @@ function solve!(fdsg::FDSG; backend=nothing, block_size=nothing)
         update_stresses!(fields, pml, elastic, domain, time, params, backend, block_size)
         KernelAbstractions.synchronize(backend)
 
-        GPUArrays.@allowscalar _stress_glut_source!(fields, source, domain, time, ti)
+        GPUArrays.@allowscalar _stress_glut!(fields, source, domain, time, ti)
 
         GPUArrays.@allowscalar save_geophones!(geophones, fields, ti)
-        save_das!(das, fields, ti)
+        save_das!(das, fields, domain, params.N_fd, ti)
         save_snapshots!(snapshots, fields, ti)
 
-        if showinfo
-            next!(prog)
-        end
+        showinfo && next!(prog)
     end
 
     fdsg = to_host!(fdsg)

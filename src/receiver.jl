@@ -11,6 +11,10 @@ function _check_in_domain(locs::Matrix, domain::Domain)
     end
 end
 
+function _axis_keys(N)
+    N == 2 ? ("x", "z") : ("x", "y", "z")
+end
+
 function _field_dict(fields::Fields2D)
     Dict("vx"  => fields.vx,  "vz"  => fields.vz,
          "sxx" => fields.sxx, "sxz" => fields.sxz, "szz" => fields.szz)
@@ -31,10 +35,6 @@ mutable struct Geophones{T<:AbstractFloat}
     ids::Matrix{Int}     # (ndim, ngeo)
     data::Array{T,3}     # (ngeo, ncomp, nt)   ncomp = ndim
     coords::Matrix{T}    # (ndim, ngeo)  — nearest neighbor grid coordinates
-end
-
-function _axis_keys(N)
-    N == 2 ? ("x", "z") : ("x", "y", "z")
 end
 
 function _build_locs(gcfg, N, fp)
@@ -63,14 +63,14 @@ end
 
 function save_geophones!(geo::Geophones, fields::Fields2D, ti)
     geo.n == 0 && return
-    GPUArrays.@allowscalar for n in 1:geo.n, (c, v) in enumerate((fields.vx, fields.vz))
+    for n in 1:geo.n, (c, v) in enumerate((fields.vx, fields.vz))
         geo.data[n, c, ti] = v[geo.ids[1,n], geo.ids[2,n]]
     end
 end
 
 function save_geophones!(geo::Geophones, fields::Fields3D, ti)
     geo.n == 0 && return
-    GPUArrays.@allowscalar for n in 1:geo.n, (c, v) in enumerate((fields.vx, fields.vy, fields.vz))
+    for n in 1:geo.n, (c, v) in enumerate((fields.vx, fields.vy, fields.vz))
         geo.data[n, c, ti] = v[geo.ids[1,n], geo.ids[2,n], geo.ids[3,n]]
     end
 end
@@ -80,156 +80,158 @@ end
 # DAS
 # ============================================================
 
-mutable struct Fibers{T<:AbstractFloat}
-    n::Int
-    axis::Int                    # varying spatial axis (1=x, 2=y or z in 2D, 3=z in 3D)
-    ids::Vector{Any}             # per-fiber: Vector{Any}[ndim], axis k: Vector{Int} or Int
-    cinv::Vector{Array{T,3}}     # per-fiber: (nch, ndim, ndim) — upper-left normal-stress compliance
-    data::Vector{Matrix{T}}      # per-fiber: (nch, nt)
-    coords::Vector{Matrix{T}}    # per-fiber: (ndim, nch) — nearest neighbor grid coordinates
+mutable struct Fiber{T<:AbstractFloat}       
+    axis::String        # "axis"_aligned
+    coords::Matrix{T}   # (ndim, nch) 
+    ids::Matrix{Int}    # (ndim, nch)
+    data::Matrix{T}     # (nch, nt)
 end
 
 mutable struct DAS
-    fibers::Vector{Fibers}       # one per spatial axis
+    fibers::Union{Vector{Fiber}, Nothing}
 end
 
-function _cinv_from_stiffness(s::Stiffness2D, fp)
-    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
-    vs44 = sqrt(max(s.c44 / s.rho, zero(fp)))
-    is_fluid = vs44 < liquid_tol
+function init_das(config::Config, domain::Domain, time::SimTime)
 
-    if is_fluid
-        return fp.(diagm([1/s.c11, 1/s.c33]))
-    end
-    return fp.(inv([s.c11 s.c13;
-                    s.c13 s.c33]))
-end
+    rcv_cfg = config.dict["receivers"]
+    das_cfg = get(rcv_cfg, "das", nothing)
+    isnothing(das_cfg) && return DAS(nothing)
 
+    fp = eval(Symbol(config.dict["settings"]["precision"]))
+    dim = length(domain.coordinates)
 
-function _cinv_from_stiffness(s::Stiffness3D, fp)
-    liquid_tol = fp(1e-4) # should be fine for m/s and km/s
+    axis = dim == 2 ? ("x", "z") : ("x", "y", "z")
+    axis_keys = dim == 2 ? ("x_aligned", "z_aligned") : 
+                           ("x_aligned", "y_aligned", "z_aligned")
 
-    vs44 = sqrt(max(s.c44 / s.rho, zero(fp)))
-    vs55 = sqrt(max(s.c55 / s.rho, zero(fp)))
-    vs66 = sqrt(max(s.c66 / s.rho, zero(fp)))
+    fibers = Fiber[]
+    for key in axis_keys
+        !haskey(das_cfg, key) && continue 
 
-    is_fluid = (vs44 < liquid_tol) &&
-               (vs55 < liquid_tol) &&
-               (vs66 < liquid_tol)
-
-    if is_fluid
-        return fp.(diagm([1/s.c11, 1/s.c22, 1/s.c33]))
-    end
-    return fp.(inv([s.c11 s.c12 s.c13;
-                    s.c12 s.c22 s.c23;
-                    s.c13 s.c23 s.c33]))
-end
-
-function _register_fibers(fp, axis, fibers_cfg, axis_keys, domain, elastic, nt)
-    ndim = length(axis_keys)
-    if isnothing(fibers_cfg) || isempty(fibers_cfg)
-        return Fibers{fp}(0, axis, Any[], Array{fp,3}[], Matrix{fp}[], Matrix{fp}[])
-    end
-
-    nfibers    = length(fibers_cfg)
-    all_ids    = Vector{Any}(undef, nfibers)
-    all_cinv   = Vector{Array{fp,3}}(undef, nfibers)
-    all_data   = Vector{Matrix{fp}}(undef, nfibers)
-    all_coords = Vector{Matrix{fp}}(undef, nfibers)
-
-    for i in 1:nfibers
-        fiber = fibers_cfg[i]
-
-        # per-axis ids: Vector{Int} for varying axis, Int for fixed axes
-        ids_i = Vector{Any}(undef, ndim)
-        for (k, key) in enumerate(axis_keys)
-            raw = fiber[key]
-            if k == axis
-                pts      = fp.(collect(raw["start"]:raw["step"]:raw["end"]))
-                ids_i[k] = [_nearest_id(v, domain.coordinates[k]) for v in pts]
-            else
-                ids_i[k] = _nearest_id(fp(raw), domain.coordinates[k])
+        for fbr in das_cfg[key]
+            
+            # this loop only determines nchannel and the aligned axis
+            pts = nothing 
+            axs = nothing
+            for a in axis
+                if fbr[a] isa Dict
+                    pts = fp.(collect(fbr[a]["start"]:fbr[a]["step"]:fbr[a]["end"]))
+                    axs = a 
+                    break
+                end 
             end
-        end
-        all_ids[i] = ids_i
 
-        # build Cinv for each channel
-        # iterate axes in (x,y,z) order; fixed axes wrapped in 1-element vector
-        nch    = length(ids_i[axis])
-        cinv_i = zeros(fp, nch, ndim, ndim)
-        iter   = [k == axis ? ids_i[k] : [ids_i[k]] for k in 1:ndim]
-        for (ch, idx) in enumerate(Iterators.product(iter...))
-            s = elastic.c_tensors[elastic.c_lookup[idx...]].fields
-            cinv_i[ch, :, :] .= _cinv_from_stiffness(s, fp)
-        end
-        all_cinv[i] = cinv_i
-        all_data[i] = zeros(fp, nch, nt)
+            nchannel = length(pts)
+            coords = zeros(fp, dim, nchannel)
+            ids    = zeros(Int, dim, nchannel)
+            data   = zeros(fp, nchannel, time.nt)
 
-        coords_i = zeros(fp, ndim, nch)
-        for ch in 1:nch
-            for k in 1:ndim
-                if k == axis
-                    coords_i[k, ch] = domain.coordinates[k][ids_i[k][ch]]
+            # locations 
+            for (i, a) in enumerate(axis)
+                if a == axs 
+                    coords[i, :] .= pts
                 else
-                    coords_i[k, ch] = domain.coordinates[k][ids_i[k]]
+                    coords[i, :] .= fp.(repeat([fbr[a]], nchannel))
                 end
             end
-        end
-        all_coords[i] = coords_i
-    end
+            _check_in_domain(coords, domain)
 
-    return Fibers(nfibers, axis, all_ids, all_cinv, all_data, all_coords)
-end
-
-function init_das(config::Config, domain::Domain{2}, elastic::Elastic, time::SimTime)
-    fp           = eval(Symbol(config.dict["settings"]["precision"]))
-    das_raw      = get(get(config.dict, "receivers", Dict()), "das", nothing)
-    das_cfg      = something(das_raw, Dict())
-    axis_keys    = _axis_keys(2)
-    orientations = ("x_aligned", "z_aligned")
-    fibers = [_register_fibers(fp, axis, get(das_cfg, orient, nothing),
-                               axis_keys, domain, elastic, time.nt)
-              for (axis, orient) in enumerate(orientations)]
-    return DAS(fibers)
-end
-
-function init_das(config::Config, domain::Domain{3}, elastic::Elastic, time::SimTime)
-    fp           = eval(Symbol(config.dict["settings"]["precision"]))
-    das_raw      = get(get(config.dict, "receivers", Dict()), "das", nothing)
-    das_cfg      = something(das_raw, Dict())
-    axis_keys    = _axis_keys(3)
-    orientations = ("x_aligned", "y_aligned", "z_aligned")
-    fibers = [_register_fibers(fp, axis, get(das_cfg, orient, nothing),
-                               axis_keys, domain, elastic, time.nt)
-              for (axis, orient) in enumerate(orientations)]
-    return DAS(fibers)
-end
-
-function save_das!(das::DAS, fields::Fields2D, ti)
-    for fg in das.fibers
-        fg.n == 0 && continue
-        for i in 1:fg.n
-            ids   = fg.ids[i]
-            sxx_v = vec(Array(fields.sxx[ids[1], ids[2]]))
-            szz_v = vec(Array(fields.szz[ids[1], ids[2]]))
-            for ch in 1:size(fg.data[i], 1)
-                fg.data[i][ch, ti] = dot(fg.cinv[i][ch, fg.axis, :], [sxx_v[ch], szz_v[ch]])
+            # location indices
+            for i in 1:dim , ch in 1:nchannel
+                ids[i, ch] = _nearest_id(coords[i, ch], domain.coordinates[i])
             end
+
+            push!(fibers, Fiber(key, coords, ids, data))
+
         end
     end
+    @logger :debug "$(length(fibers)) Fibers registered"
+    das = DAS(fibers)
+    return das
 end
 
-function save_das!(das::DAS, fields::Fields3D, ti)
-    for fg in das.fibers
-        fg.n == 0 && continue
-        for i in 1:fg.n
-            ids   = fg.ids[i]
-            sxx_v = vec(Array(fields.sxx[ids[1], ids[2], ids[3]]))
-            syy_v = vec(Array(fields.syy[ids[1], ids[2], ids[3]]))
-            szz_v = vec(Array(fields.szz[ids[1], ids[2], ids[3]]))
-            for ch in 1:size(fg.data[i], 1)
-                fg.data[i][ch, ti] = dot(fg.cinv[i][ch, fg.axis, :], [sxx_v[ch], syy_v[ch], szz_v[ch]])
-            end
+function save_das!(das::DAS, fields::Fields2D, domain::Domain, N, ti)
+    
+    # strain rate       =      1/2 * (∇v + ∇vᵀ)
+    # axial strain rate = nᵀ · 1/2 * (∇v + ∇vᵀ) · n
+    # x-aligned: n=(1,0) -> ∂vx/∂x
+    # z-aligned: n=(0,1) -> ∂vz/∂z
+
+    isnothing(das.fibers) && return 
+
+    vx = Array(fields.vx) # copy to cpu to avoid scalar indexing issue
+    vz = Array(fields.vz)
+    dx = step(domain.coordinates[1])
+    dz = step(domain.coordinates[2])
+    T = eltype(vx)
+    c_fd = diff_coeff(N)
+   
+    for fiber in das.fibers
+
+        for (ic, (x, z)) in enumerate(eachcol(fiber.ids))
+
+            if fiber.axis == "x_aligned"
+                vx_x = zero(T)
+                for i in 1:N
+                    vx_x += c_fd[i]/dx * (vx[x+i, z] - vx[x-(i-1), z])
+                end
+                fiber.data[ic, ti] = vx_x
+
+            elseif fiber.axis == "z_aligned"
+                vz_z = zero(T)
+                for i in 1:N
+                    vz_z += c_fd[i]/dz * (vz[x, z+(i-1)] - vz[x, z-i])
+                end
+                fiber.data[ic, ti] = vz_z 
+            end 
+        end
+    end
+end
+
+function save_das!(das::DAS, fields::Fields3D, domain::Domain, N, ti)
+    
+    # strain rate       =      1/2 * (∇v + ∇vᵀ)
+    # axial strain rate = nᵀ · 1/2 * (∇v + ∇vᵀ) · n
+    # x-aligned: n=(1,0,0) -> ∂vx/∂x
+    # y-aligned: n=(0,1,0) -> ∂vy/∂y
+    # z-aligned: n=(0,0,1) -> ∂vz/∂z
+
+    isnothing(das.fibers) && return 
+
+    vx = Array(fields.vx) # copy to cpu to avoid scalar indexing issue
+    vy = Array(fields.vy)
+    vz = Array(fields.vz)
+    dx = step(domain.coordinates[1])
+    dy = step(domain.coordinates[2])
+    dz = step(domain.coordinates[3])
+    T = eltype(vx)
+    c_fd = diff_coeff(N)
+   
+    for fiber in das.fibers
+
+        for (ic, (x, y, z)) in enumerate(eachcol(fiber.ids))
+
+            if fiber.axis == "x_aligned"
+                vx_x = zero(T)
+                for i in 1:N
+                    vx_x += c_fd[i]/dx * (vx[x+i, y, z] - vx[x-(i-1), y, z])
+                end
+                fiber.data[ic, ti] = vx_x
+
+            elseif fiber.axis == "y_aligned"
+                vy_y = zero(T)
+                for i in 1:N
+                    vy_y += c_fd[i]/dy * (vy[x, y+(i-1), z] - vy[x, y-i, z])
+                end
+                fiber.data[ic, ti] = vy_y
+
+            elseif fiber.axis == "z_aligned"
+                vz_z = zero(T)
+                for i in 1:N
+                    vz_z += c_fd[i]/dz * (vz[x, y, z+(i-1)] - vz[x, y, z-i])
+                end
+                fiber.data[ic, ti] = vz_z 
+            end 
         end
     end
 end
@@ -329,7 +331,7 @@ function save_snapshots!(snap::Snapshots3D, fields::Fields3D, ti)
         ix, iy, iz = snap.grid_ids[n]
         for (fi, name) in enumerate(snap.fieldnames)
             f = fd[name]
-            snap.XY[n, tid, fi, :, :] .= Array(f[:, :, iz]) # Array() to avoid GPU-host issues if fields on device
+            snap.XY[n, tid, fi, :, :] .= Array(f[:, :, iz]) # Array() to ensure GPU compability
             snap.XZ[n, tid, fi, :, :] .= Array(f[:, iy, :])
             snap.YZ[n, tid, fi, :, :] .= Array(f[ix, :, :])
         end
@@ -339,13 +341,14 @@ end
 function init_receiver(config::Config, domain::Domain, elastic::Elastic, time::SimTime)
 
     geophones = init_geophones(config, domain, time)
-    das       = init_das(config, domain, elastic, time)
+    das       = init_das(config, domain, time)
+    dasn = isnothing(das.fibers) ? 0 : length(das.fibers)
     snapshots = init_snapshots(config, domain, time)
 
-    nrec = geophones.n + sum(f.n for f in das.fibers) + snapshots.n
+    nrec = geophones.n + snapshots.n + dasn
     if nrec == 0
         @logger :warn "Receiver list is empty. No data will be saved."
     end
-
+    @logger :debug "All receivers registered"
     return geophones, das, snapshots
 end

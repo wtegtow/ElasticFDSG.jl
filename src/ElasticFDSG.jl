@@ -3,19 +3,18 @@ module ElasticFDSG
     export runsim, load_results
     export config_template_2d, config_template_3d
 
-    using YAML, HDF5, NPZ, JLD2
     using LinearAlgebra, Printf, Dates
     using KernelAbstractions, GPUArrays
-    using ProgressMeter
+    using YAML, HDF5, NPZ, JLD2, ProgressMeter
 
-    include(joinpath(@__DIR__, "utils.jl"))
+    include(joinpath(@__DIR__, "logger.jl"))
     include(joinpath(@__DIR__, "parser.jl"))
     include(joinpath(@__DIR__, "templates.jl"))
     include(joinpath(@__DIR__, "domain.jl"))
     include(joinpath(@__DIR__, "elastic.jl"))
-    include(joinpath(@__DIR__, "fields.jl"))
     include(joinpath(@__DIR__, "time.jl"))
     include(joinpath(@__DIR__, "source.jl"))
+    include(joinpath(@__DIR__, "fields.jl"))
     include(joinpath(@__DIR__, "cpml.jl"))
     include(joinpath(@__DIR__, "receiver.jl"))
    
@@ -61,7 +60,7 @@ module ElasticFDSG
         velmod::Union{String, AbstractArray};
         log_level::Symbol=:warn,
         _return::Bool=false)
-        
+
         set_log_level!(log_level)
         @logger :info "Hello from ElasticFDSG"
 
@@ -74,7 +73,7 @@ module ElasticFDSG
         time                        = init_time(config, domain, elastic)
         source                      = init_source(config, domain, elastic, time)
         geophones, das, snapshots   = init_receiver(config, domain, elastic, time)
-        velmod = nothing; GC.gc()   # free velocity model from memory before allocating new fields
+        velmod = nothing; GC.gc()   # free velmod memory before allocating new fields
         fields                      = init_fields(config, domain)
         pml                         = init_cpml(config, domain, elastic, time, source)
 
@@ -82,8 +81,7 @@ module ElasticFDSG
         config.dict["settings"]["verbose"] && _print_summary(fdsg)
         
         solve!(fdsg) 
-        save_results(fdsg)
+        #save_results(fdsg)
         _return && return fdsg 
     end
-
 end

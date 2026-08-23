@@ -63,7 +63,7 @@ function _check_dispersion(domain::Domain, elastic::Elastic, fdom, pts_per_lambd
     dx_safe = λ_dom / pts_per_lambda
     dx_min  = minimum(map(c -> abs(step(c)), domain.coordinates))
     if dx_min > dx_safe
-        @logger :warn "Grid may be too coarse for numerical accuracy. Safe Δh ≤ $(round(dx_safe, digits=2)), current Δh = $dx_min." 
+        @logger :warn "Grid may be too coarse and cause dispersion. Safe Δh ≤ $(round(dx_safe, digits=2)), current Δh = $dx_min." 
     end
 end
 

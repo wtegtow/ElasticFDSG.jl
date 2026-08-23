@@ -1,6 +1,6 @@
-# Staggered-grid finite-difference update kernels
+# Staggered-grid finite-difference update kernel
 
-# need to make (unique) c-tensor array, since gpu-kernel can not work with structs
+# NOTE: need to make another c-tensor array, since gpu-kernel can not work with Vector of structs
 function _flatten_stiffness(tensors::Vector{Stiffness}, ::Val{2}, fp::DataType)
     n   = length(tensors)
     mat = Matrix{fp}(undef, n, 5)

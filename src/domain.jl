@@ -57,6 +57,6 @@ function init_domain(config::Config, velmod::VelocityModel)::Domain
     end
 
     domain = Domain{N}(Tuple(shape), coords, inner_ids, pml_lookup)
-    @logger :debug "Domain initialized"
+    @logger :info "Domain initialized"
     return domain
 end;

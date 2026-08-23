@@ -22,7 +22,7 @@ function _print_summary(fdsg::FDSG)
         spacings  = map(c -> step(c), d.coordinates)
         dx_min    = minimum(spacings)
         courant   = t.dt * e.vmax * sqrt(sum(1 ./ spacings.^2))
-        courant_max = N == 2 ? 0.7 : 0.6
+        courant_max = 0.75
 
         # dispersion
         λ_min     = e.vmin / s.fdom
@@ -46,7 +46,7 @@ function _print_summary(fdsg::FDSG)
         row  = (k, v) -> @sprintf("│    %-26s %s\n", k, string(v))
 
         println(top)
-        println("│  ElasticFDSG — $(N)D Simulation Summary")
+        println("│  ElasticFDSG — $(N)D Summary")
         println(div)
         println(head("System"))
         print(row("Device",    fdsg.device.name))
@@ -75,7 +75,7 @@ function _print_summary(fdsg::FDSG)
         print(row("Interval", @sprintf("%.4f : %.2e : %.4f", t.t0, t.dt, t.tend)))
         print(row("Timesteps", t.nt))
         print(row("CFL number", @sprintf("%.3f %s", courant, courant > courant_max ? "⚠ UNSTABLE" : "✓")))
-        print(row("Points/dom. wavelength", @sprintf("%.1f %s", ppw, ppw < ppw_max ? "⚠ LOW" : "✓")))
+        print(row("Points/dom.wavelength", @sprintf("%.1f %s", ppw, ppw < ppw_max ? "⚠ LOW" : "✓")))
         println(div)
         println(head("Source"))
         if N == 2
@@ -87,7 +87,7 @@ function _print_summary(fdsg::FDSG)
         println(div)
         println(head("Receivers"))
         print(row("Geophones", fdsg.geophones.n))
-        print(row("DAS fibers", sum(f.n for f in fdsg.das.fibers; init=0)))
+        print(row("DAS fibers", isnothing(fdsg.das.fibers) ? 0 : length(fdsg.das.fibers)))
         print(row("Snapshots", fdsg.snapshots.n))
         println(bot)
     end
