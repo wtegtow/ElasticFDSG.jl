@@ -59,18 +59,25 @@ function save_results(fdsg::FDSG)
         end
 
         # DAS
-        axis_names = N == 2 ? _DAS_AXIS_NAMES_2D : _DAS_AXIS_NAMES_3D
-        das_has_data = any(fg -> fg.n > 0, fdsg.das.fibers)
-        if das_has_data
+        if !isnothing(fdsg.das) 
             g5 = HDF5.create_group(file, "das")
-            for (fg, aname) in zip(fdsg.das.fibers, axis_names)
-                fg.n == 0 && continue
-                ga = HDF5.create_group(g5, aname)
-                for i in 1:fg.n
-                    gfi = HDF5.create_group(ga, "fiber_$i")
-                    gfi["data"]     = fg.data[i]       # (nch, nt)
-                    gfi["location"] = fg.coords[i]     # (ndim, nch)
+
+            axis_groups = Dict{String, HDF5.Group}()
+            axis_counts = Dict{String, Int}()
+
+            for fiber in fdsg.das.fibers
+                ga = get!(axis_groups, fiber.axis) do
+                    HDF5.create_group(g5, fiber.axis)
                 end
+
+                fiber_idx = get!(axis_counts, fiber.axis, 0) + 1
+                axis_counts[fiber.axis] = fiber_idx
+
+                gfi = HDF5.create_group(ga, "fiber_$fiber_idx")
+
+                gfi["data"]     = fiber.data
+                gfi["location"] = fiber.coords
+                gfi["ids"]      = fiber.ids
             end
         end
 

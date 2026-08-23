@@ -81,7 +81,7 @@ module ElasticFDSG
         config.dict["settings"]["verbose"] && _print_summary(fdsg)
         
         solve!(fdsg) 
-        #save_results(fdsg)
+        save_results(fdsg)
         _return && return fdsg 
     end
 end
