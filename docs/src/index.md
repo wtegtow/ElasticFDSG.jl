@@ -18,7 +18,7 @@ The package was developed with a focus on a clean, user-friendly workflow: simul
 - Geophone receivers (point particle velocity).
 - DAS receivers (axial strain along coordinate-aligned profiles).
 - Wavefield snapshots.
-- Results saved to HDF5 and loaded back into a nested Julia dictionary.
+- Results saved to HDF5.
 
 A step-by-step user guide can be found in the [User Guide](userguide/intro.md).
 Working examples are available in the [`examples/`](https://github.com/wtegtow/ElasticFDSG.jl/tree/main/examples) directory of the repository.
@@ -121,9 +121,7 @@ results = load_results(config["settings"]["output_file"])
 
 Unpacking `results` and plotting the geophones, DAS fibers, and wavefield snapshots produces a figure like this:
 
-```@raw html
-<video src="assets/dev2d.mp4" controls width="850"></video>
-```
+![Wavefield snapshot demo](assets/dev2d.gif)
 
 
 ## Citing

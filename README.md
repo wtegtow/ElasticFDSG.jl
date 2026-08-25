@@ -22,7 +22,7 @@ It solves the elastic wave equation in the velocity–stress formulation using a
 - Geophone receivers (point particle velocity).
 - DAS receivers (axial strain along coordinate-aligned profiles).
 - Wavefield snapshots.
-- Results saved to HDF5 and loaded back into a nested Julia dictionary.
+- Results saved to HDF5.
 
 A step-by-step user guide can be found in the [documentation](https://wtegtow.github.io/ElasticFDSG.jl/dev/).
 
@@ -125,7 +125,7 @@ results = load_results(config["settings"]["output_file"])
 
 Unpacking `results` and plotting the geophones, DAS fibers, and wavefield snapshots may result in a figure like this:
 
-<video src="docs/src/assets/dev2d.mp4" controls width="850"></video>
+<img src="docs/src/assets/dev2d.gif" width="850">
 
 
 ## Citing
