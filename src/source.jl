@@ -55,7 +55,7 @@ function _check_wavelet(ts, fdom)
     end
 end
 
-# NOTE: This is dominant wavelength, not minimum wavelength of fmax. So need to set pts_per_lambda a bit larger than recommended 
+# NOTE: This is dominant wavelength, not minimum wavelength of fmax. So set pts_per_lambda a bit larger than recommended 
 const MIN_PTS_PER_DOM_LAMBDA_2D = 8
 const MIN_PTS_PER_DOM_LAMBDA_3D = 12
 function _check_dispersion(domain::Domain, elastic::Elastic, fdom, pts_per_lambda) 

@@ -1,6 +1,3 @@
-const _DAS_AXIS_NAMES_2D = ("x_aligned", "z_aligned")
-const _DAS_AXIS_NAMES_3D = ("x_aligned", "y_aligned", "z_aligned")
-
 function save_results(fdsg::FDSG)
 
     path = get(fdsg.config.dict["settings"], "output_file", nothing)
@@ -124,8 +121,6 @@ Load simulation results from an HDF5 file into a nested Julia dictionary.
 # Example
 ```julia
 data = load_results("output.h5")
-vx_snap = data["snapshots"]["XZ"]   # 2D wavefield snapshots
-geo1    = data["geophones"]["geophone_1"]["data"]
 ```
 """
 function load_results(path::String)

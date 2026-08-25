@@ -1,8 +1,7 @@
 """ Run a 3D FWM, test numerical against analytical solution """;
 using ElasticFDSG
-ElasticFDSG.devmode!(true)
-using Test, LinearAlgebra, Statistics
-using JLD2, YAML, Einsum, UnPack
+using Test, LinearAlgebra, Statistic
+using Einsum, UnPack
 
 println("Running DC source validation test...")
 

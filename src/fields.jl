@@ -20,3 +20,14 @@ function init_fields(config::Config, domain::Domain{3})
     z  = () -> zeros(fp, domain.shape)
     return Fields3D(z(), z(), z(), z(), z(), z(), z(), z(), z())
 end
+
+function check_fields(fields::Union{Fields2D, Fields3D}; maxabs=1e30)
+    for name in fieldnames(typeof(fields))
+        field = getfield(fields, name)
+        maxval = Float64(maximum(abs, field))
+        if !isfinite(maxval) || maxval > maxabs
+            return false
+        end
+    end
+    return true
+end

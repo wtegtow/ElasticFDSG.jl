@@ -154,8 +154,8 @@ function save_das!(das::DAS, fields::Fields2D, domain::Domain, N, ti)
     
     # strain rate       =      1/2 * (∇v + ∇vᵀ)
     # axial strain rate = nᵀ · 1/2 * (∇v + ∇vᵀ) · n
-    # x-aligned: n=(1,0) -> ∂vx/∂x
-    # z-aligned: n=(0,1) -> ∂vz/∂z
+    # x-aligned: n=(1,0) strain rate = ∂vx/∂x
+    # z-aligned: n=(0,1) strain rate = ∂vz/∂z
 
     isnothing(das.fibers) && return 
 
@@ -192,9 +192,9 @@ function save_das!(das::DAS, fields::Fields3D, domain::Domain, N, ti)
     
     # strain rate       =      1/2 * (∇v + ∇vᵀ)
     # axial strain rate = nᵀ · 1/2 * (∇v + ∇vᵀ) · n
-    # x-aligned: n=(1,0,0) -> ∂vx/∂x
-    # y-aligned: n=(0,1,0) -> ∂vy/∂y
-    # z-aligned: n=(0,0,1) -> ∂vz/∂z
+    # x-aligned: n=(1,0,0) strain rate   ∂vx/∂x
+    # y-aligned: n=(0,1,0) strain rate = ∂vy/∂y
+    # z-aligned: n=(0,0,1) strain rate = ∂vz/∂z
 
     isnothing(das.fibers) && return 
 

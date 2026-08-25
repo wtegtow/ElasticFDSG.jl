@@ -22,7 +22,7 @@ function _print_summary(fdsg::FDSG)
         spacings  = map(c -> step(c), d.coordinates)
         dx_min    = minimum(spacings)
         courant   = t.dt * e.vmax * sqrt(sum(1 ./ spacings.^2))
-        courant_max = 0.75
+        courant_max = 0.7
 
         # dispersion
         λ_min     = e.vmin / s.fdom
@@ -51,7 +51,7 @@ function _print_summary(fdsg::FDSG)
         println(head("System"))
         print(row("Device",    fdsg.device.name))
         print(row("Precision", fp))
-        print(row("Est. Memory", @sprintf("%.2f GB", mem_gb)))
+        print(row("Est.Memory", @sprintf("%.2f GB", mem_gb)))
         println(div)
         println(head("Grid"))
         for (i, ax) in enumerate(axis_names)
@@ -74,8 +74,8 @@ function _print_summary(fdsg::FDSG)
         println(head("Time"))
         print(row("Interval", @sprintf("%.4f : %.2e : %.4f", t.t0, t.dt, t.tend)))
         print(row("Timesteps", t.nt))
-        print(row("CFL number", @sprintf("%.3f %s", courant, courant > courant_max ? "⚠ UNSTABLE" : "✓")))
-        print(row("Points/dom.wavelength", @sprintf("%.1f %s", ppw, ppw < ppw_max ? "⚠ LOW" : "✓")))
+        print(row("CFL number",  @sprintf("%.3f %s", courant, courant > courant_max ? "⚠ UNSTABLE" : "✓")))
+        print(row("Points/Dom.wavelength", @sprintf("%.1f %s", ppw, ppw < ppw_max ? "⚠ LOW" : "✓")))
         println(div)
         println(head("Source"))
         if N == 2

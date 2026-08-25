@@ -81,6 +81,12 @@ function solve!(fdsg::FDSG, block_size=nothing)
         save_das!(das, fields, domain, params.N_fd, ti)
         save_snapshots!(snapshots, fields, ti)
 
+        if ti % 50 == 0
+            if !check_fields(fields)
+                println()
+                error("Solution diverged. Setup not stable.")
+        end end
+
         showinfo && next!(prog)
     end
 
