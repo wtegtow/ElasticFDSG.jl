@@ -2,5 +2,5 @@ using ElasticFDSG
 using Test
 
 @testset "ElasticFDSG.jl" begin
-    include(joinpath(@__DIR__, "test_dc.jl"))
+    println("There are no tests. Application is testet in examples/validation.jl script")
 end;

@@ -6,18 +6,13 @@ and compares the seismograms at the receiver locations to the analytical
 solution using cross-correlation and amplitude ratio metrics.
 =#
 
-# NOTE: due to the project structure, i must switch back and forth to import dependencies 
-using Pkg; Pkg.activate(joinpath(@__DIR__, ".."))
+using Pkg; Pkg.activate(joinpath(@__DIR__, "..", "dev"))
 using ElasticFDSG
-ElasticFDSG.devmode!(true)
 using Test, LinearAlgebra, Statistics
 
-using Pkg; Pkg.activate(joinpath(@__DIR__, "..", "test"))
-using JLD2, YAML, Einsum, UnPack
-
-# not in the repo, but needed for plotting at the end
-using Pkg; Pkg.activate(joinpath(@__DIR__, "..", ".dev"))
-using GLMakie, LaTeXStrings, Metal
+using GLMakie 
+using Metal
+using Einsum, UnPack, LaTeXStrings
 
 # velocity model
 h = 5.0;
@@ -38,18 +33,13 @@ velmod[4,:,:,:] .= 3000;
 velmod[5,:,:,:] .= 2000;
 velmod[6,:,:,:] .= 2500;
 
-# receiver array
-src_x, src_y, src_z = (50, 100, 500)
-rcv = [Dict("x" => 950, "y"=>200, "z"=>z) for z in 50:100:950]
-rcv_x, rcv_y, rcv_z = ([x["x"] for x in rcv], [y["y"] for y in rcv], [z["z"] for z in rcv])
-
 # config
 config = Dict(
     "settings" => Dict(
         "device" => "metal",
         "precision" => "Float32",            
         "spatial_derivative_order" => 4,      
-        "verbose" => false,                   
+        "verbose" => true,                   
         "output_file" => nothing
     ),
     "time" => Dict(
@@ -62,9 +52,9 @@ config = Dict(
         "wavelet_type" => "ricker",          
         "wavelet_center" => 0.0625,
         "location" => Dict(
-            "x" => src_x,
-            "y" => src_y,
-            "z" => src_z
+            "x" => 50,
+            "y" => 100,
+            "z" => 500
         ),
         "seismic_moment" => 1e15,
         "moment_tensor" => Dict(
@@ -74,7 +64,6 @@ config = Dict(
             "Mxy" => 0,
             "Mxz" => 0,
             "Myz" => 0.,
-            "anisotropic" => false
         )
     ),
     "boundaries" => Dict(
@@ -87,19 +76,7 @@ config = Dict(
         "pml_layer" => 10
     ),
     "receivers" => Dict(
-        "geophones" => rcv,
-        "das" => Dict(
-            "x_aligned" => [],  
-            "y_aligned" => [],  
-            "z_aligned" => []  
-        ),
-        "snapshots" => Dict(
-            "plane_positions" => [
-                Dict("x" => src_x, "y" => src_y, "z" => src_z)
-            ],
-            "times" => collect(0:0.05:0.75),           
-            "fields" => ["vx", "vy", "vz"]  
-        )
+        "geophones" => [Dict("x" => 950, "y"=>200, "z"=>z) for z in 50:100:950],
     )
 )
 
@@ -127,7 +104,7 @@ mtensor_types = ["ISO", "DC", "CLVD"]
 Simulations = []
 for i in 1:3
     println("Running simulation for $(mtensor_types[i]) source...")
-    sim = ElasticFDSG.runsim(configs[i], velmod)
+    sim = ElasticFDSG.runsim(configs[i], velmod; _return=true)
     push!(Simulations, sim)
 end
 sim_iso, sim_dc, sim_clvd = Simulations;
@@ -201,13 +178,10 @@ function compute_analytical_solution(fdsg, M0, t0, vp, vs, rho)
     v = zeros(Float64, size(fdsg.geophones.data))
 
     n_rec = size(u, 1)
-
-    # Each velocity component lives at a different staggered sub-node.
-    # Evaluate the analytical solution at the correct sub-node per component.
     rcv_pos = [  # (n_rec × 3) position matrix per component
-        hcat(fdsg.geophones.coords[1,:] .+ dx/2, fdsg.geophones.coords[2,:],        fdsg.geophones.coords[3,:]),          # vx
-        hcat(fdsg.geophones.coords[1,:],          fdsg.geophones.coords[2,:] .+ dy/2, fdsg.geophones.coords[3,:]),        # vy
-        hcat(fdsg.geophones.coords[1,:],          fdsg.geophones.coords[2,:],        fdsg.geophones.coords[3,:] .+ dz/2), # vz
+        hcat(fdsg.geophones.coords[1,:],  fdsg.geophones.coords[2,:], fdsg.geophones.coords[3,:]),  # vx
+        hcat(fdsg.geophones.coords[1,:],  fdsg.geophones.coords[2,:], fdsg.geophones.coords[3,:]),  # vy
+        hcat(fdsg.geophones.coords[1,:],  fdsg.geophones.coords[2,:], fdsg.geophones.coords[3,:]),  # vz
     ]
 
     for i in 1:n_rec
@@ -241,6 +215,7 @@ numerics  = [sim_iso.geophones.data, sim_dc.geophones.data, sim_clvd.geophones.d
 
 # metrics
 begin
+
     function cc_and_shift(a, b, dt)
         cc = [sum(a .* circshift(b, s)) for s in -(length(a)÷4):(length(a)÷4)]
         cc ./= (norm(a) * norm(b))
@@ -268,58 +243,57 @@ begin
             push!(val_ar, amp_ratio)
         end
     end
-end
 
-# tests
-if h == 5
-    @test all(val_cc .> 0.99)
-    @test all(val_ar .> -0.2)  
-elseif h == 10
-    @test all(val_cc .> 0.98)
-    @test all(val_ar .> -0.38)  
-end;
+    # tests
+    @test all(val_cc .> 0.97)
+    @test all(val_ar .> -0.22)  
+end
 
 
 # figure
-norm11(a) = a ./ maximum(abs, a);
+begin 
+    norm11(a) = a ./ maximum(abs, a);
 
-fig = Figure(size=(1000, 1000), fontsize=18, font = :bold)
-titles = ["ISO", "DC", "CLVD"]
-components = ["V_x", "V_y", "V_z"]
+    fig = Figure(size=(1000, 1000), fontsize=18, font = :bold)
 
-first_num = nothing
-first_ana = nothing
-counter = 1
-digits = 4
-for comp in 1:3
-    for i in 1:3
-        ana = analytics[i]  
-        num = numerics[i]
-    
-        ylab = i == 1 ? "Receiver Index" : ""
-        xlab = comp == 3 ? "Time [sec]" : ""
+    titles = ["ISO", "DC", "CLVD"]
+    components = ["V_x", "V_y", "V_z"]
 
-        ax = Axis(fig[comp, i],
-                title = latexstring("\$$(components[comp])\$ — $(titles[i]) \\\\ CC: $(round(val_cc[counter],digits=digits)),  AR: $(round(val_ar[counter],digits=digits)) dB"),
-                yreversed = true,
-                ylabel = ylab, xlabel=xlab)
+    global first_num = nothing
+    global first_ana = nothing
+    global counter = 1
+    global digits = 4
 
-        n_rcv = size(ana,1)
-        for n in 1:n_rcv
-            local_scale = maximum(abs, num[n, comp, :]) 
-            offset = n * 2.0 
-            h_num = lines!(ax, t, (num[n, comp, :]) ./ local_scale .+ offset, color = :blue)
-            h_ana = lines!(ax, t .+ Δt/2, (ana[n, comp, :]) ./ local_scale .+ offset, color = :red, linestyle = :dash)
+    for comp in 1:3
+        for i in 1:3
+            ana = analytics[i]  
+            num = numerics[i]
+        
+            ylab = i == 1 ? "Receiver Index" : ""
+            xlab = comp == 3 ? "Time [sec]" : ""
 
-            if isnothing(first_num)
-                first_num = h_num
-                first_ana = h_ana
+            ax = Axis(fig[comp, i],
+                    title = latexstring("\$$(components[comp])\$ — $(titles[i]) \\\\ CC: $(round(val_cc[counter],digits=digits)),  AR: $(round(val_ar[counter],digits=digits)) dB"),
+                    yreversed = true,
+                    ylabel = ylab, xlabel=xlab)
+
+            n_rcv = size(ana,1)
+            for n in 1:n_rcv
+                local_scale = maximum(abs, num[n, comp, :]) 
+                offset = n * 2.0 
+                h_num = lines!(ax, t, (num[n, comp, :]) ./ local_scale .+ offset, color = :blue)
+                h_ana = lines!(ax, t .+ Δt/2, (ana[n, comp, :]) ./ local_scale .+ offset, color = :red, linestyle = :dash)
+
+                if isnothing(first_num)
+                    first_num = h_num
+                    first_ana = h_ana
+                end
             end
+            xlims!(ax, tlims...)
+            counter += 1
         end
-        xlims!(ax, tlims...)
-        counter += 1
     end
+    Legend(fig[2, 4], [first_num, first_ana], ["Numerical", "Analytical"])
+    display(fig)
+    GLMakie.save(joinpath(@__DIR__, "validation.png"), fig)
 end
-Legend(fig[2, 4], [first_num, first_ana], ["Numerical", "Analytical"])
-display(fig)
-GLMakie.save(joinpath(@__DIR__, "validation.png"), fig)

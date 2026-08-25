@@ -148,6 +148,34 @@ function _check_config(dict::Dict, dim::Int)
     _check_block(dict["receivers"],  dim == 2 ? _REQUIRED_RECEIVERS_2D  : _REQUIRED_RECEIVERS_3D,  "receivers")
 end
 
+function _check_config_values(dict::Dict)
+    settings = dict["settings"]
+    time     = dict["time"]
+    source   = dict["source"]
+    bounds   = dict["boundaries"]
+
+    for (name, value) in (("time.start", time["start"]),
+                          ("time.end", time["end"]),
+                          ("time.timestep", time["timestep"]),
+                          ("source.dominant_frequency", source["dominant_frequency"]))
+        isfinite(value) || error("Config check failed: $name must be finite, got $value")
+    end
+
+    time["end"] > time["start"] ||
+        error("Config check failed: time.end must be greater than time.start")
+    time["timestep"] > 0 ||
+        error("Config check failed: time.timestep must be greater than zero")
+    source["dominant_frequency"] > 0 ||
+        error("Config check failed: source.dominant_frequency must be greater than zero")
+
+    order = settings["spatial_derivative_order"]
+    1 <= order <= 10 ||
+        error("Config check failed: spatial_derivative_order must be between 1 and 10, got $order")
+
+    bounds["pml_layer"] >= 0 ||
+        error("Config check failed: pml_layer must be at least 1, got $(bounds["pml_layer"])")
+end
+
 function _detect_dim(dict::Dict)::Int
     try
         return haskey(dict["boundaries"], "ystart") ? 3 : 2
@@ -175,6 +203,7 @@ function parse_config(input::Union{String, Dict})::Config
     end
     dim = _detect_dim(dict)
     _check_config(dict, dim)
+    _check_config_values(dict)
 
     # some small additional checks
     path = dict["settings"]["output_file"]
@@ -195,6 +224,8 @@ function parse_config(input::Union{String, Dict})::Config
         if isfile(output_file)            
             @logger :warn "Output file: $output_file already exists and will be overwritten"    
         end
+    else 
+        @logger :warn "No output file was given. No results will be saved."
     end
     config = Config(dict, dim)
     @logger :info "Config initialized"

@@ -1,7 +1,6 @@
 module ElasticFDSG
 
     export runsim, load_results
-    export config_template_2d, config_template_3d
 
     using LinearAlgebra, Printf, Dates
     using KernelAbstractions, GPUArrays
@@ -9,7 +8,6 @@ module ElasticFDSG
 
     include(joinpath(@__DIR__, "logger.jl"))
     include(joinpath(@__DIR__, "parser.jl"))
-    include(joinpath(@__DIR__, "templates.jl"))
     include(joinpath(@__DIR__, "domain.jl"))
     include(joinpath(@__DIR__, "elastic.jl"))
     include(joinpath(@__DIR__, "time.jl"))
@@ -42,16 +40,12 @@ module ElasticFDSG
     Run an elastic forward simulation and save results to HDF5 as specified in config.
 
     # Arguments
-    - `config`: simulation configuration — either a `Dict` (can be built with
-      [`config_template_2d`](@ref) / [`config_template_3d`](@ref)) or a
-      file path (`String`) to a `.yaml` / `.yml` file.
-    - `velmod`: velocity model — either a Julia `AbstractArray` or a file path
-      (`String`) to a `.jld2`, `.npy`, or `.npz` file.
+    - `config`: simulation configuration — either a `Dict` or a file path to a `.yaml` / `.yml` file.
+    - `velmod`: velocity model — either a Julia `AbstractArray` or a file path to a `.jld2`, `.npy`, or `.npz` file.
 
     # Example
     ```julia
-    fdsg = runsim(config_dict, velmod_array)
-    runsum(config, velmod)                  # from dict and array 
+    runsim(config, velmod)                  # from dict and array 
     runsim("config.yaml", "velmod.jld2")    # from file paths
     ```
     """

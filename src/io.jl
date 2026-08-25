@@ -56,7 +56,7 @@ function save_results(fdsg::FDSG)
         end
 
         # DAS
-        if !isnothing(fdsg.das) 
+        if !isnothing(fdsg.das.fibers)
             g5 = HDF5.create_group(file, "das")
 
             axis_groups = Dict{String, HDF5.Group}()
