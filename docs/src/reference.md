@@ -18,16 +18,6 @@ CurrentModule = ElasticFDSG
 runsim
 ```
 
-## Configuration helpers
-
-```@docs
-config_template_2d
-```
-
-```@docs
-config_template_3d
-```
-
 ## Loading results
 
 ```@docs

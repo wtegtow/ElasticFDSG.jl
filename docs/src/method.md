@@ -239,21 +239,28 @@ Point receivers record the three particle velocity components $v_x$, $v_y$, $v_z
 Due to the staggered arrangement, each component is sampled at its natural staggered grid location
 (offset by half a cell from the nominal receiver position).
 
-### Strain Profiles (DAS)
+### Strain-Rate Profiles (DAS)
 
-DAS receivers record **axial strain** along coordinate-aligned profiles.
-Within the staggered-grid framework, strain can be reconstructed from the co-located normal stress
-components via the compliance relation:
+DAS receivers record **axial strain rate** along coordinate-aligned profiles.
+Only fibers aligned with the $x$-, $y$-, or $z$-axis are supported.
+The axial strain rate is computed directly from the velocity gradient:
 
 ```math
-\begin{bmatrix} \varepsilon_{xx} \\ \varepsilon_{yy} \\ \varepsilon_{zz} \end{bmatrix}
-= \begin{bmatrix} C_{11} & C_{12} & C_{13} \\ C_{12} & C_{22} & C_{23} \\ C_{13} & C_{23} & C_{33} \end{bmatrix}^{-1}
-\begin{bmatrix} \sigma_{xx} \\ \sigma_{yy} \\ \sigma_{zz} \end{bmatrix}
+\dot{\varepsilon} = \tfrac{1}{2}\bigl(\nabla \mathbf{v} + \nabla \mathbf{v}^{\mathsf T}\bigr)
 ```
 
-The axial strain component along the fiber orientation is extracted from the resulting vector.
-Gauge-length integration or conversion to strain rate can be performed in post-processing.
-Only fibers aligned with the $x$-, $y$-, or $z$-axis are supported. 
+The axial component along a unit fiber direction $\mathbf{n}$ is $\dot{\varepsilon}_n = \mathbf{n}^{\mathsf T}\dot{\varepsilon}\,\mathbf{n}$.
+Since fibers are restricted to being axis-aligned, $\mathbf{n}$ is a coordinate unit vector and the
+off-diagonal shear terms vanish, leaving a single diagonal component evaluated with the same
+finite-difference stencil used for the velocity field:
+
+```math
+\dot{\varepsilon}_{xx} = \partial_x v_x, \qquad
+\dot{\varepsilon}_{yy} = \partial_y v_y, \qquad
+\dot{\varepsilon}_{zz} = \partial_z v_z
+```
+
+Because this is a purely kinematic quantity, it is valid in both solid and fluid regions. Gauge-length integration or conversion to strain (via time integration) can be performed in post-processing. 
 
 ---
 

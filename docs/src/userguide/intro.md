@@ -14,11 +14,11 @@ and a 4-dimensional array (`13 × nx × ny × nz`) triggers a 3D simulation.
 ```julia
 using ElasticFDSG
 # config and velmod can each be a file path (String) or a Julia object (Dict / Array)
-result = runsim(config, velmod)
+runsim(config, velmod)
 ```
 
-If the configuration has `output_file = nothing`, `runsim` returns the populated `FDSG` struct directly, which contains all field data.  
-If an `output_file` path is provided (must end in `.h5`), the results are written to HDF5 and `runsim` returns `nothing`.
+The configuration must set `output_file` to a path ending in `.h5`. `runsim` writes all results to
+that file and returns `nothing` — results can be retrieved afterwards with `load_results`.
 
 ### Example — passing objects directly
 
@@ -28,12 +28,17 @@ using ElasticFDSG
 velmod = zeros(7, 200, 200)   # fill with your data
 # ... (see Velocity Models for details)
 
-config = config_template_2d(
-    device = "cpu", precision = "Float32",
-    # ... (see Configurations for details)
+config = Dict(
+    "settings" => Dict(
+        "device" => "cpu", "precision" => "Float32",
+        "spatial_derivative_order" => 4, "verbose" => true,
+        "output_file" => "path/to/output.h5",
+    ),
+    # ... (see Configurations for the full schema)
 )
 
-fdsg = runsim(config, velmod)
+runsim(config, velmod)
+results = load_results(config["settings"]["output_file"])
 ```
 
 ### Example — passing file paths
@@ -41,26 +46,8 @@ fdsg = runsim(config, velmod)
 ```julia
 using ElasticFDSG
 
-fdsg = runsim("path/to/config.yaml", "path/to/velmod.jld2")
+runsim("path/to/config.yaml", "path/to/velmod.jld2")
+results = load_results("path/to/output.h5")
 ```
 
-## Loading results from HDF5
-
-When results are saved to disk, they can be loaded back into a nested Julia dictionary:
-
-```julia
-using ElasticFDSG
-
-data = load_results("path/to/output.h5")
-```
-
-The dictionary mirrors the HDF5 group structure:
-
-| Key | Contents |
-|-----|----------|
-| `"grid"` | `x_coordinates`, (`y_coordinates`,) `z_coordinates` — inner-domain coordinate vectors |
-| `"time"` | `t0`, `tend`, `dt`, `time` vector |
-| `"source"` | wavelet, moment tensor components, source location |
-| `"geophones"` | `geophone_i/data` — `(ncomp, nt)` array; `geophone_i/location` |
-| `"das"` | `x_aligned/fiber_i/data` — `(nch, nt)`; analogous for `z_aligned` (and `y_aligned` in 3D) |
-| `"snapshots"` | `XZ` — `(ntime, nfields, nx, nz)` in 2D; per-plane datasets in 3D |
+The results dictionary mirrors the HDF5 group structure.

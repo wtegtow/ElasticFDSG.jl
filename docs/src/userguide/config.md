@@ -1,11 +1,10 @@
 # Configurations
 
-Configurations are plain Julia dictionaries that follow a fixed schema.
-They can be created programmatically using the helper functions [`config_template_2d`](@ref) and [`config_template_3d`](@ref).
-These functions require all necessary information as keyword arguments.
-Below are two examples of how to use the template functions.
+Configurations are plain Julia dictionaries or paths to `.yaml` files that follow a fixed schema.
 
-Alternativly, configurations can be written by hand as YAML files.
+Top-level keys `"settings"`, `"time"`, `"source"`, `"boundaries"`, and `"receivers"` are all required.
+Within `"receivers"`, the `"geophones"`, `"das"` (and its `"x_aligned"` / `"y_aligned"` / `"z_aligned"`
+sub-lists), and `"snapshots"` entries are all optional — simply omit any that are not needed.
 
 ---
 
@@ -14,54 +13,66 @@ Alternativly, configurations can be written by hand as YAML files.
 ```julia
 using ElasticFDSG
 
-config = config_template_2d(
-    # Settings
-    device    = "cpu",          # "cpu" | "cuda" | "metal" | "amd" | "intel"
-    precision = "Float32",      # "Float32" | "Float64"
-    fd_order  = 4,              # stencil half-width 1–10  
-    verbose   = true,           # print simulation summary and progress
-    output_file = nothing,      # String path ending in .h5, or nothing
+config = Dict(
+    "settings" => Dict(
+        "device" => "cpu",                     # "cpu" | "cuda" | "metal" | "amd" | "oneapi"
+        "precision" => "Float32",              # "Float32" | "Float64"
+        "spatial_derivative_order" => 4,       # stencil half-width 1–10
+        "verbose" => true,                     # print simulation summary and progress
+        "output_file" => "path/to/output.h5",  # must end in .h5
+    ),
+    "time" => Dict(
+        "start" => 0.0,
+        "end" => 1.0,
+        "timestep" => 0.001,                   # reduced automatically if CFL is violated
+    ),
+    "source" => Dict(
+        "dominant_frequency" => 30.0,          # [Hz]
+        "wavelet_type" => "ricker",            # "ricker" | "gauss1d"
+        "wavelet_center" => 0.05,              # peak time of the wavelet [s] (≥ 1.25/fdom)
+        "seismic_moment" => 1e9,               # scalar seismic moment M₀ [N·m]
+        "location" => Dict(
+            "x" => 500.0,
+            "z" => 500.0,
+        ),
+        "moment_tensor" => Dict(
+            "Mxx" => 0.0,
+            "Mxz" => 1.0,
+            "Mzz" => 0.0,
+        ),
+    ),
+    "boundaries" => Dict(
+        # "absorbing" | "none"
+        "xstart" => "absorbing", "xend" => "absorbing",
+        "zstart" => "none",      "zend" => "absorbing",     # reflecting top
+        "pml_layer" => 10,                                  
+    ),
+    "receivers" => Dict(
+        # Geophones — list of dicts with x,z locations
+        "geophones" => [
+            Dict("x" => 800.0, "z" => 300.0),
+            Dict("x" => 900.0, "z" => 300.0),
+            # add more here ...
+        ],
 
-    # Time
-    t_start = 0.0,
-    t_end   = 1.0,
-    dt      = 0.001,            # will be reduced automatically if CFL is violated
-
-    # Source
-    fdom           = 30.0,      # dominant frequency [Hz]
-    wavelet        = "ricker",  # "ricker" | "gauss1d"
-    wavelet_center = 0.05,      # peak time of the wavelet [s]  (≥ 1.25/fdom)
-    seismic_moment = 1e9,       # scalar seismic moment M₀ [N·m]
-    src_x = 500.0,              # source x-coordinate [m]
-    src_z = 500.0,              # source z-coordinate [m]
-    # 2D moment tensor components (symmetric, z is depth axis)
-    Mxx = 0.0, Mxz = 1.0, Mzz = 0.0,
-    anisotropic = false,        # if true, use anisotropic source radiation
-
-    # Boundaries
-    # "absorbing" | "none"
-    xstart = "absorbing", xend = "absorbing",  
-    zstart = "none",      zend = "absorbing",  # reflecting surface at top
-    pml_layer = 10,       # number of PML grid cells per absorbing boundary
-
-    # Receivers
-    # Geophones — [list of dicts] with x,z locations
-    geophones = [
-        Dict("x" => 800.0, "z" => 300.0),
-        Dict("x" => 900.0, "z" => 300.0),
-    ],
-
-    # DAS — axis-aligned strain profiles
-    # x_aligned: [list of dicts] fibers running along x at fixed z
-    das_x_aligned = [
-        Dict("x" => Dict("start"=>100.0, "step"=>5.0, "end"=>900.0), "z"=>400.0),
-    ],
-    # z_aligned: [list of dicts] fibers running along z at fixed x
-    das_z_aligned = [], # if no receiver is needed, pass an empty list 
-
-    # Snapshots
-    snapshot_times  = [0.25, 0.5, 0.75, 1.0],          # times [s] to snapshot
-    snapshot_fields = ["vx", "vz", "sxx", "sxz", "szz"],
+        # DAS — axis-aligned strain-rate profiles
+        "das" => Dict(
+            # x_aligned: list of dicts for fibers running along x at fixed z
+            "x_aligned" => [
+                Dict("x" => Dict("start"=>100.0, "step"=>5.0, "end"=>900.0), "z"=>400.0),
+                # add more here ...
+            ],
+            # z_aligned: list of dicts for fibers running along z at fixed x 
+            "z_aligned" =>[
+                Dict("x" => 100.0, "z"=>Dict("start"=>100.0, "step"=>5.0, "end"=>900.0)),
+                # add more here ...
+            ],
+        ),
+        "snapshots" => Dict(
+            "times" => [0.25, 0.5, 0.75, 1.0],
+            "fields" => ["vx", "vz", "sxx", "sxz", "szz"],
+        ),
+    ),
 )
 ```
 
@@ -82,64 +93,75 @@ config = config_template_2d(
 ```julia
 using ElasticFDSG
 
-config = config_template_3d(
-    # Settings
-    device    = "cuda",
-    precision = "Float32",
-    fd_order  = 4,
-    verbose   = true,
-    output_file = "/path/to/output.h5",
-
-    # Time
-    t_start = 0.0,
-    t_end   = 0.8,
-    dt      = 0.0005,
-
-    # Source
-    fdom           = 40.0,
-    wavelet        = "ricker",
-    wavelet_center = 0.04,
-    seismic_moment = 1e10,
-    src_x = 500.0, src_y = 125.0, src_z = 250.0,
-    # 3D moment tensor
-    Mxx = -1.0, Mxy = 0.0, Mxz = 0.0,
-    Myy =  0.0, Myz = 0.0, Mzz = 1.0,
-    anisotropic = false,
-
-    # Boundaries
-    xstart = "absorbing", xend = "absorbing",
-    ystart = "absorbing", yend = "absorbing",
-    zstart = "none",      zend = "absorbing",
-    pml_layer = 10,
-
-    # Receivers
-    geophones = [
-        Dict("x"=>950.0, "y"=>20.0, "z"=>250.0),
-        Dict("x"=>750.0, "y"=>20.0, "z"=>250.0),
-        Dict("x"=>550.0, "y"=>20.0, "z"=>250.0),
-        # ...
-    ],
-    das_x_aligned = [
-        Dict("x"=>Dict("start"=>0, "step"=>5.0, "end"=>"500.0"), "y"=>50.0, "z"=>500.0)
-        # ...
-    ],
-    das_y_aligned = [],
-    das_z_aligned = [
-        Dict("x"=>950.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
-        Dict("x"=>250.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
-        # ...
-    ],
-
-    # Snapshot planes — one entry per centre point; each centre produces
-    # an XY-, XZ-, and YZ-plane snapshot
-    snapshot_positions = [
-        Dict("x"=>500.0, "y"=>125.0, "z"=>250.0),
-        Dict("x"=>250.0, "y"=>250.0, "z"=>250.0),
-        # ...
-    ],
-    snapshot_times  = [0.4, 0.8],
-    snapshot_fields = ["vx", "vy", "vz"],
+config = Dict(
+    "settings" => Dict(
+        "device" => "cuda",
+        "precision" => "Float32",
+        "spatial_derivative_order" => 4,
+        "verbose" => true,
+        "output_file" => "path/to/output.h5",
+    ),
+    "time" => Dict(
+        "start" => 0.0,
+        "end" => 0.8,
+        "timestep" => 0.0005,
+    ),
+    "source" => Dict(
+        "dominant_frequency" => 40.0,
+        "wavelet_type" => "ricker",
+        "wavelet_center" => 0.04,
+        "seismic_moment" => 1e10,
+        "location" => Dict(
+            "x" => 500.0,
+            "y" => 125.0,
+            "z" => 250.0,
+        ),
+        "moment_tensor" => Dict(
+            "Mxx" => -1.0, "Mxy" => 0.0, "Mxz" => 0.0,
+            "Myy" =>  0.0, "Myz" => 0.0, "Mzz" => 1.0,
+        ),
+    ),
+    "boundaries" => Dict(
+        "xstart" => "absorbing", "xend" => "absorbing",
+        "ystart" => "absorbing", "yend" => "absorbing",
+        "zstart" => "none",      "zend" => "absorbing",
+        "pml_layer" => 10,
+    ),
+    "receivers" => Dict(
+        "geophones" => [
+            Dict("x"=>950.0, "y"=>20.0, "z"=>250.0),
+            Dict("x"=>750.0, "y"=>20.0, "z"=>250.0),
+            Dict("x"=>550.0, "y"=>20.0, "z"=>250.0),
+            # add more here ...
+        ],
+        "das" => Dict(
+            "x_aligned" => [
+                Dict("x"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0), "y"=>50.0, "z"=>500.0),
+                # add more here ...
+            ],
+            "y_aligned" => [
+                Dict("x"=>950.0, "y"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0), "z"=>500.0)
+                # add more here ...
+            ],
+            "z_aligned" => [
+                Dict("x"=>950.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+                Dict("x"=>250.0, "y"=>50.0, "z"=>Dict("start"=>0.0, "step"=>5.0, "end"=>500.0)),
+                # add more here ...
+            ],
+        ),
+        "snapshots" => Dict(
+            # one entry per centre point; each centre produces an XY-, XZ-, and YZ-plane snapshot
+            "plane_positions" => [
+                Dict("x"=>500.0, "y"=>125.0, "z"=>250.0),
+                Dict("x"=>250.0, "y"=>250.0, "z"=>250.0),
+                # ...
+            ],
+            "times" => [0.4, 0.8],
+            "fields" => ["vx", "vy", "vz"],
+        ),
+    ),
 )
+
 ```
 
 ### Available snapshot field names (3D)
@@ -182,7 +204,6 @@ source:
         Mxx: 0.0
         Mxz: 1.0
         Mzz: 0.0
-        anisotropic: false
 
 boundaries:
     xstart: absorbing
@@ -205,14 +226,6 @@ receivers:
         times:  [0.5, 1.0]
 ```
 
-```julia
-runsim("config2d.yaml", "velmod2d.jld2")
-```
----
-
-!!! note
-    The config reader yet requires correct receiver formatting. If a receiver type is not needed, simply pass an empty vector to the corresponding field in the configuration, e.g., x_aligned = [], fields = [], times = [] , etc... (like shown above).
-    
 ---
 
 ## Stability and discretisation guidelines
@@ -223,7 +236,7 @@ For spatial discretisation, a common rule of thumb is:
 $$\Delta x \leq \frac{V_\mathrm{min}}{10 \, f_\mathrm{max}}$$
 
 where $V_\mathrm{min}$ is the minimum phase velocity in the model and $f_\mathrm{max}$ is the maximum
-frequency content of the wavelet (typically $\approx 2 \, f_\mathrm{dom}$ for a Ricker wavelet).
+frequency content of the wavelet.
 
 The PML thickness should be at least 10 grid cells; thicker layers improve absorption.
 For strongly anisotropic media, PML instabilities may occur for certain parameter combinations —

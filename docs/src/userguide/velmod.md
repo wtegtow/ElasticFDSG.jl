@@ -8,9 +8,6 @@ or loaded from a `.jld2` (Julia) or `.npy` / `.npz` (NumPy) file.
     All elastic parameters are defined at **full integer grid points** (co-located with normal stresses).
     The solver interpolates effective values at staggered positions internally.
 
-!!! warning 
-    Only solid material nodes should be defined. Liquids or gases do not cause the program to crash, but they currently introduce numerical artifacts.
-    
 ---
 
 ## 2D velocity model
@@ -35,13 +32,13 @@ For a **VTI** medium use the standard Thomsen parameterisation.
 ```julia
 using JLD2
 
-h  = 10.0          # grid spacing [m]
+h  = 10.0 # grid spacing [m]
 xc = range(0.0, step=h, length=300)
 zc = range(0.0, step=h, length=300)
 nx, nz = length(xc), length(zc)
 
 # 2D coordinate grids  (nx × nz)
-X = repeat(xc,          1, nz)
+X = repeat(xc, 1, nz)
 Z = repeat(reshape(zc, 1, :), nx, 1)
 
 vp  = fill(4000.0, nx, nz)   # P-wave velocity [m/s]
