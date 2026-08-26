@@ -65,8 +65,6 @@ velmod[6,:,:] .= eps
 velmod[7,:,:] .= del
 
 # config
-t_start = 0.0
-t_end   = 1.0
 config = Dict(
     "settings" => Dict(
         "device" => "cpu",
@@ -76,8 +74,8 @@ config = Dict(
         "output_file" => joinpath(@__DIR__, "demo.h5"),
     ),
     "time" => Dict(
-        "start" => t_start,
-        "end" => t_end,
+        "start" => 0,
+        "end" => 1,
         "timestep" => 0.001,
     ),
     "source" => Dict(
@@ -109,7 +107,7 @@ config = Dict(
             "z_aligned" => [Dict("x" => 250, "z" => Dict("start" => 0, "step" => h, "end" => 2000))],
         ),
         "snapshots" => Dict(
-            "times" => collect(LinRange(t_start, t_end, 200)),
+            "times" => collect(LinRange(0, 1, 200)),
             "fields" => ["vx", "vz"],
         ),
     ),
@@ -119,7 +117,7 @@ runsim(config, velmod)
 results = load_results(config["settings"]["output_file"])
 ```
 
-Unpacking `results` and plotting the geophones, DAS fibers, and wavefield snapshots produces a figure like this:
+`results` contains all the information required for post-processing and can be used to visualize the specified receivers:
 
 ![Wavefield snapshot demo](assets/dev2d.gif)
 

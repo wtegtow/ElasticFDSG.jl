@@ -123,7 +123,7 @@ runsim(config, velmod)
 results = load_results(config["settings"]["output_file"])
 ```
 
-Unpacking `results` and plotting the geophones, DAS fibers, and wavefield snapshots may result in a figure like this:
+`results` contains all the information required for post-processing and can be used to visualize the specified receivers:
 
 <img src="docs/src/assets/dev2d.gif" width="850">
 
