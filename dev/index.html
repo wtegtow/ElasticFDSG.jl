@@ -32,8 +32,6 @@ velmod[6,:,:] .= eps
 velmod[7,:,:] .= del
 
 # config
-t_start = 0.0
-t_end   = 1.0
 config = Dict(
     &quot;settings&quot; =&gt; Dict(
         &quot;device&quot; =&gt; &quot;cpu&quot;,
@@ -43,8 +41,8 @@ config = Dict(
         &quot;output_file&quot; =&gt; joinpath(@__DIR__, &quot;demo.h5&quot;),
     ),
     &quot;time&quot; =&gt; Dict(
-        &quot;start&quot; =&gt; t_start,
-        &quot;end&quot; =&gt; t_end,
+        &quot;start&quot; =&gt; 0,
+        &quot;end&quot; =&gt; 1,
         &quot;timestep&quot; =&gt; 0.001,
     ),
     &quot;source&quot; =&gt; Dict(
@@ -76,16 +74,16 @@ config = Dict(
             &quot;z_aligned&quot; =&gt; [Dict(&quot;x&quot; =&gt; 250, &quot;z&quot; =&gt; Dict(&quot;start&quot; =&gt; 0, &quot;step&quot; =&gt; h, &quot;end&quot; =&gt; 2000))],
         ),
         &quot;snapshots&quot; =&gt; Dict(
-            &quot;times&quot; =&gt; collect(LinRange(t_start, t_end, 200)),
+            &quot;times&quot; =&gt; collect(LinRange(0, 1, 200)),
             &quot;fields&quot; =&gt; [&quot;vx&quot;, &quot;vz&quot;],
         ),
     ),
 )
 
 runsim(config, velmod)
-results = load_results(config[&quot;settings&quot;][&quot;output_file&quot;])</code></pre><p>Unpacking <code>results</code> and plotting the geophones, DAS fibers, and wavefield snapshots produces a figure like this:</p><p><img src="assets/dev2d.gif" alt="Wavefield snapshot demo"/></p><h2 id="Citing"><a class="docs-heading-anchor" href="#Citing">Citing</a><a id="Citing-1"></a><a class="docs-heading-anchor-permalink" href="#Citing" title="Permalink"></a></h2><p>If you find ElasticFDSG.jl usefull for your research, consider citing:</p><pre><code class="language-bibtex hljs">@misc{ElasticFDSG,
+results = load_results(config[&quot;settings&quot;][&quot;output_file&quot;])</code></pre><p><code>results</code> contains all the information required for post-processing and can be used to visualize the specified receivers:</p><p><img src="assets/dev2d.gif" alt="Wavefield snapshot demo"/></p><h2 id="Citing"><a class="docs-heading-anchor" href="#Citing">Citing</a><a id="Citing-1"></a><a class="docs-heading-anchor-permalink" href="#Citing" title="Permalink"></a></h2><p>If you find ElasticFDSG.jl usefull for your research, consider citing:</p><pre><code class="language-bibtex hljs">@misc{ElasticFDSG,
   author = {William Tegtow},
   title  = {ElasticFDSG.jl: Simulating elastic wave propagation in 2D and 3D anisotropic media.},
   year   = {2025},
   doi    = {https://doi.org/10.5281/zenodo.14872584}
-}</code></pre><div class="admonition is-info" id="Note-491ad71f73f8197"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-491ad71f73f8197" title="Permalink"></a></header><div class="admonition-body"><p>This package is under active development. Bug reports and suggestions are very welcome.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="userguide/intro/">General Usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Tuesday 25 August 2026 18:54">Tuesday 25 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+}</code></pre><div class="admonition is-info" id="Note-491ad71f73f8197"><header class="admonition-header">Note<a class="admonition-anchor" href="#Note-491ad71f73f8197" title="Permalink"></a></header><div class="admonition-body"><p>This package is under active development. Bug reports and suggestions are very welcome.</p></div></div></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="userguide/intro/">General Usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Wednesday 26 August 2026 05:49">Wednesday 26 August 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
